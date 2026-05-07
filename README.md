@@ -28,6 +28,8 @@ An open source harness for generating 3D models with your favorite coding agent
 
 - **Generate** - Create source-controlled CAD models with coding agents like Codex and Claude Code.
 - **Export** - Produce STEP, STL, DXF, GLB, topology data, and URDF robot descriptions.
+- **Evaluate** - Score generated CAD against weighted geometric checks for agent feedback loops.
+- **Benchmark** - Run repeatable build123d/OpenCascade benchmark tasks from JSON specs.
 - **Browse** - Inspect generated geometry in a local CAD Explorer viewer.
 - **Reference** - Copy stable `@cad[...]` references so agents can make precise follow-up edits.
 - **Review** - Render quick snapshots for fast checks during an iteration loop.
@@ -81,3 +83,16 @@ npm run dev
 ```
 
 Then open [http://localhost:4178](http://localhost:4178).
+
+## 🧪 Agentic CAD Benchmark
+
+Run the smoke benchmark after installing the CAD dependencies:
+
+```bash
+./.venv/bin/python benchmarks/run_benchmark.py benchmarks/tasks/smoke.json \
+  --json-out benchmark-results/smoke.json
+```
+
+Benchmark task specs live under `benchmarks/tasks/`, candidate build123d sources
+live under `models/`, and the evaluator reads the generated STEP topology
+artifacts produced by the bundled CAD skill.

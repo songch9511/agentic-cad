@@ -21,5 +21,6 @@ htmlcov/
 *.tmp
 *.swp
 tmp/
+benchmark-results/
 
 # CAD source, generated STEP outputs, and viewer CAD artifacts are tracked via Git LFS in .gitattributes.

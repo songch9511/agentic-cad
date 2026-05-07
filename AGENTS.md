@@ -10,6 +10,7 @@ Use the bundled skills for workflow details:
 
 - `skills/cad/SKILL.md` for STEP, STL, DXF, GLB/topology artifacts, snapshots, and `@cad[...]` prompt references.
 - `skills/urdf/SKILL.md` for generated URDF files, `gen_urdf()`, robot links, joints, limits, and URDF mesh references.
+- `benchmarks/README.md` for weighted CAD evaluation and benchmark runner usage.
 - `viewer/README.md` for viewer behavior, rendering UI, prompt capture UX, and frontend development. Do not read it just to form final CAD Explorer links; use the Viewer Handoff rules below.
 
 `AGENTS.md` is intentionally harness-focused. Reusable CAD and URDF workflow rules live inside the skills.
@@ -101,6 +102,10 @@ Run from the repository root unless you intentionally want paths to resolve from
 # Render a quick review image
 ./.venv/bin/python skills/cad/scripts/snapshot models/path/to/source.py \
   --view isometric --out /tmp/cad-renders/review.png
+
+# Run the Agentic CAD smoke benchmark
+./.venv/bin/python benchmarks/run_benchmark.py benchmarks/tasks/smoke.json \
+  --json-out benchmark-results/smoke.json
 ```
 
 ## Execution Notes

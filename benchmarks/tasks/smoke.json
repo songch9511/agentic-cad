@@ -1,0 +1,83 @@
+{
+  "schemaVersion": 1,
+  "name": "Agentic CAD smoke benchmark",
+  "description": "Small build123d tasks that verify generation, topology extraction, and geometric evaluation.",
+  "tasks": [
+    {
+      "id": "box_100_60_20",
+      "kind": "part",
+      "target": "models/benchmarks/box_100_60_20.py",
+      "prompt": "Create a centered 100 x 60 x 20 mm rectangular block.",
+      "checks": [
+        {
+          "type": "step_exists",
+          "weight": 10
+        },
+        {
+          "type": "topology_exists",
+          "weight": 10
+        },
+        {
+          "type": "glb_exists",
+          "weight": 10
+        },
+        {
+          "type": "valid_shape",
+          "weight": 20
+        },
+        {
+          "type": "bbox_size",
+          "expected": [100, 60, 20],
+          "tolerance": 0.05,
+          "weight": 30
+        },
+        {
+          "type": "volume_range",
+          "min": 119999,
+          "max": 120001,
+          "weight": 20
+        }
+      ]
+    },
+    {
+      "id": "four_hole_block",
+      "kind": "part",
+      "target": "models/benchmarks/four_hole_block.py",
+      "prompt": "Create a centered 100 x 60 x 20 mm block with four 8 mm vertical through-holes.",
+      "checks": [
+        {
+          "type": "step_exists",
+          "weight": 10
+        },
+        {
+          "type": "topology_exists",
+          "weight": 10
+        },
+        {
+          "type": "valid_shape",
+          "weight": 20
+        },
+        {
+          "type": "bbox_size",
+          "expected": [100, 60, 20],
+          "tolerance": 0.05,
+          "weight": 25
+        },
+        {
+          "type": "surface_count",
+          "surface_type": "cylinder",
+          "radius": 4,
+          "radius_tolerance": 0.05,
+          "equals": 4,
+          "weight": 25
+        },
+        {
+          "type": "volume_range",
+          "min": 115900,
+          "max": 116050,
+          "weight": 10
+        }
+      ]
+    }
+  ]
+}
