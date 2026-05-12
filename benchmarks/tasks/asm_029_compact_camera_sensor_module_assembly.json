@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "name": "ASM-029 compact camera sensor module assembly benchmark",
+  "description": "Intermediate hierarchical CAD assembly benchmark for a compact camera/sensor module with PCB, sensor stack, lens barrel, mounting bosses, screws, flex connector, and side spacers.",
+  "tasks": [
+    {
+      "id": "asm_029_compact_camera_sensor_module_assembly",
+      "kind": "assembly",
+      "target": "models/benchmarks/asm_029_compact_camera_sensor_module_assembly.py",
+      "prompt": "Create a compact camera sensor module assembly with a rectangular PCB, rear flex connector and ribbon, sensor package, image sensor window, cylindrical lens barrel, front lens ring, aperture disk, mounting bosses, board screws, and side spacers. Keep the module generic, compact, and robust with simple primitives.",
+      "assumptions": [
+        "This is a generic camera/sensor module benchmark and does not model proprietary branding or exact optical prescriptions.",
+        "Lens and fastener features are represented with robust cylinder components; sensor electronics are simplified boxes.",
+        "Generated STEP, GLB, topology, and component artifacts are produced by the CAD pipeline and are not hand-edited source of truth."
+      ],
+      "checks": [
+        {"type": "step_exists", "weight": 8},
+        {"type": "topology_exists", "weight": 8},
+        {"type": "glb_exists", "weight": 8},
+        {"type": "valid_shape", "weight": 12},
+        {"type": "bbox_size", "expected": [48, 46, 20], "tolerance": [8, 8, 5], "weight": 20},
+        {"type": "selector_count", "selector": "occurrence", "min": 22, "weight": 12},
+        {"type": "selector_count", "selector": "shape", "min": 16, "weight": 10},
+        {"type": "selector_count", "selector": "face", "min": 62, "weight": 8},
+        {"type": "surface_count", "surface_type": "cylinder", "min": 12, "weight": 8},
+        {"type": "volume_range", "min": 1800, "max": 50000, "weight": 8},
+        {"type": "assembly_occurrence_count", "scope": "top_level", "min": 6, "max": 6, "weight": 10},
+        {"type": "assembly_occurrence_count", "scope": "leaf", "min": 18, "weight": 10},
+        {"type": "named_occurrence_contains", "names": ["camera_pcb_module", "sensor_stack_module", "lens_barrel_module", "mounting_boss_module", "board_fastener_module", "side_spacer_module", "image_sensor_package", "front_lens_ring", "rear_flex_connector"], "weight": 14},
+        {"type": "repeated_component_count", "contains": "mounting_boss", "min": 4, "weight": 12},
+        {"type": "repeated_component_count", "contains": "board_screw", "min": 4, "weight": 10},
+        {"type": "repeated_component_count", "contains": "side_spacer", "min": 2, "weight": 8}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "name": "ASM-021 small thermal printer feed module benchmark",
+  "description": "Intermediate hierarchical CAD assembly benchmark for a compact thermal printer feed module with chassis, side plates, rollers, paper roll/strip, printhead, heat-sink fins, gear train, sensors, and screws.",
+  "tasks": [
+    {
+      "id": "asm_021_small_thermal_printer_feed_module",
+      "kind": "assembly",
+      "target": "models/benchmarks/asm_021_small_thermal_printer_feed_module.py",
+      "prompt": "Create a small thermal printer paper-feed module assembly with a chassis, side plates, rubber platen and pinch rollers, paper roll, paper strip through the feed path, printhead bar, repeated heat-sink fins, drive gears with simple teeth, paper sensor flags, and repeated chassis screws. Keep the assembly visually recognizable as a compact receipt printer feed mechanism.",
+      "assumptions": [
+        "Intermediate assembly benchmark covers a readable consumer/electronics mechanism with paper feed, roller, printhead, and drive train cues.",
+        "Repeated components are functional: screws, fins, gear teeth, side plates, rollers, and sensor flags.",
+        "Generated STEP, GLB, topology, and component artifacts are produced by the CAD pipeline and are not hand-edited source of truth."
+      ],
+      "checks": [
+        {"type": "step_exists", "weight": 8},
+        {"type": "topology_exists", "weight": 8},
+        {"type": "glb_exists", "weight": 8},
+        {"type": "valid_shape", "weight": 12},
+        {"type": "bbox_size", "expected": [88, 48, 40], "tolerance": [14, 10, 10], "weight": 20},
+        {"type": "selector_count", "selector": "occurrence", "min": 24, "weight": 12},
+        {"type": "selector_count", "selector": "shape", "min": 18, "weight": 10},
+        {"type": "selector_count", "selector": "face", "min": 90, "weight": 8},
+        {"type": "surface_count", "surface_type": "cylinder", "min": 10, "weight": 8},
+        {"type": "volume_range", "min": 9000, "max": 280000, "weight": 8},
+        {"type": "assembly_occurrence_count", "scope": "top_level", "min": 4, "weight": 10},
+        {"type": "assembly_occurrence_count", "scope": "leaf", "min": 23, "weight": 10},
+        {"type": "named_occurrence_contains", "names": ["thermal_printer_chassis_module", "paper_feed_roller_module", "drive_gear_train_module", "printhead_sensor_module", "thermal_printhead_bar"], "weight": 14},
+        {"type": "repeated_component_count", "contains": "heat_sink_fin", "min": 3, "weight": 12},
+        {"type": "repeated_component_count", "contains": "gear_tooth", "min": 4, "weight": 10},
+        {"type": "repeated_component_count", "contains": "mount_screw", "min": 4, "weight": 8},
+        {"type": "repeated_component_count", "contains": "sensor_flag", "min": 2, "weight": 8}
+      ]
+    }
+  ]
+}

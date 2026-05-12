@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "name": "ASM-020 wearable clasp buckle hinge assembly benchmark",
+  "description": "Intermediate hierarchical CAD assembly benchmark for a watch-band style clasp/buckle hinge with rectangular frame, keeper loop, multi-knuckle hinge, latch tongue, strap anchors, and rivets.",
+  "tasks": [
+    {
+      "id": "asm_020_wearable_clasp_buckle_hinge_assembly",
+      "kind": "assembly",
+      "target": "models/benchmarks/asm_020_wearable_clasp_buckle_hinge_assembly.py",
+      "prompt": "Create a wearable clasp and buckle hinge assembly for a strap or watch band, including a rectangular buckle frame, keeper loop, multi-knuckle hinge with full pin, folding latch tongue, release tab, strap anchor plates, and repeated rivets. Keep it low-profile and recognizable as a wearable buckle mechanism.",
+      "assumptions": [
+        "Intermediate assembly benchmark targets a compact wearable hardware mechanism with a readable hinge and strap interface.",
+        "Repeated components are functional: frame rails, hinge knuckles, rivets, and strap anchors.",
+        "Generated STEP, GLB, topology, and component artifacts are produced by the CAD pipeline and are not hand-edited source of truth."
+      ],
+      "checks": [
+        {"type": "step_exists", "weight": 8},
+        {"type": "topology_exists", "weight": 8},
+        {"type": "glb_exists", "weight": 8},
+        {"type": "valid_shape", "weight": 12},
+        {"type": "bbox_size", "expected": [112, 36, 17], "tolerance": [18, 10, 8], "weight": 20},
+        {"type": "selector_count", "selector": "occurrence", "min": 17, "weight": 12},
+        {"type": "selector_count", "selector": "shape", "min": 14, "weight": 10},
+        {"type": "selector_count", "selector": "face", "min": 70, "weight": 8},
+        {"type": "surface_count", "surface_type": "cylinder", "min": 6, "weight": 8},
+        {"type": "volume_range", "min": 4000, "max": 150000, "weight": 8},
+        {"type": "assembly_occurrence_count", "scope": "top_level", "min": 4, "weight": 10},
+        {"type": "assembly_occurrence_count", "scope": "leaf", "min": 17, "weight": 10},
+        {"type": "named_occurrence_contains", "names": ["buckle_frame_module", "multi_knuckle_hinge_module", "folding_clasp_latch_module", "strap_connector_and_rivet_module", "release_tab"], "weight": 14},
+        {"type": "repeated_component_count", "contains": "hinge_knuckle", "min": 3, "weight": 12},
+        {"type": "repeated_component_count", "contains": "rivet", "min": 4, "weight": 10},
+        {"type": "repeated_component_count", "contains": "frame_rail", "min": 2, "weight": 8},
+        {"type": "repeated_component_count", "contains": "strap_anchor", "min": 2, "weight": 8}
+      ]
+    }
+  ]
+}

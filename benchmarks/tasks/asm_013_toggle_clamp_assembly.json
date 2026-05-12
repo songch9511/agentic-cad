@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "name": "ASM-013 toggle clamp assembly benchmark",
+  "description": "Intermediate hierarchical CAD assembly benchmark for a compact toggle clamp with base, handle, link bars, pivot pins, clamp screw, pressure pad, and bosses.",
+  "tasks": [
+    {
+      "id": "asm_013_toggle_clamp_assembly",
+      "kind": "assembly",
+      "target": "models/benchmarks/asm_013_toggle_clamp_assembly.py",
+      "prompt": "Create a compact toggle clamp assembly with base plate, mounting bosses, upright bracket, handle lever, grip, paired link bars, pivot pins, clamp screw, and pressure pad. Use simple robust shapes.",
+      "assumptions": [
+        "Intermediate assembly benchmark intended to broaden non-tank visual/mechanical coverage with robust primitives.",
+        "Repeated occurrences are functional or visually essential, not tiny decorative detail.",
+        "Generated STEP, GLB, topology, and component artifacts are produced by the CAD pipeline and are not hand-edited source of truth."
+      ],
+      "checks": [
+        {
+          "type": "step_exists",
+          "weight": 8
+        },
+        {
+          "type": "topology_exists",
+          "weight": 8
+        },
+        {
+          "type": "glb_exists",
+          "weight": 8
+        },
+        {
+          "type": "valid_shape",
+          "weight": 12
+        },
+        {
+          "type": "bbox_size",
+          "expected": [
+            80,
+            35,
+            35
+          ],
+          "tolerance": [
+            8,
+            8,
+            8
+          ],
+          "weight": 20
+        },
+        {
+          "type": "selector_count",
+          "selector": "occurrence",
+          "min": 20,
+          "weight": 12
+        },
+        {
+          "type": "selector_count",
+          "selector": "shape",
+          "min": 12,
+          "weight": 10
+        },
+        {
+          "type": "selector_count",
+          "selector": "face",
+          "min": 70,
+          "weight": 8
+        },
+        {
+          "type": "surface_count",
+          "surface_type": "cylinder",
+          "min": 12,
+          "weight": 8
+        },
+        {
+          "type": "volume_range",
+          "min": 5000,
+          "max": 120000,
+          "weight": 8
+        },
+        {
+          "type": "assembly_occurrence_count",
+          "scope": "top_level",
+          "min": 3,
+          "weight": 10
+        },
+        {
+          "type": "assembly_occurrence_count",
+          "scope": "leaf",
+          "min": 14,
+          "weight": 10
+        },
+        {
+          "type": "named_occurrence_contains",
+          "names": [
+            "toggle_base_module",
+            "handle_module",
+            "link_bar_module",
+            "clamp_foot_module",
+            "pivot_pin",
+            "mounting_boss"
+          ],
+          "weight": 14
+        },
+        {
+          "type": "repeated_component_count",
+          "contains": "mounting_boss",
+          "min": 4,
+          "weight": 10
+        },
+        {
+          "type": "repeated_component_count",
+          "contains": "pivot_pin",
+          "min": 3,
+          "weight": 12
+        },
+        {
+          "type": "repeated_component_count",
+          "contains": "link_bar",
+          "min": 2,
+          "weight": 10
+        }
+      ]
+    }
+  ]
+}

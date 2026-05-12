@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "name": "ASM-009 low-profile wireless keyboard assembly benchmark",
+  "description": "Intermediate hierarchical CAD assembly benchmark for a generic compact low-profile wireless keyboard with repeated chiclet-style keys, function row, modifier row, arrow cluster, and rear battery ridge.",
+  "tasks": [
+    {
+      "id": "asm_009_low_profile_keyboard_assembly",
+      "kind": "assembly",
+      "target": "models/benchmarks/asm_009_low_profile_keyboard_assembly.py",
+      "prompt": "Create a generic low-profile wireless keyboard assembly visually inspired by compact chiclet keyboards, with a slim base tray, repeated keycaps, grouped function row, main alpha/number rows, long spacebar, wide modifier keys, arrow cluster, and small rear/battery ridge. Do not include logos or trademark text.",
+      "assumptions": [
+        "This is a generic keyboard benchmark and does not model proprietary branding, logos, or exact trademarked product details.",
+        "Repeated simple keycaps are the core semantic feature; legends are intentionally omitted for robustness and speed.",
+        "Generated STEP, GLB, topology, and component artifacts are produced by the CAD pipeline and are not hand-edited source of truth."
+      ],
+      "checks": [
+        {"type": "step_exists", "weight": 8},
+        {"type": "topology_exists", "weight": 8},
+        {"type": "glb_exists", "weight": 8},
+        {"type": "valid_shape", "weight": 12},
+        {"type": "bbox_size", "expected": [150, 62, 10], "tolerance": [10, 10, 5], "weight": 20},
+        {"type": "selector_count", "selector": "occurrence", "min": 55, "weight": 12},
+        {"type": "selector_count", "selector": "shape", "min": 45, "weight": 10},
+        {"type": "selector_count", "selector": "face", "min": 180, "weight": 8},
+        {"type": "surface_count", "surface_type": "cylinder", "min": 3, "weight": 6},
+        {"type": "volume_range", "min": 6000, "max": 90000, "weight": 8},
+        {"type": "assembly_occurrence_count", "scope": "top_level", "min": 5, "weight": 10},
+        {"type": "assembly_occurrence_count", "scope": "leaf", "min": 55, "weight": 12},
+        {"type": "named_occurrence_contains", "names": ["keyboard_base_module", "keybed_module", "keycap_module", "function_key_module", "spacebar_key", "modifier_key", "arrow_key_module", "rear_battery_ridge"], "weight": 14},
+        {"type": "repeated_component_count", "contains": "keycap", "min": 30, "weight": 12},
+        {"type": "repeated_component_count", "contains": "function_key", "min": 10, "weight": 10},
+        {"type": "repeated_component_count", "contains": "modifier_key", "min": 4, "weight": 10},
+        {"type": "repeated_component_count", "contains": "arrow_key", "min": 4, "weight": 10}
+      ]
+    }
+  ]
+}

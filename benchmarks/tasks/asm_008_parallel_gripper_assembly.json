@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "name": "ASM-008 parallel gripper assembly benchmark",
+  "description": "Intermediate hierarchical CAD assembly benchmark for a two-finger robotic parallel gripper with palm, mirrored fingers, pivots, links, pads, and actuator cylinder.",
+  "tasks": [
+    {
+      "id": "asm_008_parallel_gripper_assembly",
+      "kind": "assembly",
+      "target": "models/benchmarks/asm_008_parallel_gripper_assembly.py",
+      "prompt": "Create a two-finger robotic parallel gripper assembly with palm/base, mirrored left and right fingers, pivot pins, link bars, grip pads, and a simple actuator cylinder. Keep repeated pins and links functional.",
+      "assumptions": [
+        "Intermediate assembly benchmark intended to exercise hierarchy, named modules, and repeated functional components without BRIEF-001 full-vehicle complexity.",
+        "Robust simple boxes, cylinders, and compounds are preferred over fragile booleans or detailed decorative hardware.",
+        "Generated STEP, GLB, topology, and component artifacts are produced by the CAD pipeline and are not hand-edited source of truth."
+      ],
+      "checks": [
+        {"type": "step_exists", "weight": 8},
+        {"type": "topology_exists", "weight": 8},
+        {"type": "glb_exists", "weight": 8},
+        {"type": "valid_shape", "weight": 12},
+        {"type": "bbox_size", "expected": [100, 70, 28], "tolerance": [6, 5, 5], "weight": 20},
+        {"type": "selector_count", "selector": "occurrence", "min": 13, "weight": 12},
+        {"type": "selector_count", "selector": "shape", "min": 10, "weight": 10},
+        {"type": "selector_count", "selector": "face", "min": 55, "weight": 8},
+        {"type": "surface_count", "surface_type": "cylinder", "min": 10, "weight": 8},
+        {"type": "volume_range", "min": 7000, "max": 130000, "weight": 8},
+        {"type": "assembly_occurrence_count", "scope": "top_level", "min": 3, "weight": 10},
+        {"type": "assembly_occurrence_count", "scope": "leaf", "min": 10, "weight": 10},
+        {"type": "named_occurrence_contains", "names": ["palm_module", "left_finger_module", "right_finger_module", "pivot_pin", "link_bar", "grip_pad", "actuator_cylinder"], "weight": 14},
+        {"type": "repeated_component_count", "contains": "pivot_pin", "min": 4, "weight": 12},
+        {"type": "repeated_component_count", "contains": "link_bar", "min": 2, "weight": 10},
+        {"type": "repeated_component_count", "contains": "grip_pad", "min": 2, "weight": 10}
+      ]
+    }
+  ]
+}

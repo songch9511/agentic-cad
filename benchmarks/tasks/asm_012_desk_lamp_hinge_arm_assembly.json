@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "name": "ASM-012 desk lamp hinge arm assembly benchmark",
+  "description": "Intermediate hierarchical CAD assembly benchmark for a small adjustable desk lamp with base, paired arm links, hinge joints, shade, diffuser, and cable tube.",
+  "tasks": [
+    {
+      "id": "asm_012_desk_lamp_hinge_arm_assembly",
+      "kind": "assembly",
+      "target": "models/benchmarks/asm_012_desk_lamp_hinge_arm_assembly.py",
+      "prompt": "Create a small desk lamp hinge-arm assembly with a round base, switch, lower and upper paired link bars, hinge pins and knobs, cable tube, lamp head, shade, and diffuser. Keep it robust and recognizable.",
+      "assumptions": [
+        "Intermediate assembly benchmark intended to broaden non-tank visual/mechanical coverage with robust primitives.",
+        "Repeated occurrences are functional or visually essential, not tiny decorative detail.",
+        "Generated STEP, GLB, topology, and component artifacts are produced by the CAD pipeline and are not hand-edited source of truth."
+      ],
+      "checks": [
+        {
+          "type": "step_exists",
+          "weight": 8
+        },
+        {
+          "type": "topology_exists",
+          "weight": 8
+        },
+        {
+          "type": "glb_exists",
+          "weight": 8
+        },
+        {
+          "type": "valid_shape",
+          "weight": 12
+        },
+        {
+          "type": "bbox_size",
+          "expected": [
+            80,
+            42,
+            60
+          ],
+          "tolerance": [
+            10,
+            8,
+            10
+          ],
+          "weight": 20
+        },
+        {
+          "type": "selector_count",
+          "selector": "occurrence",
+          "min": 18,
+          "weight": 12
+        },
+        {
+          "type": "selector_count",
+          "selector": "shape",
+          "min": 12,
+          "weight": 10
+        },
+        {
+          "type": "selector_count",
+          "selector": "face",
+          "min": 70,
+          "weight": 8
+        },
+        {
+          "type": "surface_count",
+          "surface_type": "cylinder",
+          "min": 9,
+          "weight": 8
+        },
+        {
+          "type": "volume_range",
+          "min": 5000,
+          "max": 140000,
+          "weight": 8
+        },
+        {
+          "type": "assembly_occurrence_count",
+          "scope": "top_level",
+          "min": 3,
+          "weight": 10
+        },
+        {
+          "type": "assembly_occurrence_count",
+          "scope": "leaf",
+          "min": 13,
+          "weight": 10
+        },
+        {
+          "type": "named_occurrence_contains",
+          "names": [
+            "lamp_base_module",
+            "lower_arm_module",
+            "upper_arm_module",
+            "hinge_joint_module",
+            "lamp_head_module",
+            "lamp_shade"
+          ],
+          "weight": 14
+        },
+        {
+          "type": "repeated_component_count",
+          "contains": "hinge_pin",
+          "min": 3,
+          "weight": 12
+        },
+        {
+          "type": "repeated_component_count",
+          "contains": "link_bar",
+          "min": 4,
+          "weight": 12
+        },
+        {
+          "type": "repeated_component_count",
+          "contains": "hinge_knob",
+          "min": 3,
+          "weight": 8
+        }
+      ]
+    }
+  ]
+}

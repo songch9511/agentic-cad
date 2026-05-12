@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "name": "ASM-024 rack-and-pinion slide assembly benchmark",
+  "description": "Intermediate hierarchical CAD assembly benchmark for a small rack-and-pinion linear slide with rail base, carriage, rack teeth, pinion drive, rollers, and end stops.",
+  "tasks": [
+    {
+      "id": "asm_024_rack_pinion_slide_assembly",
+      "kind": "assembly",
+      "target": "models/benchmarks/asm_024_rack_pinion_slide_assembly.py",
+      "prompt": "Create a small rack-and-pinion slide assembly with a rail base, moving carriage, repeated slide rollers, a linear rack bar with repeated rack teeth, a pinion gear and drive shaft, and end stops. Favor reliable primitives and a meaningful assembly hierarchy.",
+      "assumptions": [
+        "The rack teeth are repeated functional occurrences to exercise repeated component handling without fragile gear booleans.",
+        "The pinion is an approximate toothed compound that visually communicates a gear but avoids high-detail involute geometry.",
+        "Generated STEP, GLB, and topology artifacts are benchmark outputs, not source files."
+      ],
+      "checks": [
+        {"type": "step_exists", "weight": 8},
+        {"type": "topology_exists", "weight": 8},
+        {"type": "glb_exists", "weight": 8},
+        {"type": "valid_shape", "weight": 12},
+        {"type": "bbox_size", "expected": [122, 76, 38], "tolerance": [6, 6, 8], "weight": 20},
+        {"type": "selector_count", "selector": "occurrence", "min": 28, "weight": 12},
+        {"type": "selector_count", "selector": "shape", "min": 20, "weight": 10},
+        {"type": "selector_count", "selector": "face", "min": 120, "weight": 8},
+        {"type": "surface_count", "surface_type": "cylinder", "min": 24, "weight": 8},
+        {"type": "volume_range", "min": 35000, "max": 170000, "weight": 8},
+        {"type": "assembly_occurrence_count", "scope": "top_level", "min": 5, "weight": 10},
+        {"type": "assembly_occurrence_count", "scope": "leaf", "min": 20, "weight": 10},
+        {"type": "named_occurrence_contains", "names": ["base_and_rail_module", "moving_carriage_module", "rack_bar_module", "pinion_drive_module", "rack_tooth", "slide_roller", "pinion_gear"], "weight": 14},
+        {"type": "repeated_component_count", "contains": "rack_tooth", "min": 13, "weight": 12},
+        {"type": "repeated_component_count", "contains": "slide_roller", "min": 8, "weight": 10},
+        {"type": "repeated_component_count", "contains": "guide_rail", "min": 2, "weight": 8}
+      ]
+    }
+  ]
+}

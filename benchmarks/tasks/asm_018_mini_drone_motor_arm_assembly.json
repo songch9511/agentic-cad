@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "name": "ASM-018 mini drone motor arm assembly benchmark",
+  "description": "Intermediate hierarchical CAD assembly benchmark for a small quadcopter motor-arm module with repeated arms, motors, propellers, landing legs, and fasteners.",
+  "tasks": [
+    {
+      "id": "asm_018_mini_drone_motor_arm_assembly",
+      "kind": "assembly",
+      "target": "models/benchmarks/asm_018_mini_drone_motor_arm_assembly.py",
+      "prompt": "Create a mini quadcopter drone motor arm assembly with a central electronics hub, four cross arms, four brushless motor pods, crossed propeller blades, landing legs, and visible repeated fasteners. Keep the silhouette readable as a compact drone using robust primitive solids.",
+      "assumptions": [
+        "Intermediate assembly benchmark expands readable mechatronics/product coverage with a recognizable quadcopter layout.",
+        "Repeated components are functional drone parts: four arms, four motors, propeller blades, four landing legs, and repeated screws.",
+        "Generated STEP, GLB, topology, and component artifacts are produced by the CAD pipeline and are not hand-edited source of truth."
+      ],
+      "checks": [
+        {"type": "step_exists", "weight": 8},
+        {"type": "topology_exists", "weight": 8},
+        {"type": "glb_exists", "weight": 8},
+        {"type": "valid_shape", "weight": 12},
+        {"type": "bbox_size", "expected": [106, 106, 27], "tolerance": [18, 18, 12], "weight": 20},
+        {"type": "selector_count", "selector": "occurrence", "min": 22, "weight": 12},
+        {"type": "selector_count", "selector": "shape", "min": 18, "weight": 10},
+        {"type": "selector_count", "selector": "face", "min": 80, "weight": 8},
+        {"type": "surface_count", "surface_type": "cylinder", "min": 12, "weight": 8},
+        {"type": "volume_range", "min": 5000, "max": 260000, "weight": 8},
+        {"type": "assembly_occurrence_count", "scope": "top_level", "min": 5, "weight": 10},
+        {"type": "assembly_occurrence_count", "scope": "leaf", "min": 22, "weight": 10},
+        {"type": "named_occurrence_contains", "names": ["drone_center_hub_module", "cross_motor_arm_module", "four_motor_propeller_module", "landing_gear_module", "arm_fastener_module"], "weight": 14},
+        {"type": "repeated_component_count", "contains": "motor_arm", "min": 4, "weight": 12},
+        {"type": "repeated_component_count", "contains": "brushless_motor", "min": 4, "weight": 10},
+        {"type": "repeated_component_count", "contains": "prop_blade", "min": 4, "weight": 10},
+        {"type": "repeated_component_count", "contains": "landing_leg", "min": 4, "weight": 8}
+      ]
+    }
+  ]
+}

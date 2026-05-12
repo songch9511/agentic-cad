@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "name": "ASM-004 linear rail carriage assembly benchmark",
+  "description": "Intermediate hierarchical CAD assembly benchmark for a small linear guide, moving carriage, side rollers, end stops, and clamp plate.",
+  "tasks": [
+    {
+      "id": "asm_004_linear_rail_carriage_assembly",
+      "kind": "assembly",
+      "target": "models/benchmarks/asm_004_linear_rail_carriage_assembly.py",
+      "prompt": "Create a small linear rail carriage assembly with a base guide rail, moving carriage, side rollers or bearings, end stops, and a clamp plate. Use meaningful repeated roller and end stop components without fragile details.",
+      "assumptions": [
+        "Intermediate assembly benchmark intended to exercise hierarchy, named modules, and repeated functional components without BRIEF-001 full-vehicle complexity.",
+        "Robust simple boxes, cylinders, and compounds are preferred over fragile booleans or detailed decorative hardware.",
+        "Generated STEP, GLB, topology, and component artifacts are produced by the CAD pipeline and are not hand-edited source of truth."
+      ],
+      "checks": [
+        {"type": "step_exists", "weight": 8},
+        {"type": "topology_exists", "weight": 8},
+        {"type": "glb_exists", "weight": 8},
+        {"type": "valid_shape", "weight": 12},
+        {"type": "bbox_size", "expected": [100, 38, 28], "tolerance": [5, 5, 5], "weight": 20},
+        {"type": "selector_count", "selector": "occurrence", "min": 13, "weight": 12},
+        {"type": "selector_count", "selector": "shape", "min": 10, "weight": 10},
+        {"type": "selector_count", "selector": "face", "min": 55, "weight": 8},
+        {"type": "surface_count", "surface_type": "cylinder", "min": 10, "weight": 8},
+        {"type": "volume_range", "min": 6000, "max": 110000, "weight": 8},
+        {"type": "assembly_occurrence_count", "scope": "top_level", "min": 3, "weight": 10},
+        {"type": "assembly_occurrence_count", "scope": "leaf", "min": 10, "weight": 10},
+        {"type": "named_occurrence_contains", "names": ["rail_module", "carriage_module", "roller_module", "end_stop_module", "clamp_plate", "guide_rail"], "weight": 14},
+        {"type": "repeated_component_count", "contains": "roller", "min": 4, "weight": 12},
+        {"type": "repeated_component_count", "contains": "end_stop", "min": 2, "weight": 10}
+      ]
+    }
+  ]
+}

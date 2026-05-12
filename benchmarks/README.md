@@ -21,6 +21,15 @@ The runner:
 
 Use `--skip-generate` to score existing generated artifacts without rebuilding them.
 
+If the local Python environment does not already include the CAD dependencies,
+run through `uv`:
+
+```bash
+uv run --with-requirements requirements-cad.txt python benchmarks/run_benchmark.py \
+  benchmarks/tasks/model_006_pdf.json \
+  --json-out benchmark-results/model_006_pdf.json
+```
+
 ## Task Schema
 
 Each task is a JSON object with:
@@ -31,7 +40,12 @@ Each task is a JSON object with:
 - `prompt`: source prompt for agent runs.
 - `checks`: weighted evaluator checks.
 
-Supported checks in this initial harness:
+Drawing-to-CAD tasks may also include an `inputs` object with source artifacts
+such as `drawingPdf` and `drawingPreview`. The current runner preserves those
+fields as benchmark data for agents, while scoring still happens against the
+generated CAD target and geometric checks.
+
+Supported checks:
 
 - `step_exists`
 - `topology_exists`
@@ -43,3 +57,18 @@ Supported checks in this initial harness:
 - `surface_count`
 - `curve_count`
 - `volume_range`
+- `assembly_occurrence_count`
+  - Reads `topology.json["assembly"]["root"]` and counts assembly occurrences.
+  - `scope`: `top_level`, `leaf`, or `all`.
+  - Supports `min`, `max`, and `equals`.
+- `named_occurrence_contains`
+  - Requires each string in `names` to appear in an assembly node `displayName` or `instancePath`.
+- `repeated_component_count`
+  - Counts matching leaf assembly nodes.
+  - `contains` may be a string or list and is matched against `displayName`, `instancePath`, and `sourcePath` by default.
+  - `fields` can narrow matching to any of `displayName`, `instancePath`, or `sourcePath`.
+  - Supports `min`, `max`, and `equals`.
+
+The first assembly checks are manifest-only and intentionally avoid expensive BREP
+intersection or visual recognizability. Use them to reject monolithic outputs and
+verify named hierarchy/reused components before adding heavier assembly semantics.

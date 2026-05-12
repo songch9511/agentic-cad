@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "name": "ASM-025 indexing turntable fixture assembly benchmark",
+  "description": "Intermediate hierarchical CAD assembly benchmark for a small indexing turntable fixture with a round base, rotating disk, repeated index pins, clamps, jaws, screws, and support feet.",
+  "tasks": [
+    {
+      "id": "asm_025_indexing_turntable_fixture_assembly",
+      "kind": "assembly",
+      "target": "models/benchmarks/asm_025_indexing_turntable_fixture_assembly.py",
+      "prompt": "Create an indexing table / turntable fixture assembly with a round base, rotating disk, center bearing, repeated index pins around the table, four fixture clamp blocks with screws and jaws, and support feet. Keep geometry robust and visually recognizable.",
+      "assumptions": [
+        "Index pins, fixture clamps, jaws, clamp screws, and feet are modeled as repeated functional occurrences.",
+        "Clamp screw orientation is simplified to a common axis; the layout still communicates an indexing fixture without fragile rotated transforms.",
+        "Generated STEP, GLB, and topology artifacts are benchmark outputs, not source files."
+      ],
+      "checks": [
+        {"type": "step_exists", "weight": 8},
+        {"type": "topology_exists", "weight": 8},
+        {"type": "glb_exists", "weight": 8},
+        {"type": "valid_shape", "weight": 12},
+        {"type": "bbox_size", "expected": [114, 94, 40], "tolerance": [6, 6, 8], "weight": 20},
+        {"type": "selector_count", "selector": "occurrence", "min": 28, "weight": 12},
+        {"type": "selector_count", "selector": "shape", "min": 20, "weight": 10},
+        {"type": "selector_count", "selector": "face", "min": 120, "weight": 8},
+        {"type": "surface_count", "surface_type": "cylinder", "min": 30, "weight": 8},
+        {"type": "volume_range", "min": 50000, "max": 220000, "weight": 8},
+        {"type": "assembly_occurrence_count", "scope": "top_level", "min": 4, "weight": 10},
+        {"type": "assembly_occurrence_count", "scope": "leaf", "min": 22, "weight": 10},
+        {"type": "named_occurrence_contains", "names": ["base_plinth_module", "turntable_disk_module", "index_pin_module", "fixture_clamp_module", "index_pin", "fixture_clamp_block", "fixture_clamp_screw"], "weight": 14},
+        {"type": "repeated_component_count", "contains": "index_pin", "min": 8, "weight": 12},
+        {"type": "repeated_component_count", "contains": "fixture_clamp", "min": 8, "weight": 10},
+        {"type": "repeated_component_count", "contains": "support_foot", "min": 4, "weight": 8}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "name": "ASM-019 compact pan-tilt servo head assembly benchmark",
+  "description": "Intermediate hierarchical CAD assembly benchmark for a small pan-tilt camera head with base servo, turntable, tilt yoke, camera body, cable loop, and repeated fasteners.",
+  "tasks": [
+    {
+      "id": "asm_019_compact_pan_tilt_servo_head_assembly",
+      "kind": "assembly",
+      "target": "models/benchmarks/asm_019_compact_pan_tilt_servo_head_assembly.py",
+      "prompt": "Create a compact pan-tilt servo camera head assembly with a rectangular base, pan servo, round turntable, paired tilt yoke arms, tilt servo, camera block with lens, pivot pins, cable loop, and repeated mounting screws. Use robust primitive geometry and maintain a readable mechatronics silhouette.",
+      "assumptions": [
+        "Intermediate assembly benchmark targets a readable robotic pan-tilt head rather than a generic stack of boxes.",
+        "Repeated components are functional: yoke sides, pivot pins, servo cases, and screws.",
+        "Generated STEP, GLB, topology, and component artifacts are produced by the CAD pipeline and are not hand-edited source of truth."
+      ],
+      "checks": [
+        {"type": "step_exists", "weight": 8},
+        {"type": "topology_exists", "weight": 8},
+        {"type": "glb_exists", "weight": 8},
+        {"type": "valid_shape", "weight": 12},
+        {"type": "bbox_size", "expected": [46, 33, 62], "tolerance": [10, 10, 12], "weight": 20},
+        {"type": "selector_count", "selector": "occurrence", "min": 14, "weight": 12},
+        {"type": "selector_count", "selector": "shape", "min": 12, "weight": 10},
+        {"type": "selector_count", "selector": "face", "min": 70, "weight": 8},
+        {"type": "surface_count", "surface_type": "cylinder", "min": 8, "weight": 8},
+        {"type": "volume_range", "min": 6000, "max": 200000, "weight": 8},
+        {"type": "assembly_occurrence_count", "scope": "top_level", "min": 4, "weight": 10},
+        {"type": "assembly_occurrence_count", "scope": "leaf", "min": 14, "weight": 10},
+        {"type": "named_occurrence_contains", "names": ["servo_base_module", "pan_servo_turntable_module", "tilt_yoke_module", "camera_cable_module", "camera_body"], "weight": 14},
+        {"type": "repeated_component_count", "contains": "servo_case", "min": 2, "weight": 12},
+        {"type": "repeated_component_count", "contains": "yoke_side", "min": 2, "weight": 10},
+        {"type": "repeated_component_count", "contains": "mount_screw", "min": 4, "weight": 10},
+        {"type": "repeated_component_count", "contains": "pivot_pin", "min": 2, "weight": 8}
+      ]
+    }
+  ]
+}

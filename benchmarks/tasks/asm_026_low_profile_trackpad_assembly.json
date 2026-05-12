@@ -1,0 +1,37 @@
+{
+  "schemaVersion": 1,
+  "name": "ASM-026 low-profile trackpad assembly benchmark",
+  "description": "Intermediate hierarchical CAD assembly benchmark for a compact low-profile touch trackpad with slim chassis, glass touch surface, haptic actuator, fasteners, and rubber feet.",
+  "tasks": [
+    {
+      "id": "asm_026_low_profile_trackpad_assembly",
+      "kind": "assembly",
+      "target": "models/benchmarks/asm_026_low_profile_trackpad_assembly.py",
+      "prompt": "Create a generic low-profile trackpad assembly with a slim base chassis, glass touch surface, front click zone, internal haptic actuator, side rails, screw posts, and underside rubber feet. Keep the model compact, consumer-electronics recognizable, and robust using simple primitives.",
+      "assumptions": [
+        "This is a generic compact trackpad benchmark and does not model proprietary branding or exact product details.",
+        "Repeated fasteners and feet are semantically meaningful assembly occurrences, not excessive decorative detail.",
+        "Generated STEP, GLB, topology, and component artifacts are produced by the CAD pipeline and are not hand-edited source of truth."
+      ],
+      "checks": [
+        {"type": "step_exists", "weight": 8},
+        {"type": "topology_exists", "weight": 8},
+        {"type": "glb_exists", "weight": 8},
+        {"type": "valid_shape", "weight": 12},
+        {"type": "bbox_size", "expected": [112, 72, 8], "tolerance": [8, 8, 4], "weight": 20},
+        {"type": "selector_count", "selector": "occurrence", "min": 20, "weight": 12},
+        {"type": "selector_count", "selector": "shape", "min": 14, "weight": 10},
+        {"type": "selector_count", "selector": "face", "min": 60, "weight": 8},
+        {"type": "surface_count", "surface_type": "cylinder", "min": 8, "weight": 8},
+        {"type": "volume_range", "min": 3500, "max": 80000, "weight": 8},
+        {"type": "assembly_occurrence_count", "scope": "top_level", "min": 5, "max": 5, "weight": 10},
+        {"type": "assembly_occurrence_count", "scope": "leaf", "min": 17, "weight": 10},
+        {"type": "named_occurrence_contains", "names": ["trackpad_chassis_module", "touch_sensor_surface_module", "haptic_click_module", "trackpad_fastener_module", "underside_rubber_foot_module", "glass_touch_surface_panel", "linear_haptic_actuator"], "weight": 14},
+        {"type": "repeated_component_count", "contains": "screw_post", "min": 4, "weight": 12},
+        {"type": "repeated_component_count", "contains": "rubber_foot", "min": 4, "weight": 10},
+        {"type": "repeated_component_count", "contains": "side_rail", "min": 2, "weight": 8},
+        {"type": "repeated_component_count", "contains": "click_beam", "min": 2, "weight": 8}
+      ]
+    }
+  ]
+}

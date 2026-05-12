@@ -1,0 +1,101 @@
+{
+  "schemaVersion": 1,
+  "name": "MODEL-006 drawing-to-CAD benchmark",
+  "description": "Drawing-to-CAD benchmark seeded from benchmarks/drawings/model_006.pdf. The reference model reconstructs the main pipe-elbow body with hollow pipe runs, a swept bend, front circular flange, service port, and rounded top rectangular flange shown in the drawing.",
+  "tasks": [
+    {
+      "id": "model_006_pipe_elbow_from_pdf",
+      "kind": "part",
+      "target": "models/benchmarks/model_006_pipe_elbow.py",
+      "prompt": "Create MODEL NO - 006 from the attached drawing PDF. Reconstruct the main stainless pipe-elbow part as editable CAD: front circular flange OD 57.5mm with 4x Ø5 bolt holes on Ø47.15mm PCD, hollow pipe OD 20mm / ID 15mm, vertical riser, and a 50mm x 40mm top rectangular flange with 4x Ø5 bolt holes and a Ø20 center opening. Use the drawing as the source of truth and keep the model parametric.",
+      "inputs": {
+        "drawingPdf": "benchmarks/drawings/model_006.pdf",
+        "drawingPreview": "benchmarks/drawings/model_006.png"
+      },
+      "assumptions": [
+        "The benchmark uses a single editable part instead of separate assembly components.",
+        "The elbow bend is represented by a swept hollow circular arc so the evaluator can score curved geometry, not just intersecting cylinders.",
+        "The small top service port is approximated as a capsule flange with two bolt holes because the drawing view is partially ambiguous.",
+        "Dimensions are interpreted in millimeters from MODEL NO - 006, sheet 01."
+      ],
+      "checks": [
+        {
+          "type": "step_exists",
+          "weight": 8
+        },
+        {
+          "type": "topology_exists",
+          "weight": 8
+        },
+        {
+          "type": "glb_exists",
+          "weight": 8
+        },
+        {
+          "type": "valid_shape",
+          "weight": 16
+        },
+        {
+          "type": "bbox_size",
+          "expected": [89.9, 57.499286, 83.75],
+          "tolerance": [0.25, 0.25, 0.25],
+          "weight": 24
+        },
+        {
+          "type": "selector_count",
+          "selector": "shape",
+          "equals": 1,
+          "weight": 6
+        },
+        {
+          "type": "selector_count",
+          "selector": "face",
+          "min": 50,
+          "weight": 8
+        },
+        {
+          "type": "selector_count",
+          "selector": "edge",
+          "min": 120,
+          "weight": 8
+        },
+        {
+          "type": "surface_count",
+          "surface_type": "cylinder",
+          "radius": 28.75,
+          "radius_tolerance": 0.05,
+          "equals": 1,
+          "weight": 8
+        },
+        {
+          "type": "surface_count",
+          "surface_type": "torus",
+          "equals": 2,
+          "weight": 10
+        },
+        {
+          "type": "surface_count",
+          "surface_type": "cylinder",
+          "radius": 2.5,
+          "radius_tolerance": 0.05,
+          "equals": 10,
+          "weight": 10
+        },
+        {
+          "type": "surface_count",
+          "surface_type": "cylinder",
+          "radius": 12.5,
+          "radius_tolerance": 0.05,
+          "min": 2,
+          "weight": 8
+        },
+        {
+          "type": "volume_range",
+          "min": 41100,
+          "max": 41350,
+          "weight": 12
+        }
+      ]
+    }
+  ]
+}

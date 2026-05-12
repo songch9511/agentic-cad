@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "name": "ASM-003 hinge latch assembly benchmark",
+  "description": "Intermediate hierarchical CAD assembly benchmark for a compact hinge/latch mechanism with repeated knuckles and mounting bosses.",
+  "tasks": [
+    {
+      "id": "asm_003_hinge_latch_assembly",
+      "kind": "assembly",
+      "target": "models/benchmarks/asm_003_hinge_latch_assembly.py",
+      "prompt": "Create a compact hinge/latch mechanism assembly with two hinge leaves, repeated hinge knuckles, a continuous hinge pin, latch catch, and mounting bosses. Keep geometry robust and fast with boxes, cylinders, and compounds.",
+      "assumptions": [
+        "Intermediate assembly benchmark intended to exercise hierarchy, named modules, and repeated functional components without BRIEF-001 full-vehicle complexity.",
+        "Robust simple boxes, cylinders, and compounds are preferred over fragile booleans or detailed decorative hardware.",
+        "Generated STEP, GLB, topology, and component artifacts are produced by the CAD pipeline and are not hand-edited source of truth."
+      ],
+      "checks": [
+        {"type": "step_exists", "weight": 8},
+        {"type": "topology_exists", "weight": 8},
+        {"type": "glb_exists", "weight": 8},
+        {"type": "valid_shape", "weight": 12},
+        {"type": "bbox_size", "expected": [70, 32, 20], "tolerance": [5, 5, 5], "weight": 20},
+        {"type": "selector_count", "selector": "occurrence", "min": 14, "weight": 12},
+        {"type": "selector_count", "selector": "shape", "min": 10, "weight": 10},
+        {"type": "selector_count", "selector": "face", "min": 55, "weight": 8},
+        {"type": "surface_count", "surface_type": "cylinder", "min": 10, "weight": 8},
+        {"type": "volume_range", "min": 4000, "max": 90000, "weight": 8},
+        {"type": "assembly_occurrence_count", "scope": "top_level", "min": 3, "weight": 10},
+        {"type": "assembly_occurrence_count", "scope": "leaf", "min": 10, "weight": 10},
+        {"type": "named_occurrence_contains", "names": ["base_leaf_module", "swing_leaf_module", "hinge_pin", "hinge_knuckle", "latch_catch_module", "mounting_boss"], "weight": 14},
+        {"type": "repeated_component_count", "contains": "hinge_knuckle", "min": 3, "weight": 12},
+        {"type": "repeated_component_count", "contains": "mounting_boss", "min": 4, "weight": 10}
+      ]
+    }
+  ]
+}

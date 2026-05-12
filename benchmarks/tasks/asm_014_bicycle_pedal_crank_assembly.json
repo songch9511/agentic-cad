@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "name": "ASM-014 bicycle pedal-crank assembly benchmark",
+  "description": "Intermediate hierarchical CAD assembly benchmark for a bicycle bottom bracket, crank arm, chainring spider, pedal, bearings, and repeated fasteners.",
+  "tasks": [
+    {
+      "id": "asm_014_bicycle_pedal_crank_assembly",
+      "kind": "assembly",
+      "target": "models/benchmarks/asm_014_bicycle_pedal_crank_assembly.py",
+      "prompt": "Create a recognizable bicycle pedal-crank subassembly with bottom bracket shell, crank arms, chainring spider, pedal platform, axle, bearing caps, and repeated chainring bolts. Use simple robust primitives.",
+      "assumptions": [
+        "Intermediate assembly benchmark extends transport/mechanical coverage with robust primitive geometry.",
+        "Repeated occurrences represent functional hardware such as bolts, bearing caps, and reflectors rather than tiny decorative details.",
+        "Generated STEP, GLB, topology, and component artifacts are produced by the CAD benchmark pipeline and are not hand-edited source of truth."
+      ],
+      "checks": [
+        {"type": "step_exists", "weight": 8},
+        {"type": "topology_exists", "weight": 8},
+        {"type": "glb_exists", "weight": 8},
+        {"type": "valid_shape", "weight": 12},
+        {"type": "bbox_size", "expected": [147, 46, 18], "tolerance": [8, 8, 8], "weight": 20},
+        {"type": "selector_count", "selector": "occurrence", "min": 18, "weight": 12},
+        {"type": "selector_count", "selector": "shape", "min": 12, "weight": 10},
+        {"type": "selector_count", "selector": "face", "min": 60, "weight": 8},
+        {"type": "surface_count", "surface_type": "cylinder", "min": 10, "weight": 8},
+        {"type": "volume_range", "min": 5000, "max": 180000, "weight": 8},
+        {"type": "assembly_occurrence_count", "scope": "top_level", "min": 4, "max": 4, "weight": 10},
+        {"type": "assembly_occurrence_count", "scope": "leaf", "min": 15, "weight": 10},
+        {"type": "named_occurrence_contains", "names": ["bottom_bracket_module", "crank_arm_module", "chainring_spider_module", "pedal_module", "chainring_bolt", "pedal_platform"], "weight": 14},
+        {"type": "repeated_component_count", "contains": "chainring_bolt", "min": 4, "weight": 10},
+        {"type": "repeated_component_count", "contains": "bearing_cap", "min": 2, "weight": 10},
+        {"type": "repeated_component_count", "contains": "reflector", "min": 2, "weight": 8}
+      ]
+    }
+  ]
+}

@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "name": "ASM-005 pulley tensioner assembly benchmark",
+  "description": "Intermediate hierarchical CAD assembly benchmark for a belt pulley tensioner with bracket, pivot arm, pulley wheel, axle, spacers, and adjustment screw.",
+  "tasks": [
+    {
+      "id": "asm_005_pulley_tensioner_assembly",
+      "kind": "assembly",
+      "target": "models/benchmarks/asm_005_pulley_tensioner_assembly.py",
+      "prompt": "Create a belt pulley tensioner assembly with a fixed bracket, pivot arm, pulley wheel, axle pin, spacer bushings, and adjustment screw. Keep components simple, robust, and visually recognizable.",
+      "assumptions": [
+        "Intermediate assembly benchmark intended to exercise hierarchy, named modules, and repeated functional components without BRIEF-001 full-vehicle complexity.",
+        "Robust simple boxes, cylinders, and compounds are preferred over fragile booleans or detailed decorative hardware.",
+        "Generated STEP, GLB, topology, and component artifacts are produced by the CAD pipeline and are not hand-edited source of truth."
+      ],
+      "checks": [
+        {"type": "step_exists", "weight": 8},
+        {"type": "topology_exists", "weight": 8},
+        {"type": "glb_exists", "weight": 8},
+        {"type": "valid_shape", "weight": 12},
+        {"type": "bbox_size", "expected": [85, 45, 38], "tolerance": [5, 5, 6], "weight": 20},
+        {"type": "selector_count", "selector": "occurrence", "min": 12, "weight": 12},
+        {"type": "selector_count", "selector": "shape", "min": 9, "weight": 10},
+        {"type": "selector_count", "selector": "face", "min": 55, "weight": 8},
+        {"type": "surface_count", "surface_type": "cylinder", "min": 12, "weight": 8},
+        {"type": "volume_range", "min": 8000, "max": 130000, "weight": 8},
+        {"type": "assembly_occurrence_count", "scope": "top_level", "min": 3, "weight": 10},
+        {"type": "assembly_occurrence_count", "scope": "leaf", "min": 10, "weight": 10},
+        {"type": "named_occurrence_contains", "names": ["fixed_bracket_module", "pivot_arm_module", "pulley_wheel", "axle_pin", "spacer_bushing", "adjustment_screw"], "weight": 14},
+        {"type": "repeated_component_count", "contains": "spacer_bushing", "min": 2, "weight": 12},
+        {"type": "repeated_component_count", "contains": "axle_pin", "min": 1, "weight": 8},
+        {"type": "repeated_component_count", "contains": "pulley_wheel", "min": 1, "weight": 8}
+      ]
+    }
+  ]
+}

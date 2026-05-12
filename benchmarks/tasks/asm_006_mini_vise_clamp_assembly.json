@@ -1,0 +1,35 @@
+{
+  "schemaVersion": 1,
+  "name": "ASM-006 mini vise clamp assembly benchmark",
+  "description": "Intermediate hierarchical CAD assembly benchmark for a small bench vise/clamp with jaws, screw spindle, guide rods, and handle bar.",
+  "tasks": [
+    {
+      "id": "asm_006_mini_vise_clamp_assembly",
+      "kind": "assembly",
+      "target": "models/benchmarks/asm_006_mini_vise_clamp_assembly.py",
+      "prompt": "Create a small bench vise or clamp assembly with a base frame, fixed jaw, moving jaw, screw spindle, parallel guide rods, jaw plates, and handle bar. Prefer stable box/cylinder components.",
+      "assumptions": [
+        "Intermediate assembly benchmark intended to exercise hierarchy, named modules, and repeated functional components without BRIEF-001 full-vehicle complexity.",
+        "Robust simple boxes, cylinders, and compounds are preferred over fragile booleans or detailed decorative hardware.",
+        "Generated STEP, GLB, topology, and component artifacts are produced by the CAD pipeline and are not hand-edited source of truth."
+      ],
+      "checks": [
+        {"type": "step_exists", "weight": 8},
+        {"type": "topology_exists", "weight": 8},
+        {"type": "glb_exists", "weight": 8},
+        {"type": "valid_shape", "weight": 12},
+        {"type": "bbox_size", "expected": [95, 45, 35], "tolerance": [5, 5, 5], "weight": 20},
+        {"type": "selector_count", "selector": "occurrence", "min": 12, "weight": 12},
+        {"type": "selector_count", "selector": "shape", "min": 10, "weight": 10},
+        {"type": "selector_count", "selector": "face", "min": 55, "weight": 8},
+        {"type": "surface_count", "surface_type": "cylinder", "min": 8, "weight": 8},
+        {"type": "volume_range", "min": 9000, "max": 140000, "weight": 8},
+        {"type": "assembly_occurrence_count", "scope": "top_level", "min": 3, "weight": 10},
+        {"type": "assembly_occurrence_count", "scope": "leaf", "min": 10, "weight": 10},
+        {"type": "named_occurrence_contains", "names": ["base_frame_module", "fixed_jaw_module", "moving_jaw_module", "screw_spindle", "guide_rod", "handle_bar"], "weight": 14},
+        {"type": "repeated_component_count", "contains": "guide_rod", "min": 2, "weight": 12},
+        {"type": "repeated_component_count", "contains": "jaw_plate", "min": 2, "weight": 10}
+      ]
+    }
+  ]
+}

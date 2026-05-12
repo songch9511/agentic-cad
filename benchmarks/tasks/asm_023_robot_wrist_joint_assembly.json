@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "name": "ASM-023 robot wrist joint assembly benchmark",
+  "description": "Intermediate hierarchical CAD assembly benchmark for a compact robot wrist joint with base flange, fork yoke, hub, output plate, bearings, pins, and cap screws.",
+  "tasks": [
+    {
+      "id": "asm_023_robot_wrist_joint_assembly",
+      "kind": "assembly",
+      "target": "models/benchmarks/asm_023_robot_wrist_joint_assembly.py",
+      "prompt": "Create a robot wrist joint assembly with a base flange, two yoke plates, repeated cross pins, a central wrist hub with bearing caps, an output tool plate, encoder puck, and repeated cap screws. Use simple reliable solids and meaningful hierarchy.",
+      "assumptions": [
+        "The joint is represented by nested flange/yoke/hub/tooling modules rather than kinematic constraints.",
+        "Cap screws and cross pins are repeated functional occurrences; holes are represented by raised cylindrical bosses for robust topology.",
+        "Generated STEP, GLB, and topology artifacts are benchmark outputs, not source files."
+      ],
+      "checks": [
+        {"type": "step_exists", "weight": 8},
+        {"type": "topology_exists", "weight": 8},
+        {"type": "glb_exists", "weight": 8},
+        {"type": "valid_shape", "weight": 12},
+        {"type": "bbox_size", "expected": [63, 50, 84], "tolerance": [8, 8, 10], "weight": 20},
+        {"type": "selector_count", "selector": "occurrence", "min": 20, "weight": 12},
+        {"type": "selector_count", "selector": "shape", "min": 16, "weight": 10},
+        {"type": "selector_count", "selector": "face", "min": 100, "weight": 8},
+        {"type": "surface_count", "surface_type": "cylinder", "min": 28, "weight": 8},
+        {"type": "volume_range", "min": 30000, "max": 160000, "weight": 8},
+        {"type": "assembly_occurrence_count", "scope": "top_level", "min": 5, "weight": 10},
+        {"type": "assembly_occurrence_count", "scope": "leaf", "min": 14, "weight": 10},
+        {"type": "named_occurrence_contains", "names": ["base_flange_module", "fork_yoke_module", "wrist_hub_module", "tool_plate_module", "cross_pin", "cap_screw", "bearing_cap"], "weight": 14},
+        {"type": "repeated_component_count", "contains": "cap_screw", "min": 8, "weight": 12},
+        {"type": "repeated_component_count", "contains": "cross_pin", "min": 2, "weight": 10},
+        {"type": "repeated_component_count", "contains": "bearing_cap", "min": 2, "weight": 8}
+      ]
+    }
+  ]
+}

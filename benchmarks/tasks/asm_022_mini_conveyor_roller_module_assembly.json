@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "name": "ASM-022 mini conveyor roller module assembly benchmark",
+  "description": "Intermediate hierarchical CAD assembly benchmark for a compact driven conveyor roller module used in small manufacturing cells.",
+  "tasks": [
+    {
+      "id": "asm_022_mini_conveyor_roller_module_assembly",
+      "kind": "assembly",
+      "target": "models/benchmarks/asm_022_mini_conveyor_roller_module_assembly.py",
+      "prompt": "Create a mini conveyor roller module assembly with a base frame, paired side rails, six repeated conveyor rollers on shafts, repeated bearing blocks, a drive motor, and mounting feet. Use robust boxes/cylinders/compounds and keep the assembly fast to generate.",
+      "assumptions": [
+        "Functional repeated rollers, shafts, bearing blocks, and feet are modeled as actual assembly occurrences.",
+        "Simple solid pins and raised bosses stand in for detailed bearings and fasteners to keep generation reliable.",
+        "Generated STEP, GLB, and topology artifacts are benchmark outputs, not source files."
+      ],
+      "checks": [
+        {"type": "step_exists", "weight": 8},
+        {"type": "topology_exists", "weight": 8},
+        {"type": "glb_exists", "weight": 8},
+        {"type": "valid_shape", "weight": 12},
+        {"type": "bbox_size", "expected": [133, 68, 34], "tolerance": [10, 8, 8], "weight": 20},
+        {"type": "selector_count", "selector": "occurrence", "min": 26, "weight": 12},
+        {"type": "selector_count", "selector": "shape", "min": 18, "weight": 10},
+        {"type": "selector_count", "selector": "face", "min": 110, "weight": 8},
+        {"type": "surface_count", "surface_type": "cylinder", "min": 30, "weight": 8},
+        {"type": "volume_range", "min": 35000, "max": 180000, "weight": 8},
+        {"type": "assembly_occurrence_count", "scope": "top_level", "min": 4, "weight": 10},
+        {"type": "assembly_occurrence_count", "scope": "leaf", "min": 18, "weight": 10},
+        {"type": "named_occurrence_contains", "names": ["base_frame_module", "side_guard_module", "roller_bed_module", "drive_motor_module", "conveyor_roller", "bearing_block", "roller_shaft_pin"], "weight": 14},
+        {"type": "repeated_component_count", "contains": "conveyor_roller", "min": 6, "weight": 12},
+        {"type": "repeated_component_count", "contains": "bearing_block", "min": 12, "weight": 10},
+        {"type": "repeated_component_count", "contains": "roller_shaft_pin", "min": 6, "weight": 10}
+      ]
+    }
+  ]
+}

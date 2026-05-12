@@ -1,0 +1,122 @@
+{
+  "schemaVersion": 1,
+  "name": "ASM-010 compact desktop fan assembly benchmark",
+  "description": "Intermediate hierarchical CAD assembly benchmark for a compact desktop fan with base, stand, fan housing, repeated blades, grille bars, and switch.",
+  "tasks": [
+    {
+      "id": "asm_010_compact_desktop_fan_assembly",
+      "kind": "assembly",
+      "target": "models/benchmarks/asm_010_compact_desktop_fan_assembly.py",
+      "prompt": "Create a compact desktop fan assembly with a base, vertical stand, yoke arms, circular fan housing, four broad fan blades, front grille bars, and a switch button. Keep the fan visually recognizable with robust primitive geometry.",
+      "assumptions": [
+        "Intermediate assembly benchmark intended to broaden non-tank visual/mechanical coverage with robust primitives.",
+        "Repeated occurrences are functional or visually essential, not tiny decorative detail.",
+        "Generated STEP, GLB, topology, and component artifacts are produced by the CAD pipeline and are not hand-edited source of truth."
+      ],
+      "checks": [
+        {
+          "type": "step_exists",
+          "weight": 8
+        },
+        {
+          "type": "topology_exists",
+          "weight": 8
+        },
+        {
+          "type": "glb_exists",
+          "weight": 8
+        },
+        {
+          "type": "valid_shape",
+          "weight": 12
+        },
+        {
+          "type": "bbox_size",
+          "expected": [
+            60,
+            32,
+            65
+          ],
+          "tolerance": [
+            8,
+            8,
+            8
+          ],
+          "weight": 20
+        },
+        {
+          "type": "selector_count",
+          "selector": "occurrence",
+          "min": 18,
+          "weight": 12
+        },
+        {
+          "type": "selector_count",
+          "selector": "shape",
+          "min": 14,
+          "weight": 10
+        },
+        {
+          "type": "selector_count",
+          "selector": "face",
+          "min": 70,
+          "weight": 8
+        },
+        {
+          "type": "surface_count",
+          "surface_type": "cylinder",
+          "min": 8,
+          "weight": 8
+        },
+        {
+          "type": "volume_range",
+          "min": 5000,
+          "max": 120000,
+          "weight": 8
+        },
+        {
+          "type": "assembly_occurrence_count",
+          "scope": "top_level",
+          "min": 3,
+          "weight": 10
+        },
+        {
+          "type": "assembly_occurrence_count",
+          "scope": "leaf",
+          "min": 14,
+          "weight": 10
+        },
+        {
+          "type": "named_occurrence_contains",
+          "names": [
+            "fan_base_module",
+            "stand_module",
+            "fan_housing_module",
+            "fan_blade",
+            "grill_bar",
+            "switch_button"
+          ],
+          "weight": 14
+        },
+        {
+          "type": "repeated_component_count",
+          "contains": "fan_blade",
+          "min": 4,
+          "weight": 12
+        },
+        {
+          "type": "repeated_component_count",
+          "contains": "grill_bar",
+          "min": 4,
+          "weight": 10
+        },
+        {
+          "type": "repeated_component_count",
+          "contains": "yoke_arm",
+          "min": 2,
+          "weight": 8
+        }
+      ]
+    }
+  ]
+}

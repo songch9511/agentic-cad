@@ -1,0 +1,36 @@
+{
+  "schemaVersion": 1,
+  "name": "ASM-007 valve manifold assembly benchmark",
+  "description": "Intermediate hierarchical CAD assembly benchmark for a compact pipe/manifold valve with flanged ports, stem, hand wheel, gasket rings, and mounting feet.",
+  "tasks": [
+    {
+      "id": "asm_007_valve_manifold_assembly",
+      "kind": "assembly",
+      "target": "models/benchmarks/asm_007_valve_manifold_assembly.py",
+      "prompt": "Create a compact valve manifold assembly with a manifold body, inlet and outlet flange modules, valve stem, hand wheel, gasket rings, and mounting feet. Use robust primitives and keep repeated parts meaningful.",
+      "assumptions": [
+        "Intermediate assembly benchmark intended to exercise hierarchy, named modules, and repeated functional components without BRIEF-001 full-vehicle complexity.",
+        "Robust simple boxes, cylinders, and compounds are preferred over fragile booleans or detailed decorative hardware.",
+        "Generated STEP, GLB, topology, and component artifacts are produced by the CAD pipeline and are not hand-edited source of truth."
+      ],
+      "checks": [
+        {"type": "step_exists", "weight": 8},
+        {"type": "topology_exists", "weight": 8},
+        {"type": "glb_exists", "weight": 8},
+        {"type": "valid_shape", "weight": 12},
+        {"type": "bbox_size", "expected": [85, 55, 42], "tolerance": [5, 5, 5], "weight": 20},
+        {"type": "selector_count", "selector": "occurrence", "min": 13, "weight": 12},
+        {"type": "selector_count", "selector": "shape", "min": 10, "weight": 10},
+        {"type": "selector_count", "selector": "face", "min": 60, "weight": 8},
+        {"type": "surface_count", "surface_type": "cylinder", "min": 14, "weight": 8},
+        {"type": "volume_range", "min": 9000, "max": 160000, "weight": 8},
+        {"type": "assembly_occurrence_count", "scope": "top_level", "min": 3, "weight": 10},
+        {"type": "assembly_occurrence_count", "scope": "leaf", "min": 10, "weight": 10},
+        {"type": "named_occurrence_contains", "names": ["manifold_body_module", "inlet_flange_module", "outlet_flange_module", "valve_stem", "hand_wheel", "gasket_ring", "mounting_foot"], "weight": 14},
+        {"type": "repeated_component_count", "contains": "gasket_ring", "min": 2, "weight": 10},
+        {"type": "repeated_component_count", "contains": ["flange_module", "flange"], "min": 2, "weight": 10},
+        {"type": "repeated_component_count", "contains": "mounting_foot", "min": 2, "weight": 10}
+      ]
+    }
+  ]
+}

@@ -270,6 +270,160 @@ def _valid_shape(check: dict[str, Any], step_path: Path) -> CheckResult:
     )
 
 
+def _assembly_root(manifest: dict[str, Any]) -> dict[str, Any] | None:
+    assembly = manifest.get("assembly")
+    if not isinstance(assembly, dict):
+        return None
+    root = assembly.get("root")
+    return root if isinstance(root, dict) else None
+
+
+def _walk_assembly_nodes(root: dict[str, Any]) -> list[dict[str, Any]]:
+    nodes = [root]
+    children = root.get("children")
+    if isinstance(children, list):
+        for child in children:
+            if isinstance(child, dict):
+                nodes.extend(_walk_assembly_nodes(child))
+    return nodes
+
+
+def _assembly_nodes_for_scope(root: dict[str, Any], scope: str) -> list[dict[str, Any]]:
+    normalized_scope = scope.strip().lower() or "all"
+    if normalized_scope == "all":
+        return _walk_assembly_nodes(root)
+    if normalized_scope == "top_level":
+        children = root.get("children")
+        return [child for child in children if isinstance(child, dict)] if isinstance(children, list) else []
+    if normalized_scope == "leaf":
+        return [node for node in _walk_assembly_nodes(root) if not node.get("children")]
+    raise ValueError(f"Unsupported assembly_occurrence_count scope: {scope}")
+
+
+def _assembly_missing_result(check: dict[str, Any]) -> CheckResult:
+    return _result(
+        check,
+        passed=False,
+        message="assembly root is missing from topology manifest",
+    )
+
+
+def _assembly_occurrence_count(check: dict[str, Any], manifest: dict[str, Any]) -> CheckResult:
+    root = _assembly_root(manifest)
+    if root is None:
+        return _assembly_missing_result(check)
+    scope = str(check.get("scope") or "all").strip().lower()
+    nodes = _assembly_nodes_for_scope(root, scope)
+    passed, message, expected = _compare_count(check, len(nodes))
+    return _result(
+        check,
+        passed=passed,
+        message=message,
+        actual={
+            "scope": scope,
+            "count": len(nodes),
+            "occurrences": [node.get("instancePath") or node.get("displayName") for node in nodes],
+        },
+        expected=expected,
+    )
+
+
+def _named_occurrence_contains(check: dict[str, Any], manifest: dict[str, Any]) -> CheckResult:
+    root = _assembly_root(manifest)
+    if root is None:
+        return _assembly_missing_result(check)
+    names = check.get("names", check.get("required"))
+    if not isinstance(names, list) or not names:
+        raise ValueError("named_occurrence_contains requires a non-empty names list")
+    required = []
+    for name in names:
+        if not isinstance(name, str) or not name.strip():
+            raise ValueError("named_occurrence_contains names must be non-empty strings")
+        required.append(name.strip().lower())
+
+    nodes = _walk_assembly_nodes(root)
+    matched: dict[str, str] = {}
+    for name in required:
+        for node in nodes:
+            display_name = str(node.get("displayName") or "")
+            instance_path = str(node.get("instancePath") or "")
+            if name in f"{display_name} {instance_path}".lower():
+                matched[name] = instance_path or display_name
+                break
+    missing = [name for name in required if name not in matched]
+    passed = not missing
+    return _result(
+        check,
+        passed=passed,
+        message="all required occurrence names found" if passed else f"missing occurrence names: {missing}",
+        actual={"matched": matched, "missing": missing},
+        expected={"names": required},
+    )
+
+
+def _string_list(value: object, *, field_name: str) -> list[str]:
+    if isinstance(value, str) and value.strip():
+        return [value.strip()]
+    if isinstance(value, list) and value:
+        strings = []
+        for item in value:
+            if not isinstance(item, str) or not item.strip():
+                raise ValueError(f"{field_name} must contain non-empty strings")
+            strings.append(item.strip())
+        return strings
+    raise ValueError(f"{field_name} must be a non-empty string or list of strings")
+
+
+def _repeated_component_count(check: dict[str, Any], manifest: dict[str, Any]) -> CheckResult:
+    root = _assembly_root(manifest)
+    if root is None:
+        return _assembly_missing_result(check)
+
+    contains_source = "contains"
+    if "contains" not in check and "name_contains" in check:
+        contains_source = "name_contains"
+    elif "contains" not in check and "source_path_contains" in check:
+        contains_source = "source_path_contains"
+    needles = [item.lower() for item in _string_list(check.get(contains_source), field_name=contains_source)]
+
+    fields_value = check.get("fields", check.get("match_fields"))
+    if fields_value is None:
+        fields = ["displayName", "instancePath", "sourcePath"]
+    else:
+        fields = _string_list(fields_value, field_name="fields")
+    allowed_fields = {"displayName", "instancePath", "sourcePath"}
+    if any(field not in allowed_fields for field in fields):
+        raise ValueError(f"repeated_component_count fields must be one of {sorted(allowed_fields)}")
+
+    leaves = _assembly_nodes_for_scope(root, "leaf")
+    matched_nodes = []
+    for node in leaves:
+        haystack = " ".join(str(node.get(field) or "") for field in fields).lower()
+        if any(needle in haystack for needle in needles):
+            matched_nodes.append(node)
+
+    passed, message, expected = _compare_count(check, len(matched_nodes))
+    expected["contains"] = needles
+    expected["fields"] = fields
+    return _result(
+        check,
+        passed=passed,
+        message=message,
+        actual={
+            "count": len(matched_nodes),
+            "components": [
+                {
+                    "displayName": node.get("displayName"),
+                    "instancePath": node.get("instancePath"),
+                    "sourcePath": node.get("sourcePath"),
+                }
+                for node in matched_nodes
+            ],
+        },
+        expected=expected,
+    )
+
+
 def evaluate_step(step_path: Path | str, checks: list[dict[str, Any]]) -> dict[str, Any]:
     resolved_step_path = Path(step_path).resolve()
     topology_path = part_selector_manifest_path(resolved_step_path)
@@ -326,6 +480,12 @@ def evaluate_step(step_path: Path | str, checks: list[dict[str, Any]]) -> dict[s
             results.append(_curve_count(check, manifest))
         elif check_type == "volume_range":
             results.append(_volume_range(check, manifest))
+        elif check_type == "assembly_occurrence_count":
+            results.append(_assembly_occurrence_count(check, manifest))
+        elif check_type == "named_occurrence_contains":
+            results.append(_named_occurrence_contains(check, manifest))
+        elif check_type == "repeated_component_count":
+            results.append(_repeated_component_count(check, manifest))
         else:
             raise ValueError(f"Unsupported check type: {check_type}")
 

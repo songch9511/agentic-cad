@@ -1,0 +1,96 @@
+{
+  "schemaVersion": 1,
+  "name": "ASM-002 wheel bogie / suspension carrier assembly benchmark",
+  "description": "Intermediate hierarchical CAD assembly benchmark for a compact road-wheel bogie module, smaller and faster than the BRIEF-001 tracked vehicle integration stress test.",
+  "tasks": [
+    {
+      "id": "asm_002_wheel_bogie_assembly",
+      "kind": "assembly",
+      "target": "models/benchmarks/asm_002_wheel_bogie_assembly.py",
+      "prompt": "Create a compact mechanical wheel bogie / suspension carrier assembly for a tracked robot or small rover. The assembly should include a base rail/carrier frame, mirrored left and right side brackets, repeated road wheels, axle rods, spacer or bushing components, mounting bosses or holes integrated into the frame/brackets, and an optional simple spring/shock cylinder. Keep the geometry robust, simple, and fast to generate.",
+      "assumptions": [
+        "This is an intermediate assembly benchmark intended to exercise semantic hierarchy and repeated components without the BRIEF-001 full-vehicle complexity.",
+        "Robust simple boxes, cylinders, and compounds are preferred over fragile booleans or detailed decorative hardware.",
+        "Generated STEP, GLB, and topology artifacts are produced by the CAD pipeline and are not source of truth."
+      ],
+      "checks": [
+        {"type": "step_exists", "weight": 8},
+        {"type": "topology_exists", "weight": 8},
+        {"type": "glb_exists", "weight": 8},
+        {"type": "valid_shape", "weight": 12},
+        {
+          "type": "bbox_size",
+          "expected": [90, 45, 35],
+          "tolerance": [5, 5, 5],
+          "weight": 20
+        },
+        {
+          "type": "selector_count",
+          "selector": "occurrence",
+          "min": 16,
+          "weight": 12
+        },
+        {
+          "type": "selector_count",
+          "selector": "shape",
+          "min": 12,
+          "weight": 10
+        },
+        {
+          "type": "selector_count",
+          "selector": "face",
+          "min": 70,
+          "weight": 8
+        },
+        {
+          "type": "surface_count",
+          "surface_type": "cylinder",
+          "min": 20,
+          "weight": 8
+        },
+        {
+          "type": "volume_range",
+          "min": 25000,
+          "max": 120000,
+          "weight": 8
+        },
+        {
+          "type": "assembly_occurrence_count",
+          "scope": "top_level",
+          "min": 3,
+          "weight": 10
+        },
+        {
+          "type": "assembly_occurrence_count",
+          "scope": "leaf",
+          "min": 10,
+          "weight": 10
+        },
+        {
+          "type": "named_occurrence_contains",
+          "names": [
+            "carrier_frame_module",
+            "left_bracket_module",
+            "right_bracket_module",
+            "wheel_set_module",
+            "road_wheel",
+            "axle_rod"
+          ],
+          "weight": 14
+        },
+        {
+          "type": "repeated_component_count",
+          "contains": "road_wheel",
+          "min": 4,
+          "weight": 12
+        },
+        {
+          "type": "repeated_component_count",
+          "contains": "axle_rod",
+          "min": 4,
+          "weight": 10
+        }
+      ]
+    }
+  ]
+}
