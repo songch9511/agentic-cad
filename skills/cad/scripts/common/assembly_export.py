@@ -131,12 +131,14 @@ def _clear_shape_colors(shape: object) -> None:
 
 
 def _apply_source_color(shape: object, cad_ref: str, *, use_source_colors: bool) -> None:
-    import build123d
-
-    source_color = _source_color_for_cad_ref(cad_ref)
     if not use_source_colors:
         _clear_shape_colors(shape)
-    elif source_color is not None:
+        return
+
+    source_color = _source_color_for_cad_ref(cad_ref)
+    if source_color is not None:
+        import build123d
+
         shape.color = build123d.Color(*source_color)
 
 
