@@ -1,4 +1,8 @@
 import { mergeBounds, transformBounds, transformPoint } from "../urdf/kinematics.js";
+import {
+  CAD_TO_VIEWER_TRANSFORM,
+  transformMeshData
+} from "../cadCoordinateSpace.js";
 
 const IDENTITY_TRANSFORM = Object.freeze([
   1, 0, 0, 0,
@@ -6,6 +10,11 @@ const IDENTITY_TRANSFORM = Object.freeze([
   0, 0, 1, 0,
   0, 0, 0, 1
 ]);
+
+export const ASSEMBLY_COORDINATE_SPACE = Object.freeze({
+  CAD: "cad",
+  VIEWER: "viewer"
+});
 
 function toTransformArray(value) {
   if (!Array.isArray(value) || value.length !== 16) {
@@ -268,7 +277,9 @@ export function assemblyCompositionMeshRequests(topologyManifest) {
   return requests;
 }
 
-export function buildAssemblyMeshData(topologyManifest, meshesBySourcePath) {
+export function buildAssemblyMeshData(topologyManifest, meshesBySourcePath, {
+  outputCoordinateSpace = ASSEMBLY_COORDINATE_SPACE.CAD
+} = {}) {
   const assemblyRoot = assemblyRootFromTopology(topologyManifest);
   if (!assemblyRoot) {
     throw new Error("Assembly topology is missing assembly.root");
@@ -355,7 +366,7 @@ export function buildAssemblyMeshData(topologyManifest, meshesBySourcePath) {
     indexOffset += sourceIndices.length;
   }
 
-  return {
+  const meshData = {
     vertices,
     indices,
     normals,
@@ -364,8 +375,12 @@ export function buildAssemblyMeshData(topologyManifest, meshesBySourcePath) {
     bounds: mergeBounds(parts.map((part) => part.bounds)),
     parts,
     assemblyRoot,
-    has_source_colors: hasSourceColors
+    has_source_colors: hasSourceColors,
+    coordinateSpace: ASSEMBLY_COORDINATE_SPACE.CAD
   };
+  return outputCoordinateSpace === ASSEMBLY_COORDINATE_SPACE.VIEWER
+    ? transformMeshData(meshData, CAD_TO_VIEWER_TRANSFORM)
+    : meshData;
 }
 
 function manifestPartUsesSourceColors(part) {

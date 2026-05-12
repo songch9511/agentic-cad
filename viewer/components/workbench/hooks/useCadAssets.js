@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
+  GLB_COORDINATE_SPACE,
   isAbortError,
   loadRenderDxf,
   loadRenderGlb,
@@ -15,6 +16,7 @@ import {
   peekRenderUrdf
 } from "../../../lib/renderAssetClient";
 import {
+  ASSEMBLY_COORDINATE_SPACE,
   assemblyCompositionMeshRequests,
   assemblyRootFromTopology,
   buildAssemblyMeshData
@@ -134,7 +136,9 @@ export function useCadAssets({
       file: entry.file,
       kind: entry.kind,
       meshHash: getAssemblyMeshHash(entry),
-      meshData: buildAssemblyMeshData(topologyManifest, meshesBySourcePath),
+      meshData: buildAssemblyMeshData(topologyManifest, meshesBySourcePath, {
+        outputCoordinateSpace: ASSEMBLY_COORDINATE_SPACE.VIEWER
+      }),
       assemblyStructureReady: true,
       assemblyInteractionReady: true,
       assemblyBackgroundError: ""
@@ -171,7 +175,7 @@ export function useCadAssets({
       const meshesBySourcePath = new Map();
       for (const request of assemblyCompositionMeshRequests(topologyManifest)) {
         const meshUrl = resolveAssetUrl(request.meshUrl, topologyUrl);
-        const sourceMesh = peekRenderGlb(meshUrl);
+        const sourceMesh = peekRenderGlb(meshUrl, { coordinateSpace: GLB_COORDINATE_SPACE.CAD });
         if (!meshUrl || !sourceMesh) {
           return buildAssemblyPreviewMeshState(entry, previewMeshData, topologyManifest);
         }
@@ -327,7 +331,10 @@ export function useCadAssets({
           }
           return [
             request.key,
-            await loadRenderGlb(meshUrl, { signal: controller.signal })
+            await loadRenderGlb(meshUrl, {
+              signal: controller.signal,
+              coordinateSpace: GLB_COORDINATE_SPACE.CAD
+            })
           ];
         });
         const meshesBySourcePath = new Map(loadedMeshes);

@@ -1,6 +1,6 @@
 "use client";
 
-import { startTransition, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { startTransition, useCallback, useEffect, useLayoutEffect, useMemo, useRef, useState } from "react";
 import { ArrowLeftRight, ArrowRight, Circle, Eraser, Minus, PaintBucket, PenTool, Square } from "lucide-react";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import CadRenderPane from "./workbench/CadRenderPane";
@@ -15,6 +15,7 @@ import ViewerLoadingOverlay from "./workbench/ViewerLoadingOverlay";
 import CadWorkspaceAssemblyInspectPill from "./workbench/CadWorkspaceAssemblyInspectPill";
 import FloatingToolBar from "./workbench/FloatingToolBar";
 import CadWorkspaceTopBar from "./workbench/CadWorkspaceTopBar";
+import AgenticWorkbenchRail from "./workbench/AgenticWorkbenchRail";
 import { useCadAssets } from "./workbench/hooks/useCadAssets";
 import { useCadWorkspaceLayout } from "./workbench/hooks/useCadWorkspaceLayout";
 import { useCadWorkspaceSelection } from "./workbench/hooks/useCadWorkspaceSelection";
@@ -99,6 +100,10 @@ import {
 } from "../lib/urdf/jointAnimation";
 import { buildSelectorRuntime } from "../lib/selectors/runtime";
 import {
+  CAD_TO_VIEWER_TRANSFORM,
+  multiplyTransforms
+} from "../lib/cadCoordinateSpace";
+import {
   assemblyBreadcrumb,
   buildAssemblyLeafToNodePickMap,
   descendantLeafPartIds,
@@ -109,7 +114,7 @@ import {
 } from "../lib/assembly/meshData";
 import { copyTextToClipboard } from "../lib/clipboard";
 
-const DEFAULT_DOCUMENT_TITLE = "CAD Explorer";
+const DEFAULT_DOCUMENT_TITLE = "Agentic CAD";
 const EMPTY_LIST = Object.freeze([]);
 const CAD_BUILD_COMMANDS = {
   dxf: "python skills/cad/scripts/gen_dxf",
@@ -376,17 +381,20 @@ function entryAssetHash(entry, key) {
 
 function buildCadCommand(fileRef, entry = null) {
   const sourceFormat = entrySourceFormat(entry);
+  const commandPath = sourceFormat === RENDER_FORMAT.STEP && entry?.cadPath
+    ? `${entry.cadPath}.${String(entry?.source?.format || "step").toLowerCase() === "stp" ? "stp" : "step"}`
+    : String(entry?.source?.path || fileRef || "").trim();
   if (sourceFormat === RENDER_FORMAT.DXF) {
-    return `${CAD_BUILD_COMMANDS.dxf} ${fileRef}`;
+    return `${CAD_BUILD_COMMANDS.dxf} ${commandPath}`;
   }
   if (sourceFormat === RENDER_FORMAT.URDF) {
-    return `${CAD_BUILD_COMMANDS.urdf} ${fileRef}`;
+    return `${CAD_BUILD_COMMANDS.urdf} ${commandPath}`;
   }
   if (sourceFormat === RENDER_FORMAT.STL) {
     return "";
   }
   const command = entry?.kind === "assembly" ? CAD_BUILD_COMMANDS.stepAssembly : CAD_BUILD_COMMANDS.stepPart;
-  return `${command} ${fileRef}`;
+  return `${command} ${commandPath}`;
 }
 
 function entryHasMesh(entry) {
@@ -484,11 +492,14 @@ function buildNormalizedReferenceState(entry, referencePayload = null, {
   remapOccurrenceId = ""
 } = {}) {
   const counts = readReferenceCounts(referencePayload);
+  const selectorTransform = Array.isArray(transform) && transform.length === 16
+    ? multiplyTransforms(CAD_TO_VIEWER_TRANSFORM, transform)
+    : CAD_TO_VIEWER_TRANSFORM;
 
   const selectorRuntime = buildSelectorRuntime(referencePayload, {
     copyCadPath: copyCadPath || cadPathForEntry(entry),
     partId,
-    transform,
+    transform: selectorTransform,
     remapOccurrenceId
   });
   const references = normalizeReferenceList(selectorRuntime.references);
@@ -1071,6 +1082,7 @@ export default function CadWorkspace({
   const [viewerAlertOpen, setViewerAlertOpen] = useState(false);
   const [viewerRuntimeAlert, setViewerRuntimeAlert] = useState(null);
   const [lookMenuOpen, setLookMenuOpen] = useState(false);
+  const [mobileAgentRailOpen, setMobileAgentRailOpen] = useState(false);
   const [lookSettings, setLookSettings] = useState(readLookSettings);
   const [cadWorkspaceGlassTone, setCadWorkspaceGlassTone] = useState(readCadWorkspaceGlassTone);
   const [previewMode, setPreviewMode] = useState(false);
@@ -1097,7 +1109,7 @@ export default function CadWorkspace({
       return;
     }
     lastPersistenceFailureKeyRef.current = failureKey;
-    setPersistenceStatus("Browser storage could not save CAD Explorer state.");
+    setPersistenceStatus("Browser storage could not save Agentic CAD state.");
   }, []);
 
   const entryMap = useMemo(() => {
@@ -2242,6 +2254,12 @@ export default function CadWorkspace({
   });
 
   useEffect(() => {
+    if (isDesktop || previewMode) {
+      setMobileAgentRailOpen(false);
+    }
+  }, [isDesktop, previewMode]);
+
+  useEffect(() => {
     if (selectedKey) {
       setMobileSidebarOpen(false);
       return undefined;
@@ -2264,7 +2282,7 @@ export default function CadWorkspace({
     };
   }, [previewMode, selectedKey]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setCatalogEntries(manifestEntries);
   }, [manifestEntries]);
 
@@ -3505,6 +3523,9 @@ export default function CadWorkspace({
     bottom: 0,
     left: activeSidebarWidth
   };
+  const agenticRailOpen = !previewMode && isDesktop && !fileSheetOpen && !lookSheetOpen;
+  const compactAgentRailOpen = !previewMode && !isDesktop && mobileAgentRailOpen && !lookSheetOpen;
+  const viewPlaneOffsetRight = viewportFrameInsets.right + (agenticRailOpen ? 376 : 16);
   const floatingCadToolbarPosition = {
     top: "14px",
     right: "14px"
@@ -3524,6 +3545,21 @@ export default function CadWorkspace({
     { id: DRAWING_TOOL.FILL, label: "Fill", Icon: PaintBucket },
     { id: DRAWING_TOOL.ERASE, label: "Erase", Icon: Eraser }
   ];
+  const agenticRailProps = {
+    selectedEntry,
+    selectedEntryLabel: selectedEntry ? sidebarLabelForEntry(selectedEntry) : "",
+    renderFormat: effectiveRenderFormat,
+    selectedMeshData,
+    selectedDxfData,
+    selectedUrdfData,
+    catalogEntries,
+    viewerLoading,
+    viewerAlert,
+    stepUpdateInProgress: effectiveRenderFormat === RENDER_FORMAT.STEP && stepUpdateInProgress,
+    selectionCount,
+    selectedReferenceCount: selectedReferenceIds.length,
+    isAssemblyView
+  };
 
   return (
     <SidebarProvider
@@ -3554,7 +3590,7 @@ export default function CadWorkspace({
           viewerLoading={viewerLoading}
           viewerAlert={viewerAlert}
           stepUpdateInProgress={effectiveRenderFormat === RENDER_FORMAT.STEP && stepUpdateInProgress}
-          viewPlaneOffsetRight={viewportFrameInsets.right + 16}
+          viewPlaneOffsetRight={viewPlaneOffsetRight}
           viewerMode={viewerMode}
           assemblyParts={isAssemblyView && selectedAssemblyInteractionReady ? assemblyLeafParts : EMPTY_LIST}
           hiddenPartIds={hiddenPartIds}
@@ -3616,7 +3652,29 @@ export default function CadWorkspace({
           fileSheetKind={selectedFileSheetKind}
           fileSheetOpen={fileSheetOpen}
           onToggleFileSheet={handleToggleFileSheet}
+          agentRailOpen={mobileAgentRailOpen}
+          showAgentRailToggle={!isDesktop}
+          onToggleAgentRail={() => {
+            setMobileAgentRailOpen((current) => !current);
+          }}
         />
+
+        {agenticRailOpen ? (
+          <div className="pointer-events-none absolute bottom-3 right-3 top-[3.5rem] z-30">
+            <AgenticWorkbenchRail
+              {...agenticRailProps}
+            />
+          </div>
+        ) : null}
+
+        {compactAgentRailOpen ? (
+          <div className="pointer-events-none absolute inset-x-3 bottom-[5.25rem] top-[3.5rem] z-30 sm:left-auto sm:w-[22rem]">
+            <AgenticWorkbenchRail
+              {...agenticRailProps}
+              compact={true}
+            />
+          </div>
+        ) : null}
 
         <div className="pointer-events-none relative min-h-0 flex-1 overflow-hidden">
           <div className="flex h-full min-w-0">

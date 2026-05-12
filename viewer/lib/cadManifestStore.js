@@ -62,10 +62,6 @@ function publishCadManifest(nextManifest) {
   }
 }
 
-function currentSnapshotMatchesDirectory(dir = readCadDirectoryParam()) {
-  return normalizeCadDirectory(currentSnapshot.manifest?.root?.dir) === normalizeCadDirectory(dir);
-}
-
 async function refreshCadCatalog() {
   if (typeof window === "undefined" || !import.meta.env.DEV) {
     return;
@@ -107,11 +103,9 @@ if (import.meta.hot) {
 }
 
 if (typeof window !== "undefined" && import.meta.env.DEV) {
-  if (!currentSnapshotMatchesDirectory()) {
-    refreshCadCatalog().catch((error) => {
-      console.warn("Failed to load CAD catalog", error);
-    });
-  }
+  refreshCadCatalog().catch((error) => {
+    console.warn("Failed to load CAD catalog", error);
+  });
   window.addEventListener("popstate", () => {
     refreshCadCatalog().catch((error) => {
       console.warn("Failed to refresh CAD catalog", error);

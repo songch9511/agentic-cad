@@ -1,5 +1,5 @@
 import { Fragment } from "react";
-import { Palette, PanelRightIcon } from "lucide-react";
+import { BadgeCheck, Bot, Palette, PanelRightIcon } from "lucide-react";
 import {
   Breadcrumb,
   BreadcrumbEllipsis,
@@ -65,7 +65,10 @@ export default function CadWorkspaceTopBar({
   setLookMenuOpen,
   fileSheetKind = "",
   fileSheetOpen = false,
-  onToggleFileSheet
+  onToggleFileSheet,
+  agentRailOpen = false,
+  showAgentRailToggle = false,
+  onToggleAgentRail
 }) {
   const { isMobile, state: sidebarState } = useSidebar();
 
@@ -95,10 +98,16 @@ export default function CadWorkspaceTopBar({
     >
       {showTopBarSidebarTrigger ? (
         <SidebarTrigger
-          title="Toggle CAD Explorer"
-          aria-label="Toggle CAD Explorer"
+          title="Toggle Agentic CAD explorer"
+          aria-label="Toggle Agentic CAD explorer"
         />
       ) : null}
+
+      <div className="hidden shrink-0 items-center gap-2 rounded-md border border-sidebar-border/70 bg-sidebar-accent/35 px-2 py-1 md:flex">
+        <BadgeCheck className="size-3.5 text-primary" strokeWidth={2} aria-hidden="true" />
+        <span className="text-[11px] font-semibold text-sidebar-foreground">Agentic CAD</span>
+        <span className="text-[10px] text-muted-foreground">Dimension Shell</span>
+      </div>
 
       <Breadcrumb className="min-w-0 flex-1">
         <BreadcrumbList className="min-w-0 flex-nowrap gap-1.5 text-xs sm:gap-1.5">
@@ -132,6 +141,21 @@ export default function CadWorkspaceTopBar({
       </Breadcrumb>
 
       <div className="flex shrink-0 items-center gap-1">
+        {showAgentRailToggle ? (
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon-sm"
+            aria-label={agentRailOpen ? "Close agent workbench" : "Open agent workbench"}
+            title={agentRailOpen ? "Close agent workbench" : "Open agent workbench"}
+            aria-pressed={agentRailOpen}
+            onClick={onToggleAgentRail}
+            className={`size-8 ${agentRailOpen ? activeIconButtonClasses : ""}`}
+          >
+            <Bot className="size-4" strokeWidth={2} aria-hidden="true" />
+          </Button>
+        ) : null}
+
         <Button
           type="button"
           variant="ghost"

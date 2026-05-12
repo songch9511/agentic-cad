@@ -283,13 +283,7 @@ export function useCadWorkspaceSession({
       const unresolvedUrlSelection = Boolean(readCadParam() || readCadRefQueryParams().length);
       if (unresolvedUrlSelection) {
         const urlSelectedKey = selectedEntryKeyFromUrl(catalogEntries);
-        if (
-          urlSelectedKey ||
-          (
-            initialUnresolvedUrlSelectionRef.current &&
-            (manifestRevision === initialManifestRevisionRef.current || !entryMap.size)
-          )
-        ) {
+        if (urlSelectedKey || initialUnresolvedUrlSelectionRef.current) {
           return;
         }
       }

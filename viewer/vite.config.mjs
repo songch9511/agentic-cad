@@ -18,6 +18,8 @@ const viewerPort = Number.isFinite(resolvedPort) ? resolvedPort : DEFAULT_VIEWER
 const viewerRoot = process.cwd();
 const repoRoot = path.resolve(viewerRoot, "..");
 const buildCadDir = normalizeCadDirectory(process.env.CAD_DIR || DEFAULT_CAD_DIRECTORY);
+const drawingAssetRoot = path.resolve(repoRoot, "benchmarks", "drawings");
+const DRAWING_ASSET_EXTENSIONS = new Set([".png", ".jpg", ".jpeg", ".webp", ".gif", ".pdf"]);
 
 function emptyCatalog(dir = DEFAULT_CAD_DIRECTORY) {
   const normalizedDir = normalizeCadDirectory(dir);
@@ -45,7 +47,7 @@ function pathIsInside(childPath, parentPath) {
   return Boolean(relativePath) && !relativePath.startsWith("..") && !path.isAbsolute(relativePath);
 }
 
-function serveStaticFile(root, requestUrl, res, next, { allow } = {}) {
+function serveStaticFile(root, requestUrl, res, next, { allow, fallthroughOnMissing = true } = {}) {
   const requestPath = String(requestUrl || "").replace(/\?.*$/, "");
   let decodedRequestPath = "";
   try {
@@ -66,6 +68,11 @@ function serveStaticFile(root, requestUrl, res, next, { allow } = {}) {
   }
   fs.stat(filePath, (error, stats) => {
     if (error || !stats.isFile()) {
+      if (!fallthroughOnMissing) {
+        res.statusCode = 404;
+        res.end("Not found");
+        return;
+      }
       next();
       return;
     }
@@ -98,6 +105,15 @@ function sendJson(res, statusCode, payload) {
   res.setHeader("content-type", "application/json; charset=utf-8");
   res.setHeader("cache-control", "no-store");
   res.end(JSON.stringify(payload));
+}
+
+function isServedDrawingAsset(filePath) {
+  const extension = path.extname(filePath).toLowerCase();
+  if (!DRAWING_ASSET_EXTENSIONS.has(extension)) {
+    return false;
+  }
+  const resolvedFilePath = path.resolve(filePath);
+  return resolvedFilePath === drawingAssetRoot || pathIsInside(resolvedFilePath, drawingAssetRoot);
 }
 
 function cadCatalogPlugin() {
@@ -189,15 +205,16 @@ function cadCatalogPlugin() {
           return;
         }
         const candidatePath = path.resolve(repoRoot, decodedRequestPath.replace(/^\/+/, ""));
-        if (!isServedCadAsset(candidatePath)) {
+        if (!isServedCadAsset(candidatePath) && !isServedDrawingAsset(candidatePath)) {
           next();
           return;
         }
         serveStaticFile(repoRoot, req.url, res, next, {
           allow: (filePath) => (
-            isServedCadAsset(filePath) &&
+            (isServedCadAsset(filePath) || isServedDrawingAsset(filePath)) &&
             (filePath === repoRoot || pathIsInside(filePath, repoRoot))
           ),
+          fallthroughOnMissing: false,
         });
       });
       for (const eventName of ["add", "change", "unlink"]) {
@@ -210,6 +227,9 @@ function cadCatalogPlugin() {
       const cadDestinationRoot = path.resolve(viewerRoot, outDir, repoRelativePath(repoRoot, resolved.rootPath));
       copyRecursiveFiltered(resolved.rootPath, cadDestinationRoot, (filePath) => {
         return isServedCadAsset(filePath);
+      });
+      copyRecursiveFiltered(drawingAssetRoot, path.resolve(viewerRoot, outDir, "benchmarks", "drawings"), (filePath) => {
+        return isServedDrawingAsset(filePath);
       });
     },
   };

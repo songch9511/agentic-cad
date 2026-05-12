@@ -1,5 +1,5 @@
 import { parseDxf } from "./dxf/parseDxf.js";
-import { buildMeshDataFromGlbBuffer } from "./render/glbMeshData.js";
+import { buildMeshDataFromGlbBuffer, GLB_COORDINATE_SPACE } from "./render/glbMeshData.js";
 import { buildMeshDataFromStlBuffer } from "./render/stlMeshData.js";
 
 function isObject(value) {
@@ -19,12 +19,21 @@ const selectorCache = new Map();
 const dxfCache = new Map();
 const urdfCache = new Map();
 
+export { GLB_COORDINATE_SPACE };
+
 async function fetchJson(url, { signal } = {}) {
   const response = await fetch(url, { signal });
   if (!response.ok) {
     throw fetchError(url, response);
   }
-  return response.json();
+  const text = await response.text();
+  try {
+    return JSON.parse(text);
+  } catch (error) {
+    const contentType = response.headers.get("content-type") || "unknown content type";
+    const preview = text.trim().slice(0, 80).replace(/\s+/g, " ");
+    throw new Error(`Expected JSON from ${url}, received ${contentType}${preview ? `: ${preview}` : ""}`);
+  }
 }
 
 async function fetchText(url, { signal } = {}) {
@@ -99,16 +108,21 @@ export function peekRenderArrayBuffer(url) {
   return peekCached(arrayBufferCache, url);
 }
 
-export async function loadRenderGlb(url, { signal } = {}) {
-  const meshData = await loadCached(glbCache, url, async () => {
-    const buffer = await loadRenderArrayBuffer(url, { signal });
-    return buildMeshDataFromGlbBuffer(buffer);
-  });
-  return finalizeCached(glbCache, url, meshData);
+function glbCacheKey(url, coordinateSpace = GLB_COORDINATE_SPACE.VIEWER) {
+  return `${coordinateSpace === GLB_COORDINATE_SPACE.CAD ? GLB_COORDINATE_SPACE.CAD : GLB_COORDINATE_SPACE.VIEWER}:${url}`;
 }
 
-export function peekRenderGlb(url) {
-  return peekCached(glbCache, url);
+export async function loadRenderGlb(url, { signal, coordinateSpace = GLB_COORDINATE_SPACE.VIEWER } = {}) {
+  const cacheKey = glbCacheKey(url, coordinateSpace);
+  const meshData = await loadCached(glbCache, cacheKey, async () => {
+    const buffer = await loadRenderArrayBuffer(url, { signal });
+    return buildMeshDataFromGlbBuffer(buffer, { coordinateSpace });
+  });
+  return finalizeCached(glbCache, cacheKey, meshData);
+}
+
+export function peekRenderGlb(url, { coordinateSpace = GLB_COORDINATE_SPACE.VIEWER } = {}) {
+  return peekCached(glbCache, glbCacheKey(url, coordinateSpace));
 }
 
 export async function loadRenderStl(url, { signal } = {}) {

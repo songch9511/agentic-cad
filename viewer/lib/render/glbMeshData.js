@@ -167,9 +167,21 @@ function appendGlbPrimitive(THREE, accumulator, mesh, group, material, useSource
   }
 }
 
-function buildMeshDataFromGltf(THREE, gltf) {
+export const GLB_COORDINATE_SPACE = Object.freeze({
+  VIEWER: "viewer",
+  CAD: "cad"
+});
+
+function normalizeCoordinateSpace(value) {
+  return value === GLB_COORDINATE_SPACE.CAD ? GLB_COORDINATE_SPACE.CAD : GLB_COORDINATE_SPACE.VIEWER;
+}
+
+function buildMeshDataFromGltf(THREE, gltf, { coordinateSpace = GLB_COORDINATE_SPACE.VIEWER } = {}) {
   const declaredMaterials = Array.isArray(gltf?.parser?.json?.materials) && gltf.parser.json.materials.length > 0;
-  const rootCorrection = buildGlbCadRootCorrection(THREE, gltf?.scene);
+  const normalizedCoordinateSpace = normalizeCoordinateSpace(coordinateSpace);
+  const rootCorrection = normalizedCoordinateSpace === GLB_COORDINATE_SPACE.CAD
+    ? buildGlbCadRootCorrection(THREE, gltf?.scene)
+    : null;
   const accumulator = {
     vertices: [],
     indices: [],
@@ -211,6 +223,7 @@ function buildMeshDataFromGltf(THREE, gltf) {
     parts: accumulator.parts,
     has_source_colors: colors.length === vertices.length && colors.length > 0,
     sourceColor: accumulator.colorSet.size === 1 ? [...accumulator.colorSet][0] : "",
+    coordinateSpace: normalizedCoordinateSpace,
   };
 }
 
@@ -221,11 +234,11 @@ function parseGlb(GLTFLoader, buffer) {
   });
 }
 
-export async function buildMeshDataFromGlbBuffer(buffer) {
+export async function buildMeshDataFromGlbBuffer(buffer, options = {}) {
   const [THREE, { GLTFLoader }] = await Promise.all([
     import("three"),
     import("three/examples/jsm/loaders/GLTFLoader.js"),
   ]);
   const gltf = await parseGlb(GLTFLoader, buffer);
-  return buildMeshDataFromGltf(THREE, gltf);
+  return buildMeshDataFromGltf(THREE, gltf, options);
 }

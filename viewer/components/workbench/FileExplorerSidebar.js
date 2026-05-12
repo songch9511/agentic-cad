@@ -248,13 +248,21 @@ export default function FileExplorerSidebar({
   return (
     <Sidebar collapsible="offcanvas">
       <SidebarHeader>
-        <div className="flex h-7 items-center gap-2 px-2">
-          <div className="min-w-0 flex-1 truncate text-xs font-semibold">
-            CAD Explorer
+        <div className="flex min-h-9 items-center gap-2 px-2">
+          <div className="flex size-7 shrink-0 items-center justify-center rounded-md border border-sidebar-border/70 bg-sidebar-accent/55">
+            <DraftingCompass className="size-3.5 text-primary" strokeWidth={2} aria-hidden="true" />
+          </div>
+          <div className="min-w-0 flex-1">
+            <div className="truncate text-xs font-semibold">
+              Agentic CAD
+            </div>
+            <div className="truncate text-[10px] text-muted-foreground">
+              {catalogEntries.length} artifacts - evaluator harness
+            </div>
           </div>
           <SidebarTrigger
-            title="Toggle CAD Explorer"
-            aria-label="Toggle CAD Explorer"
+            title="Toggle Agentic CAD explorer"
+            aria-label="Toggle Agentic CAD explorer"
             className="shrink-0"
           />
         </div>

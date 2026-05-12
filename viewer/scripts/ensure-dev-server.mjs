@@ -49,7 +49,7 @@ async function waitForViewer() {
 
 async function main() {
   if (await probeViewer()) {
-    console.log(`CAD Explorer is already running at ${VIEWER_URL}`);
+    console.log(`Agentic CAD is already running at ${VIEWER_URL}`);
     return;
   }
 
@@ -57,7 +57,7 @@ async function main() {
   const viewerRoot = path.resolve(path.dirname(scriptPath), "..");
   const npmCommand = process.platform === "win32" ? "npm.cmd" : "npm";
 
-  console.log(`Starting CAD Explorer dev server at ${VIEWER_URL}`);
+  console.log(`Starting Agentic CAD dev server at ${VIEWER_URL}`);
   const child = spawn(npmCommand, ["run", "dev"], {
     cwd: viewerRoot,
     detached: true,
@@ -70,11 +70,11 @@ async function main() {
   child.unref();
 
   if (await waitForViewer()) {
-    console.log(`CAD Explorer is ready at ${VIEWER_URL}`);
+    console.log(`Agentic CAD is ready at ${VIEWER_URL}`);
     return;
   }
 
-  console.error(`CAD Explorer did not become ready at ${HEALTH_URL} within ${STARTUP_TIMEOUT_MS}ms.`);
+  console.error(`Agentic CAD did not become ready at ${HEALTH_URL} within ${STARTUP_TIMEOUT_MS}ms.`);
   process.exitCode = 1;
 }
 

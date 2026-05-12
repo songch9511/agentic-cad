@@ -2,6 +2,7 @@ import assert from "node:assert/strict";
 import { test } from "node:test";
 
 import {
+  ASSEMBLY_COORDINATE_SPACE,
   assemblyBreadcrumb,
   assemblyCompositionMeshRequests,
   buildAssemblyLeafToNodePickMap,
@@ -74,6 +75,71 @@ test("buildAssemblyMeshData composes source meshes with assembly transforms", ()
   assert.deepEqual(meshData.parts[0].bounds, {
     min: [10, 20, 30],
     max: [11, 21, 30]
+  });
+});
+
+test("buildAssemblyMeshData can emit viewer-space meshes after CAD assembly composition", () => {
+  const sourceMesh = {
+    vertices: new Float32Array([
+      0, 0, 0,
+      1, 0, 0,
+      0, 1, 0
+    ]),
+    normals: new Float32Array([
+      0, 0, 1,
+      0, 0, 1,
+      0, 0, 1
+    ]),
+    indices: new Uint32Array([0, 1, 2]),
+    bounds: {
+      min: [0, 0, 0],
+      max: [1, 1, 0]
+    }
+  };
+  const topology = {
+    assembly: {
+      root: {
+        id: "root",
+        nodeType: "assembly",
+        children: [
+          {
+            id: "o1.2",
+            occurrenceId: "o1.2",
+            nodeType: "part",
+            sourcePath: "parts/sample_part.step",
+            worldTransform: [
+              1, 0, 0, 10,
+              0, 1, 0, 20,
+              0, 0, 1, 30,
+              0, 0, 0, 1
+            ],
+            children: []
+          }
+        ]
+      }
+    }
+  };
+
+  const meshData = buildAssemblyMeshData(
+    topology,
+    new Map([["parts/sample_part.step", sourceMesh]]),
+    { outputCoordinateSpace: ASSEMBLY_COORDINATE_SPACE.VIEWER }
+  );
+
+  assert.deepEqual(Array.from(meshData.vertices), [
+    10, 30, -20,
+    11, 30, -20,
+    10, 30, -21
+  ]);
+  assert.deepEqual(Array.from(meshData.normals), [
+    0, 1, 0,
+    0, 1, 0,
+    0, 1, 0
+  ]);
+  assert.equal(meshData.coordinateSpace, "viewer");
+  assert.deepEqual(meshData.parts[0].bounds, {
+    min: [10, 30, -21],
+    max: [11, 30, -20]
   });
 });
 

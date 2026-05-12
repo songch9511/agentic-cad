@@ -3965,6 +3965,8 @@ const CadViewer = forwardRef(function CadViewer({
   theme = BASE_VIEWER_THEME,
   lookSettings = null,
   floorModeOverride = "",
+  floorOffset = 0,
+  cameraFitScale = 1,
   previewMode = false,
   showViewPlane = true,
   viewPlaneOffsetRight = 16,
@@ -4042,6 +4044,10 @@ const CadViewer = forwardRef(function CadViewer({
   const resolvedFloorMode = floorModeOverride
     ? normalizeFloorMode(floorModeOverride, resolveFloorMode(normalizedLookSettings.floor))
     : resolveFloorMode(normalizedLookSettings.floor);
+  const normalizedFloorOffset = Number.isFinite(Number(floorOffset)) ? Number(floorOffset) : 0;
+  const normalizedCameraFitScale = Number.isFinite(Number(cameraFitScale))
+    ? Math.min(4, Math.max(0.25, Number(cameraFitScale)))
+    : 1;
   const edgesVisible = showEdges && normalizedLookSettings.edges.enabled;
   const partVisualStateEnabled =
     pickMode === VIEWER_PICK_MODE.PARTS ||
@@ -4823,11 +4829,12 @@ const CadViewer = forwardRef(function CadViewer({
       (toNumber(boundsMin[2]) + toNumber(boundsMax[2])) / 2
     );
     const { radius } = applyRuntimeModelBounds(THREE, runtime, meshData.bounds, normalizedSceneScaleMode);
+    const modelFloorY = toNumber(boundsMin[1]) - center.y + normalizedFloorOffset;
     updateGridHelper(
       runtime,
       viewerTheme,
       radius,
-      toNumber(boundsMin[1]) - center.y,
+      modelFloorY,
       normalizedSceneScaleMode,
       resolvedFloorMode
     );
@@ -4883,7 +4890,7 @@ const CadViewer = forwardRef(function CadViewer({
         ) {
           cancelCameraTransition(runtime);
           const frameMetrics = getViewportFrameMetrics(runtime, viewportFrameInsetsRef.current);
-          const fitDistance = getFitDistanceForBoundingSphere(camera, radius, normalizedSceneScaleMode, frameMetrics.aspect);
+          const fitDistance = getFitDistanceForBoundingSphere(camera, radius, normalizedSceneScaleMode, frameMetrics.aspect) * normalizedCameraFitScale;
           const viewDirection = new THREE.Vector3(...DEFAULT_VIEW_DIRECTION).normalize();
           camera.position.copy(viewDirection.multiplyScalar(fitDistance));
           controls.target.set(0, 0, 0);
@@ -4915,6 +4922,8 @@ const CadViewer = forwardRef(function CadViewer({
     focusedPartId,
     normalizedSceneScaleMode,
     resolvedFloorMode,
+    normalizedFloorOffset,
+    normalizedCameraFitScale,
     viewerTheme,
     normalizedLookSettings.materials,
     normalizedLookSettings.edges
