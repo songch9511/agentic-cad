@@ -1,0 +1,51 @@
+{
+  "product": "cybertruck_2035_concept",
+  "display_name": "Parametric Cybertruck-inspired 2035 faceted EV pickup concept assembly",
+  "design_intent": "Tesla Cybertruck-inspired 2035 visual engineering concept, not an official Tesla design",
+  "wheelbase_mm": 3650.0,
+  "overall_length_mm": 5940.0,
+  "width_mm": 2220.0,
+  "height_mm": 1840.0,
+  "wheel_diameter_mm": 920.0,
+  "tire_width_mm": 315.0,
+  "body_panel_thickness_mm": 48.0,
+  "bed_length_mm": 1940.0,
+  "ground_clearance_mm": 315.0,
+  "bounding_box_mm": [
+    5832.2,
+    2599.0,
+    2062.3
+  ],
+  "wheel_count": 4,
+  "sensor_count": 8,
+  "light_bar_count": 2,
+  "diffuser_fin_count": 7,
+  "panel_gap_count": 12,
+  "component_count": 6,
+  "separate_colored_solids": 96,
+  "wheel_centers_mm": [
+    [
+      -1825.0,
+      -1070.0,
+      460.0
+    ],
+    [
+      -1825.0,
+      1070.0,
+      460.0
+    ],
+    [
+      1825.0,
+      -1070.0,
+      460.0
+    ],
+    [
+      1825.0,
+      1070.0,
+      460.0
+    ]
+  ],
+  "wheel_contact_ground_plane": true,
+  "left_right_symmetry": true,
+  "passed": true
+}
