@@ -54,7 +54,7 @@ GLB_OUTPUT = "cybertruck_2035_concept_assembly.glb"
 VALIDATION_OUTPUT = "cybertruck_2035_concept_validation_report.json"
 PROMPT_OUTPUT = "cybertruck_2035_concept_prompt.md"
 COMPONENT_DIR = "cybertruck_2035_concept_components"
-COMPONENT_REVISION = "cybertruck-premium-clean-concept-v2"
+COMPONENT_REVISION = "cybertruck-premium-clean-concept-v3-window-alignment"
 
 COLORS = {
     "stainless": Color(0.68, 0.70, 0.69, 1.0),
@@ -195,21 +195,23 @@ def _body_shell():
 
 def _glass_package():
     children = [
-        _paint(Pos(-1242.0, 0.0, 1408.0) * Rot(0.0, -WINDSHIELD_ANGLE, 0.0) * Box(1060.0, CABIN_WIDTH - 70.0, 22.0), "glass", "large_flush_black_sloped_windshield"),
-        _paint(Pos(18.0, 0.0, 1705.0) * Rot(0.0, -5.5, 0.0) * Box(1120.0, CABIN_WIDTH - 170.0, 14.0), "glass", "flush_black_panoramic_roof_panel"),
+        _paint(Pos(-1250.0, 0.0, 1388.0) * Rot(0.0, -WINDSHIELD_ANGLE, 0.0) * Box(960.0, CABIN_WIDTH - 95.0, 20.0), "glass", "large_flush_black_sloped_windshield"),
+        _paint(Pos(20.0, 0.0, 1708.0) * Rot(0.0, -5.5, 0.0) * Box(780.0, CABIN_WIDTH - 250.0, 12.0), "glass", "flush_aligned_black_panoramic_roof_panel"),
     ]
-    front_window = [(-1412.0, 1118.0), (-1004.0, 1598.0), (-378.0, 1592.0), (-520.0, 1135.0)]
-    rear_window = [(-335.0, 1134.0), (-212.0, 1588.0), (530.0, 1534.0), (680.0, 1152.0)]
-    quarter_window = [(720.0, 1156.0), (805.0, 1510.0), (1125.0, 1434.0), (1320.0, 1166.0)]
+    front_window = [(-1375.0, 1128.0), (-1008.0, 1552.0), (-442.0, 1536.0), (-535.0, 1130.0)]
+    rear_window = [(-410.0, 1132.0), (-374.0, 1532.0), (314.0, 1490.0), (450.0, 1138.0)]
+    quarter_window = [(482.0, 1142.0), (360.0, 1480.0), (980.0, 1412.0), (1192.0, 1150.0)]
     for side in (-1, 1):
         children.extend(
             [
                 _side_panel(front_window, side, "glass", "front_door_flush_trapezoid_window", 10.0, CABIN_SIDE_Y),
                 _side_panel(rear_window, side, "glass", "rear_door_flush_trapezoid_window", 10.0, CABIN_SIDE_Y),
                 _side_panel(quarter_window, side, "glass", "rear_quarter_flush_glass", 10.0, CABIN_SIDE_Y),
-                _side_panel([(-1478.0, 1088.0), (-1398.0, 1116.0), (-998.0, 1604.0), (-1088.0, 1620.0)], side, "stainless_light", "bright_faceted_a_pillar", 9.0, CABIN_SIDE_Y),
-                _side_panel([(-390.0, 1128.0), (-362.0, 1582.0), (-306.0, 1578.0), (-322.0, 1128.0)], side, "graphite", "thin_black_b_pillar", 9.0, CABIN_SIDE_Y),
-                _side_panel([(662.0, 1144.0), (792.0, 1506.0), (842.0, 1496.0), (720.0, 1146.0)], side, "graphite", "thin_black_c_pillar", 9.0, CABIN_SIDE_Y),
+                _side_panel([(-1442.0, 1100.0), (-1370.0, 1126.0), (-1000.0, 1558.0), (-1090.0, 1570.0)], side, "stainless_light", "bright_faceted_a_pillar", 9.0, CABIN_SIDE_Y),
+                _side_panel([(-446.0, 1125.0), (-412.0, 1532.0), (-360.0, 1528.0), (-384.0, 1126.0)], side, "graphite", "thin_black_b_pillar", 9.0, CABIN_SIDE_Y),
+                _side_panel([(438.0, 1135.0), (332.0, 1488.0), (382.0, 1480.0), (496.0, 1138.0)], side, "graphite", "thin_black_c_pillar", 9.0, CABIN_SIDE_Y),
+                _line_on_side(-95.0, 1118.0, 2520.0, side, "straight_aligned_window_beltline", vertical=False, thickness=7.0, color="graphite", surface_y=CABIN_SIDE_Y),
+                _line_on_side(-70.0, 1540.0, 1310.0, side, "continuous_aligned_window_header", vertical=False, thickness=7.0, color="stainless_light", surface_y=CABIN_SIDE_Y),
             ]
         )
     return Compound(children=children)
