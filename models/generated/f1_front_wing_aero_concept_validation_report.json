@@ -1,0 +1,23 @@
+{
+  "product": "f1_front_wing_aero_concept",
+  "display_name": "Parametric F1 front wing aero concept assembly",
+  "span_mm": 1840.0,
+  "chord_mm": 520.0,
+  "flap_count": 3,
+  "endplate_count": 2,
+  "sensor_count": 12,
+  "vortex_fin_count": 20,
+  "fastener_count": 48,
+  "pylon_spacing_mm": 220.0,
+  "actuator_diameter_mm": 22.0,
+  "bounding_box_mm": [
+    1869.1,
+    778.5,
+    389.0
+  ],
+  "left_right_symmetry": true,
+  "minimum_flap_gap_clearance_mm": 21.2,
+  "component_categories": 8,
+  "separate_colored_solids": 150,
+  "passed": true
+}
