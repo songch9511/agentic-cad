@@ -1,0 +1,73 @@
+{
+  "simulation_type": "deterministic_forward_kinematics_pose_sweep",
+  "duration_s": 2.8,
+  "frames": [
+    {
+      "name": "pick",
+      "time_s": 0.0,
+      "base_yaw_deg": -28.0,
+      "shoulder_pitch_deg": 28.0,
+      "elbow_pitch_delta_deg": -48.0,
+      "wrist_pitch_delta_deg": -12.0,
+      "gripper_open_mm": 38.0,
+      "tcp_x_mm": 251.7,
+      "tcp_y_mm": -133.8,
+      "tcp_z_mm": 49.9
+    },
+    {
+      "name": "clearance_lift",
+      "time_s": 1.4,
+      "base_yaw_deg": 6.0,
+      "shoulder_pitch_deg": 48.0,
+      "elbow_pitch_delta_deg": -66.0,
+      "wrist_pitch_delta_deg": -18.0,
+      "gripper_open_mm": 22.0,
+      "tcp_x_mm": 255.7,
+      "tcp_y_mm": 26.9,
+      "tcp_z_mm": 80.0
+    },
+    {
+      "name": "place",
+      "time_s": 2.8,
+      "base_yaw_deg": 42.0,
+      "shoulder_pitch_deg": 34.0,
+      "elbow_pitch_delta_deg": -42.0,
+      "wrist_pitch_delta_deg": -28.0,
+      "gripper_open_mm": 38.0,
+      "tcp_x_mm": 208.2,
+      "tcp_y_mm": 187.4,
+      "tcp_z_mm": 75.9
+    }
+  ],
+  "joint_limits_deg": {
+    "base_yaw": [
+      -170,
+      170
+    ],
+    "shoulder_pitch": [
+      -35,
+      95
+    ],
+    "elbow_pitch_delta": [
+      -125,
+      15
+    ],
+    "wrist_pitch_delta": [
+      -110,
+      110
+    ],
+    "wrist_roll": [
+      -180,
+      180
+    ],
+    "gripper": [
+      0,
+      42
+    ]
+  },
+  "checks": {
+    "tcp_above_floor_all_frames": true,
+    "base_clearance_ok": true,
+    "self_collision_proxy_clearance_ok": true
+  }
+}

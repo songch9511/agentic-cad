@@ -1,0 +1,36 @@
+{
+  "source_reference": "K26/K27 exploded turbocharger legend",
+  "major_legend_parts_A_to_G": 7,
+  "service_legend_parts_1_to_17": 17,
+  "component_categories": 24,
+  "assembly_instance_count": 51,
+  "rebuild_kit_categories": [
+    "1",
+    "2",
+    "4",
+    "8",
+    "9",
+    "10",
+    "14",
+    "17"
+  ],
+  "contains_compressor_housing_C": true,
+  "contains_compressor_wheel_B": true,
+  "contains_bearing_housing_D": true,
+  "contains_heat_shield_E": true,
+  "contains_turbine_wheel_shaft_F": true,
+  "contains_turbine_housing_G": true,
+  "coaxial_rotor_stack": true,
+  "external_ports_present": true,
+  "assembled_bounding_box_mm": [
+    249.5,
+    176.5,
+    121.7
+  ],
+  "exploded_bounding_box_mm": [
+    347.0,
+    278.5,
+    219.8
+  ],
+  "passed": true
+}

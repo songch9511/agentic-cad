@@ -1,0 +1,19 @@
+{
+  "motor_count": 4,
+  "propeller_count": 4,
+  "arm_count": 4,
+  "esc_count": 4,
+  "flight_controller_count": 1,
+  "receiver_count": 1,
+  "landing_leg_count": 4,
+  "cw_propeller_markers": 2,
+  "ccw_propeller_markers": 2,
+  "propeller_body_clearance_mm": 23.8,
+  "battery_skid_clearance_mm": 12.0,
+  "bounding_box_mm": [
+    301.8,
+    301.8,
+    52.4
+  ],
+  "passed": true
+}

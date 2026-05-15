@@ -1,0 +1,24 @@
+{
+  "product": "f1_style_steering_wheel",
+  "overall_width_target_mm": 270.0,
+  "overall_height_target_mm": 183.0,
+  "overall_depth_target_mm": 67.0,
+  "display_mm": [
+    96.0,
+    46.0
+  ],
+  "teal_pushbuttons": 4,
+  "red_pushbuttons": 4,
+  "shift_leds": 8,
+  "visible_socket_screws": 12,
+  "rear_shift_paddles": 2,
+  "rear_quick_release_hub": true,
+  "component_categories": 5,
+  "separate_colored_solids": 90,
+  "bounding_box_mm": [
+    270.0,
+    71.0,
+    183.0
+  ],
+  "passed": true
+}

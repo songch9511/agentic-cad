@@ -1,0 +1,47 @@
+{
+  "angle_from_front_rear_over_key_area_deg": 5.993349234421165,
+  "case_size_mm": {
+    "x": 339.5625,
+    "y": 140.3
+  },
+  "exploded_view": false,
+  "final_bounding_box_mm": {
+    "max": {
+      "x": 169.78125,
+      "y": 69.76571096008165,
+      "z": 45.54742551442816
+    },
+    "min": {
+      "x": -169.78125,
+      "y": -71.52178914298447,
+      "z": 0.9407561693859422
+    },
+    "size": {
+      "x": 339.5625,
+      "y": 141.28750010306612,
+      "z": 44.60666934504222
+    }
+  },
+  "front_height_mm": 18.0,
+  "issues": [],
+  "key_area_size_mm": {
+    "x": 309.5625,
+    "y": 114.30000000000001
+  },
+  "key_count": 84,
+  "layout_depth_u": 6.0,
+  "layout_row_count": 6,
+  "layout_width_u": 16.25,
+  "plate_size_mm": {
+    "x": 333.5625,
+    "y": 134.3,
+    "z": 1.5
+  },
+  "rear_height_from_angle_over_key_area_mm": 30.013414090866824,
+  "rear_height_mm": 30.0,
+  "stabilizer_position_count": 5,
+  "switch_cutout_count": 84,
+  "typing_angle_deg": 6.0,
+  "units": "mm",
+  "valid": true
+}

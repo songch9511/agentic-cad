@@ -1,0 +1,34 @@
+{
+  "robot_type": "six_axis_articulated_robot_arm",
+  "axis_count": 6,
+  "separate_component_categories": 10,
+  "base_turntable_present": true,
+  "shoulder_elbow_wrist_joints_present": true,
+  "dual_link_upper_arm_present": true,
+  "dual_link_forearm_present": true,
+  "parallel_gripper_present": true,
+  "cable_carrier_present": true,
+  "controller_fixture_present": true,
+  "simulation_frames": 3,
+  "simulation_outputs": [
+    "robotic_arm_simulation_report.json",
+    "robotic_arm_simulation_sweep.step"
+  ],
+  "tcp_nominal_mm": [
+    259.2,
+    0.0,
+    59.0
+  ],
+  "nominal_reach_mm": 265.8,
+  "assembled_bounding_box_mm": [
+    320.7,
+    196.6,
+    185.0
+  ],
+  "simulation_sweep_bounding_box_mm": [
+    382.1,
+    409.7,
+    193.7
+  ],
+  "passed": true
+}
