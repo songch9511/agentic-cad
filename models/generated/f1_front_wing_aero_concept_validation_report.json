@@ -6,7 +6,7 @@
   "design_intent": "visual low-drag aero concept, not CFD-validated race hardware",
   "flap_count": 4,
   "endplate_count": 2,
-  "sensor_count": 16,
+  "sensor_count": 8,
   "vortex_fin_count": 28,
   "slot_gap_spacer_count": 24,
   "aero_fairing_count": 12,
@@ -15,7 +15,7 @@
   "actuator_diameter_mm": 18.0,
   "bounding_box_mm": [
     1891.5,
-    798.2,
+    714.4,
     389.0
   ],
   "left_right_symmetry": true,

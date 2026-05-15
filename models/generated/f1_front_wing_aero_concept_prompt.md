@@ -7,8 +7,8 @@ Required components:
 - Left and right swept endplates with louvered pressure-relief slots, side fences, and slim outwash footplates.
 - Central low-profile nose mounting pylons, pylon rear fairings, hidden hinge rods, and structural brackets.
 - Adjustable flap hinge rods, compact actuator/linkage placeholders, slot-gap spacers, and teardrop actuator fairings.
-- Low-drag vortex generator fins, pressure sensor pitot/rake placeholders, and edge flow vanes.
-- Flush titanium fasteners, satin carbon surfaces, champagne hardware, red/blue edge accents, and clean camera-friendly presentation.
+- Low-drag vortex generator fins, compact flush pressure sensor pods, and edge flow vanes.
+- Raised titanium fasteners, satin carbon surfaces, champagne hardware, red/blue edge accents, and clean camera-friendly presentation with no long external sensor rake wires.
 
 Parametric requirements:
 - Define overall span, chord, main plane thickness, flap count, flap gap, endplate height, pylon spacing, actuator diameter, sensor count, vortex fin count, slot-gap spacer count, and fastener count as named parameters.

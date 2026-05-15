@@ -31,7 +31,7 @@ ENDPLATE_THICKNESS = 34.0
 PYLON_SPACING = 220.0
 ACTUATOR_DIAMETER = 18.0
 FASTENER_COUNT = 64
-PRESSURE_SENSOR_COUNT = 16
+PRESSURE_SENSOR_COUNT = 8
 VORTEX_FIN_COUNT = 28
 SLOT_GAP_SPACER_COUNT = 24
 AERO_FAIRING_COUNT = 12
@@ -53,7 +53,7 @@ COLORS = {
     "champagne": Color(0.72, 0.59, 0.36, 1.0),
     "red": Color(0.9, 0.02, 0.025, 1.0),
     "blue": Color(0.02, 0.18, 0.9, 1.0),
-    "green": Color(0.05, 0.85, 0.28, 1.0),
+    "sensor_dark": Color(0.02, 0.08, 0.12, 1.0),
     "rubber": Color(0.015, 0.015, 0.015, 1.0),
 }
 
@@ -192,15 +192,14 @@ def _sensors_and_vortex_fins():
             )
     for side in (-1, 1):
         name = "right" if side > 0 else "left"
-        for index, z in enumerate([-58.0, -34.0, -10.0, 14.0, 38.0, 62.0, 86.0, 110.0], start=1):
-            x = side * 520.0
+        for index, (x_offset, y, z) in enumerate([(410.0, -250.0, 26.0), (530.0, -210.0, 50.0), (650.0, -160.0, 72.0), (770.0, -112.0, 94.0)], start=1):
+            x = side * x_offset
             children.extend(
                 [
-                    _paint(Pos(x, -342.0, z) * _y_cylinder(2.2, 220.0), "green", f"{name}_micro_pressure_rake_tube_{index:02d}"),
-                    _paint(Pos(x, -455.0, z) * Sphere(4.8), "green", f"{name}_pitot_sensor_tip_{index:02d}"),
+                    _paint(Pos(x, y, z) * Rot(0.0, 0.0, side * 9.0) * Box(22.0, 12.0, 10.0), "sensor_dark", f"{name}_flush_pressure_sensor_pod_{index:02d}"),
+                    _paint(Pos(x + side * 16.0, y - 9.0, z + 2.0) * Sphere(3.8), "titanium", f"{name}_sensor_reference_port_{index:02d}"),
                 ]
             )
-        children.append(_paint(Pos(side * 520.0, -230.0, 28.0) * Box(14.0, 14.0, 206.0), "titanium", f"{name}_pressure_rake_faired_backbone"))
     for side in (-1, 1):
         for index, y in enumerate([-214.0, -154.0, 14.0, 92.0, 174.0, 246.0], start=1):
             children.append(_paint(Pos(side * 872.0, y, 52.0 + index * 7.0) * Rot(0.0, 0.0, side * 13.0) * Box(7.0, 38.0, 34.0), "champagne", f"{'right' if side > 0 else 'left'}_edge_flow_vane_{index:02d}"))
@@ -246,8 +245,7 @@ def _fasteners():
             bolt_locations.append((x, y, z))
     for x, y, z in bolt_locations[:FASTENER_COUNT]:
         index += 1
-        children.append(_paint(Pos(x, y, z) * _z_cylinder(5.4, 4.0), "titanium", f"flush_titanium_socket_fastener_{index:02d}"))
-        children.append(_paint(Pos(x, y, z + 2.4) * _z_cylinder(2.3, 1.6), "dark_metal", f"flush_socket_recess_{index:02d}"))
+        children.append(_paint(Pos(x, y, z) * _z_cylinder(4.6, 3.2), "titanium", f"raised_titanium_fastener_{index:02d}"))
     return Compound(children=children)
 
 
@@ -355,7 +353,7 @@ def _validation_report(shape) -> dict[str, object]:
         and 300.0 <= bbox[2] <= 590.0
         and report["flap_count"] == 4
         and report["endplate_count"] == 2
-        and report["sensor_count"] == 16
+        and report["sensor_count"] == 8
         and report["vortex_fin_count"] == 28
         and report["slot_gap_spacer_count"] == 24
         and report["aero_fairing_count"] == 12
@@ -376,8 +374,8 @@ Required components:
 - Left and right swept endplates with louvered pressure-relief slots, side fences, and slim outwash footplates.
 - Central low-profile nose mounting pylons, pylon rear fairings, hidden hinge rods, and structural brackets.
 - Adjustable flap hinge rods, compact actuator/linkage placeholders, slot-gap spacers, and teardrop actuator fairings.
-- Low-drag vortex generator fins, pressure sensor pitot/rake placeholders, and edge flow vanes.
-- Flush titanium fasteners, satin carbon surfaces, champagne hardware, red/blue edge accents, and clean camera-friendly presentation.
+- Low-drag vortex generator fins, compact flush pressure sensor pods, and edge flow vanes.
+- Raised titanium fasteners, satin carbon surfaces, champagne hardware, red/blue edge accents, and clean camera-friendly presentation with no long external sensor rake wires.
 
 Parametric requirements:
 - Define overall span, chord, main plane thickness, flap count, flap gap, endplate height, pylon spacing, actuator diameter, sensor count, vortex fin count, slot-gap spacer count, and fastener count as named parameters.
