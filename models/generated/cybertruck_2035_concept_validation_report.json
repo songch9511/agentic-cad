@@ -13,16 +13,16 @@
   "ground_clearance_mm": 315.0,
   "bounding_box_mm": [
     5832.2,
-    2599.0,
-    2062.3
+    2641.0,
+    2003.8
   ],
   "wheel_count": 4,
   "sensor_count": 8,
   "light_bar_count": 2,
   "diffuser_fin_count": 7,
   "panel_gap_count": 12,
-  "component_count": 6,
-  "separate_colored_solids": 96,
+  "component_count": 7,
+  "separate_colored_solids": 132,
   "wheel_centers_mm": [
     [
       -1825.0,
