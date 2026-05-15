@@ -1,7 +1,7 @@
 {
   "product": "cybertruck_2035_concept",
-  "display_name": "Parametric Cybertruck-inspired angular electric pickup concept assembly",
-  "design_intent": "Cybertruck-inspired non-official visual engineering concept based on a clean angular EV pickup reference",
+  "display_name": "Parametric premium Cybertruck-inspired angular EV pickup concept",
+  "design_intent": "Premium Cybertruck-inspired non-official angular EV pickup concept with a clean low wedge body, flush glass, proper wheel placement, and no detached decorative geometry",
   "overall_length_mm": 5860.0,
   "width_mm": 2180.0,
   "height_mm": 1760.0,
@@ -12,44 +12,46 @@
   "tire_width_mm": 315.0,
   "ground_clearance_mm": 305.0,
   "body_panel_thickness_mm": 42.0,
-  "windshield_angle_deg": 27.0,
+  "windshield_angle_deg": 31.0,
   "bed_length_mm": 1750.0,
   "door_gap_width_mm": 10.0,
   "bounding_box_mm": [
-    5880.0,
-    2561.0,
-    2065.0
+    5860.0,
+    2679.0,
+    1783.1
   ],
   "wheel_count": 4,
   "door_count": 4,
   "light_bar_count": 2,
-  "glass_component_count": 7,
-  "component_count": 8,
-  "separate_colored_solids": 118,
+  "glass_component_count": 9,
+  "component_count": 7,
+  "separate_colored_solids": 132,
   "wheel_centers_mm": [
     [
       -1825.0,
-      -1045.0,
+      -1150.0,
       450.0
     ],
     [
       -1825.0,
-      1045.0,
+      1150.0,
       450.0
     ],
     [
       1825.0,
-      -1045.0,
+      -1150.0,
       450.0
     ],
     [
       1825.0,
-      1045.0,
+      1150.0,
       450.0
     ]
   ],
   "wheel_contact_ground_plane": true,
   "left_right_symmetry": true,
   "floating_components_removed": true,
+  "detached_roof_panels_removed": true,
+  "loose_rods_removed": true,
   "passed": true
 }
