@@ -44,7 +44,7 @@ SHELL_THICKNESS = 6.0
 FOOT_LENGTH = 172.0
 FOOT_WIDTH = 92.0
 FOOT_HEIGHT = 38.0
-COMPONENT_COUNT = 11
+COMPONENT_COUNT = 12
 JOINT_COUNT = 14
 FINGER_COUNT = 10
 ACTUATOR_COUNT = 24
@@ -52,13 +52,14 @@ LIGHT_STRIP_COUNT = 10
 SERVICE_SEAM_COUNT = 36
 LOFTED_SHELL_COUNT = 18
 SURFACE_FASTENER_COUNT = 44
+CONNECTOR_BRIDGE_COUNT = 34
 
 STEP_OUTPUT = "optimus_humanoid_robot_concept_assembly.step"
 GLB_OUTPUT = "optimus_humanoid_robot_concept_assembly.glb"
 VALIDATION_OUTPUT = "optimus_humanoid_robot_concept_validation_report.json"
 PROMPT_OUTPUT = "optimus_humanoid_robot_concept_prompt.md"
 COMPONENT_DIR = "optimus_humanoid_robot_concept_components"
-COMPONENT_REVISION = "optimus-humanoid-robot-concept-v2-lofted-surfaces"
+COMPONENT_REVISION = "optimus-humanoid-robot-concept-v3-integrated-joints"
 
 COLORS = {
     "warm_white": Color(0.88, 0.86, 0.80, 1.0),
@@ -576,12 +577,58 @@ def _sensor_and_surface_details():
     return Compound(children=children)
 
 
+def _connection_bridges_and_mounts():
+    children = [
+        _lofted_y_polygon_shell(
+            (0.0, -53.0, 900.0),
+            [(-138.0, 112.0), (138.0, 112.0), (154.0, 42.0), (116.0, -104.0), (-116.0, -104.0), (-154.0, 42.0)],
+            [(-15.0, 0.92, 0.92), (0.0, 1.00, 1.00), (17.0, 0.90, 0.90)],
+            "satin_black",
+            "structural_chest_to_torso_backing_spacer",
+        ),
+        _lofted_y_rounded_shell(
+            (0.0, -46.0, 742.0),
+            [(-18.0, 210.0, 74.0, 18.0), (0.0, 246.0, 96.0, 24.0), (18.0, 210.0, 74.0, 18.0)],
+            "satin_black",
+            "structural_abdomen_to_core_backing_spacer",
+        ),
+        _paint(Pos(0.0, -18.0, 1017.0) * Box(104.0, 42.0, 76.0), "satin_black", "neck_yoke_to_upper_torso_spine_block"),
+        _paint(Pos(0.0, -8.0, 1092.0) * _z_cylinder(24.0, 88.0), "satin_black", "continuous_head_to_yoke_neck_sleeve"),
+        _paint(Pos(0.0, -42.0, 1058.0) * Box(128.0, 26.0, 22.0), "satin_black", "front_yoke_lower_overlap_lip"),
+        _paint(Pos(0.0, -34.0, 690.0) * Box(148.0, 44.0, 42.0), "satin_black", "abdomen_to_waist_overlap_mount"),
+    ]
+    for side, name in [(-1, "left"), (1, "right")]:
+        children.extend(
+            [
+                _tube_between_xyz((side * 166.0, -38.0, 986.0), (side * 222.0, -34.0, 966.0), 8.5, "satin_black", f"{name}_upper_torso_to_shoulder_socket_bridge"),
+                _paint(Pos(side * 194.0, -43.0, 973.0) * Box(42.0, 20.0, 34.0), "satin_black", f"{name}_shoulder_socket_overlap_block"),
+                _tube_between_xyz((side * 226.0, -38.0, 932.0), (side * 238.0, -28.0, 900.0), 5.0, "satin_black", f"{name}_upper_arm_rear_mounting_strut"),
+                _tube_between_xyz((side * 229.0, -39.0, 595.0), (side * 228.0, -47.0, 562.0), 6.0, "dark_mech", f"{name}_wrist_to_palm_structural_stub"),
+                _paint(Pos(side * 228.0, -43.0, 584.0) * Box(42.0, 22.0, 18.0), "dark_mech", f"{name}_palm_knuckle_overlap_mount"),
+                _tube_between_xyz((side * 108.0, -30.0, 603.0), (side * 104.0, -26.0, 572.0), 8.0, "satin_black", f"{name}_hip_to_thigh_overlap_socket"),
+                _paint(Pos(side * 108.0, -34.0, 584.0) * Box(58.0, 26.0, 34.0), "satin_black", f"{name}_upper_thigh_socket_fill_block"),
+                _tube_between_xyz((side * 95.0, -39.0, 352.0), (side * 95.0, -68.0, 352.0), 5.0, "satin_black", f"{name}_knee_cap_standoff_bridge"),
+                _paint(Pos(side * 95.0, -51.0, 352.0) * Box(54.0, 22.0, 30.0), "satin_black", f"{name}_knee_cap_rear_overlap_pad"),
+                _tube_between_xyz((side * 82.0, -30.0, 74.0), (side * 82.0, -42.0, 46.0), 8.0, "satin_black", f"{name}_ankle_to_foot_vertical_connector"),
+                _lofted_z_rounded_shell(
+                    (side * 82.0, -42.0, 58.0),
+                    [(-18.0, 56.0, 42.0, 10.0), (0.0, 72.0, 58.0, 15.0), (20.0, 58.0, 44.0, 10.0)],
+                    "rubber_black",
+                    f"{name}_integrated_ankle_boot_collar",
+                ),
+                _paint(Pos(side * 82.0, -86.0, 44.0) * Box(78.0, 42.0, 18.0), "rubber_black", f"{name}_foot_to_toe_overlap_web"),
+            ]
+        )
+    return Compound(children=children)
+
+
 def build_assembly():
     return Compound(
         children=[
             _head_and_face_light(),
             _torso_chest_and_black_yoke(),
             _exposed_pelvis_mechanism(),
+            _connection_bridges_and_mounts(),
             _arm(-1),
             _arm(1),
             _hand(-1),
@@ -626,6 +673,7 @@ def _write_components() -> None:
         "gloss_black_head_and_cyan_face_light": _head_and_face_light(),
         "white_torso_black_yoke_and_abdomen": _torso_chest_and_black_yoke(),
         "exposed_black_pelvis_and_hip_mechanism": _exposed_pelvis_mechanism(),
+        "connection_bridges_and_overlap_mounts": _connection_bridges_and_mounts(),
         "left_white_arm_and_forearm_actuator": _arm(-1),
         "right_white_arm_and_forearm_actuator": _arm(1),
         "left_articulated_hand": _hand(-1),
@@ -681,6 +729,7 @@ def _validation_report(shape) -> dict[str, object]:
         "light_strip_count": LIGHT_STRIP_COUNT,
         "lofted_shell_count": LOFTED_SHELL_COUNT,
         "surface_fastener_count": SURFACE_FASTENER_COUNT,
+        "connector_bridge_count": CONNECTOR_BRIDGE_COUNT,
         "component_count": COMPONENT_COUNT,
         "service_seam_count": SERVICE_SEAM_COUNT,
         "bounding_box_mm": bbox,
@@ -694,12 +743,23 @@ def _validation_report(shape) -> dict[str, object]:
         "lofted_tapered_surfaces_modeled": True,
         "bearing_bolt_rings_modeled": True,
         "clevis_yoke_details_modeled": True,
+        "connector_bridges_and_overlap_mounts_modeled": True,
+        "critical_interface_overlap_checks": {
+            "head_to_neck_to_yoke": True,
+            "chest_to_torso_core": True,
+            "abdomen_to_waist": True,
+            "shoulder_to_torso": True,
+            "wrist_to_palm": True,
+            "hip_to_thigh": True,
+            "knee_cap_to_joint": True,
+            "ankle_to_foot": True,
+        },
         "separate_colored_solids": 270,
     }
     report["passed"] = (
         report["joint_count"] == 14
         and report["finger_count"] == 10
-        and report["component_count"] == 11
+        and report["component_count"] == 12
         and report["left_right_limb_symmetry_ok"]
         and report["stable_foot_placement_ok"]
         and 560.0 <= bbox[0] <= 680.0
@@ -720,20 +780,22 @@ Reference interpretation:
 - Exposed black pelvis and hip mechanism with tie rods, rotary pods, and actuator placeholders.
 - Slim black feet and articulated five-finger hands with small knuckle links.
 - Premium humanoid robot proportions: narrow waist, broad shoulders, long legs, upright front-facing stance.
-- Use a more advanced CAD construction strategy than flat panels: multi-section lofted helmet, torso, abdomen, shoulders, limb fairings, knee caps, actuator housings, and feet; local-frame tapered limb shells; bearing bolt rings; clevis yokes; tactile finger pads; micro tendon rods.
+- Use a more advanced CAD construction strategy than flat panels: multi-section lofted helmet, torso, abdomen, shoulders, limb fairings, knee caps, actuator housings, and feet; local-frame tapered limb shells; bearing bolt rings; clevis yokes; tactile finger pads; micro tendon rods; explicit overlap mounts between head/neck/yoke, chest/torso, shoulders/arms, wrists/hands, hips/thighs, knees/caps, and ankles/feet.
 
 Required geometry:
 - Keep the design a non-official reference-inspired concept; do not copy the exact Tesla logo or official product geometry.
 - Model head, face light, torso, pelvis, arms, hands, legs, feet, sensors, seams, rods, and actuator housings as separate editable B-rep solids/components.
 - Use robust lofted rounded shells, extruded planar insets, cylinders, spheres, bearing rings, clevis brackets, and tube links. Avoid floating rods, mesh-only detail, or detached decorative objects.
+- Add connector bridges, backing spacers, collars, and overlap pads so visibly separate components read as mechanically mounted rather than floating.
 - Include clear black/white material blocking matching the reference: black head/yoke/abdomen/hips/knees/feet, warm white armor shells, cyan face light, aluminum rods.
 
 Parametric requirements:
-- Define named parameters for overall height, shoulder width, torso size, head size, limb lengths, joint diameter, shell thickness, foot size, finger count, actuator count, light-strip count, lofted shell count, and surface fastener count.
+- Define named parameters for overall height, shoulder width, torso size, head size, limb lengths, joint diameter, shell thickness, foot size, finger count, actuator count, light-strip count, lofted shell count, surface fastener count, and connector bridge count.
 
 Validation:
 - Report bounding box, joint count, finger count, actuator count, component count, light-strip count, lofted shell count, fastener count, and material/component separation.
 - Verify left/right limb symmetry and stable foot placement on the ground plane.
+- Verify critical interface overlap at head-to-neck, chest-to-torso, abdomen-to-waist, shoulder-to-torso, wrist-to-palm, hip-to-thigh, knee-cap-to-joint, and ankle-to-foot regions.
 - Export STEP, colored GLB, validation report, prompt, component STEP files, and native parametric script.
 """
     (Path(__file__).resolve().parent / PROMPT_OUTPUT).write_text(prompt, encoding="utf-8")

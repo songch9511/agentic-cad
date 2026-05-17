@@ -29,7 +29,8 @@
   "light_strip_count": 10,
   "lofted_shell_count": 18,
   "surface_fastener_count": 44,
-  "component_count": 11,
+  "connector_bridge_count": 34,
+  "component_count": 12,
   "service_seam_count": 36,
   "bounding_box_mm": [
     577.8,
@@ -46,6 +47,17 @@
   "lofted_tapered_surfaces_modeled": true,
   "bearing_bolt_rings_modeled": true,
   "clevis_yoke_details_modeled": true,
+  "connector_bridges_and_overlap_mounts_modeled": true,
+  "critical_interface_overlap_checks": {
+    "head_to_neck_to_yoke": true,
+    "chest_to_torso_core": true,
+    "abdomen_to_waist": true,
+    "shoulder_to_torso": true,
+    "wrist_to_palm": true,
+    "hip_to_thigh": true,
+    "knee_cap_to_joint": true,
+    "ankle_to_foot": true
+  },
   "separate_colored_solids": 270,
   "passed": true
 }

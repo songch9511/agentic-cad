@@ -1,1 +1,1 @@
-optimus-humanoid-robot-concept-v2-lofted-surfaces
+optimus-humanoid-robot-concept-v3-integrated-joints
