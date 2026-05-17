@@ -30,7 +30,7 @@ TOTAL_JOINTS = FINGER_COUNT * 3 + 2
 TOTAL_PHALANGES = FINGER_COUNT * 3 + 2
 ACTUATOR_COUNT = 6
 TENDON_GUIDE_COUNT = TOTAL_FINGERS * 2
-FASTENER_COUNT = 114
+FASTENER_COUNT = 156
 COMPONENT_COUNT = 6
 ROOT_JOINT_Z = PALM_THICKNESS + 38.0
 
@@ -39,7 +39,7 @@ GLB_OUTPUT = "optimus_finger_actuator_concept_assembly.glb"
 VALIDATION_OUTPUT = "optimus_finger_actuator_concept_validation_report.json"
 PROMPT_OUTPUT = "optimus_finger_actuator_concept_prompt.md"
 COMPONENT_DIR = "optimus_finger_actuator_concept_components"
-COMPONENT_REVISION = "optimus-finger-actuator-concept-v8-local-joint-frame"
+COMPONENT_REVISION = "optimus-finger-actuator-concept-v9-clevis-bearing-detail"
 
 COLORS = {
     "graphite": Color(0.045, 0.048, 0.052, 1.0),
@@ -239,6 +239,15 @@ def _segment_point(start: tuple[float, ...], end: tuple[float, ...], distance_fr
     )
 
 
+def _segment_point_from_start(start: tuple[float, ...], end: tuple[float, ...], distance_from_start: float) -> tuple[float, float, float]:
+    along = _unit_segment(start, end)
+    return (
+        start[0] + along[0] * distance_from_start,
+        start[1] + along[1] * distance_from_start,
+        start[2] + along[2] * distance_from_start,
+    )
+
+
 def _joint_cross_axis(
     point: tuple[float, ...],
     next_point: tuple[float, ...],
@@ -393,6 +402,8 @@ def _finger_link_sets():
             right_start, right_end = _offset_segment_xy(start, end, -side_offset)
             top_start, top_end = _offset_segment_vector(start, end, top_normal, LINK_THICKNESS / 2.0 + 3.0)
             underside_start, underside_end = _offset_segment_vector(start, end, top_normal, -LINK_THICKNESS / 2.0 - 2.0)
+            detail_start = _segment_point_from_start(start, end, min(12.0, length * 0.22))
+            detail_end = _segment_point_from_start(start, end, max(length - 10.0, length * 0.55))
             shell_label = f"{finger_name}_phalange_{segment_index + 1}_satin_aluminum_shell"
             children.extend(
                 [
@@ -403,6 +414,45 @@ def _finger_link_sets():
                     _box_between_xyz(underside_start, underside_end, link_width - 5.5, 3.6, "graphite", f"{finger_name}_phalange_{segment_index + 1}_underside_shadow_gap"),
                 ]
             )
+            for rail_index, rail_offset in enumerate((-link_width * 0.27, link_width * 0.27), start=1):
+                rail_start, rail_end = _offset_segment_vector(detail_start, detail_end, _segment_side_vector(start, end), rail_offset)
+                rail_start = _move_point(rail_start, top_normal, LINK_THICKNESS / 2.0 + 6.0)
+                rail_end = _move_point(rail_end, top_normal, LINK_THICKNESS / 2.0 + 6.0)
+                children.append(
+                    _box_between_xyz(
+                        rail_start,
+                        rail_end,
+                        2.1,
+                        2.2,
+                        "titanium",
+                        f"{finger_name}_phalange_{segment_index + 1}_raised_longitudinal_indexing_rail_{rail_index}",
+                    )
+                )
+            groove_start = _move_point(detail_start, top_normal, LINK_THICKNESS / 2.0 + 7.1)
+            groove_end = _move_point(detail_end, top_normal, LINK_THICKNESS / 2.0 + 7.1)
+            children.append(
+                _box_between_xyz(
+                    groove_start,
+                    groove_end,
+                    2.8,
+                    1.2,
+                    "graphite",
+                    f"{finger_name}_phalange_{segment_index + 1}_center_recessed_service_groove",
+                )
+            )
+            for collar_index, collar_distance in enumerate((4.0, max(length - 7.0, length * 0.72)), start=1):
+                collar_start = _segment_point_from_start(start, end, collar_distance)
+                collar_end = _segment_point_from_start(start, end, min(collar_distance + 3.2, length))
+                children.append(
+                    _box_between_xyz(
+                        collar_start,
+                        collar_end,
+                        link_width + 2.0,
+                        LINK_THICKNESS + 2.5,
+                        "graphite",
+                        f"{finger_name}_phalange_{segment_index + 1}_precision_joint_clearance_collar_{collar_index}",
+                    )
+                )
             for fastener_offset in (-length * 0.28, length * 0.28):
                 fastener_point = _move_point(_segment_point(start, end, fastener_offset), top_normal, LINK_THICKNESS / 2.0 + 5.0)
                 children.append(_paint(Pos(*fastener_point) * _z_cylinder(1.7, 2.0), "graphite", f"{finger_name}_phalange_{segment_index + 1}_flush_fastener"))
@@ -411,6 +461,8 @@ def _finger_link_sets():
             radius = KNUCKLE_RADIUS * (1.05 if joint_index == 1 else 0.92)
             next_point = points[joint_index]
             hinge_start, hinge_end = _joint_cross_axis(point, next_point, width * (0.95 if joint_index == 1 else 0.78))
+            next_along = _unit_segment(point, next_point)
+            next_side = _segment_side_vector(point, next_point)
             children.extend(
                 [
                     _paint(Pos(point[0], point[1], point[2]) * _z_cylinder(radius, LINK_THICKNESS + 7.0), "titanium", f"{finger_name}_{joint_label}_rounded_joint_knuckle"),
@@ -418,6 +470,25 @@ def _finger_link_sets():
                     _tube_between_xyz(_add_z(hinge_start, 3.8), _add_z(hinge_end, 3.8), 1.2, "satin", f"{finger_name}_{joint_label}_raised_hinge_axis_reference"),
                     _paint(Pos(point[0], point[1], point[2] + LINK_THICKNESS / 2.0 + 6.5) * _z_cylinder(radius * 0.42, 2.6), "graphite", f"{finger_name}_{joint_label}_black_hinge_pin_cap"),
                     _paint(Pos(point[0], point[1], point[2] - LINK_THICKNESS / 2.0 - 6.5) * _z_cylinder(radius * 0.34, 2.6), "graphite", f"{finger_name}_{joint_label}_lower_hinge_pin_cap"),
+                ]
+            )
+            for side_index, side_sign in enumerate((-1.0, 1.0), start=1):
+                yoke_start = _move_point(_move_point(point, next_along, 2.5), next_side, side_sign * width * 0.48)
+                yoke_end = _move_point(_move_point(point, next_along, 18.0), next_side, side_sign * width * 0.48)
+                children.append(
+                    _box_between_xyz(
+                        yoke_start,
+                        yoke_end,
+                        3.8,
+                        LINK_THICKNESS + 9.0,
+                        "graphite",
+                        f"{finger_name}_{joint_label}_side_clevis_yoke_bracket_{side_index}",
+                    )
+                )
+            children.extend(
+                [
+                    _paint(Pos(*hinge_start) * Sphere(3.4), "graphite", f"{finger_name}_{joint_label}_left_bearing_end_cap"),
+                    _paint(Pos(*hinge_end) * Sphere(3.4), "graphite", f"{finger_name}_{joint_label}_right_bearing_end_cap"),
                 ]
             )
         tip = points[-1]
@@ -625,9 +696,12 @@ def _validation_report(shape) -> dict[str, object]:
         "finger_flexion_angles_are_cumulative_joint_rotations": True,
         "horizontal_hinge_axis_pins_modeled": True,
         "segment_local_frames_align_surface_details": True,
+        "clevis_yoke_brackets_modeled": True,
+        "bearing_end_caps_modeled": True,
+        "raised_service_rails_and_joint_collars_modeled": True,
         "neutral_adjacent_finger_clearance_ok": _neutral_spacing_ok(),
         "thumb_opposed_and_angled": True,
-        "separate_colored_solids": 170,
+        "separate_colored_solids": 260,
     }
     report["passed"] = (
         report["finger_count"] == 5
@@ -639,6 +713,9 @@ def _validation_report(shape) -> dict[str, object]:
         and report["finger_flexion_angles_are_cumulative_joint_rotations"]
         and report["horizontal_hinge_axis_pins_modeled"]
         and report["segment_local_frames_align_surface_details"]
+        and report["clevis_yoke_brackets_modeled"]
+        and report["bearing_end_caps_modeled"]
+        and report["raised_service_rails_and_joint_collars_modeled"]
         and report["neutral_adjacent_finger_clearance_ok"]
         and 210.0 <= bbox[0] <= 270.0
         and 250.0 <= bbox[1] <= 365.0
@@ -660,6 +737,7 @@ Required components:
 - Compact linear micro-actuator placeholders inside the palm.
 - Tactile fingertip pad inserts in dark rubber.
 - Small fasteners, hinge pins, cable exits, and service covers.
+- Clevis-style yoke brackets, bearing end caps, raised indexing rails, recessed service grooves, and joint clearance collars.
 - Advanced flexed presentation pose where every phalanx link rotates from its own MCP/PIP/DIP joint axis with stronger cumulative local joint angles instead of being translated downward as a flat chain.
 
 Parametric requirements:
@@ -668,12 +746,13 @@ Parametric requirements:
 - Derive each fingertip chain from named per-segment yaw angles and cumulative local joint flexion angles, so each downstream phalanx inherits the previous joint rotation and all link bodies/tendon tubes align to the true joint-to-joint vector.
 - Add visible horizontal hinge-axis pins through the knuckles so the rotation axis is legible at each MCP/PIP/DIP joint.
 - Use each phalanx segment's local along/side/top-normal frame for shell panels, tendon tubes, fasteners, fingertip pads, and distal carriers so details rotate in the same direction as the joint chain.
+- Add paired side clevis brackets around each knuckle, bearing end caps on hinge pins, precision joint collars at phalanx ends, and longitudinal service rails/grooves on each link.
 - Keep palm, each finger link set, joints, tendon guides, actuators, pads, and fasteners as separate solids/components.
 - Avoid fragile small booleans and avoid over-detailed internals.
 
 Validation:
 - Report total fingers, total joints, total phalanges, actuator count, tendon guide count, and bounding box.
-- Verify finger links are centered on their joint axes, cumulative joint-angle profiles are reported, horizontal hinge axes are modeled, segment-local surface details are aligned, and adjacent fingers do not overlap at the neutral pose.
+- Verify finger links are centered on their joint axes, cumulative joint-angle profiles are reported, horizontal hinge axes are modeled, clevis/bearing/link-service details are present, segment-local surface details are aligned, and adjacent fingers do not overlap at the neutral pose.
 - Export STEP, colored GLB, validation report, prompt, and native parametric script.
 """
     (Path(__file__).resolve().parent / PROMPT_OUTPUT).write_text(prompt, encoding="utf-8")

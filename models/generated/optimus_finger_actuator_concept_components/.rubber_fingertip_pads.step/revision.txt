@@ -1,1 +1,1 @@
-optimus-finger-actuator-concept-v8-local-joint-frame
+optimus-finger-actuator-concept-v9-clevis-bearing-detail

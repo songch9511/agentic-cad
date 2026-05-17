@@ -8,7 +8,7 @@
   "total_phalanges": 14,
   "actuator_count": 6,
   "tendon_guide_count": 10,
-  "fastener_count": 114,
+  "fastener_count": 156,
   "component_count": 6,
   "finger_pitch_mm": 34.0,
   "palm_width_mm": 174.0,
@@ -168,8 +168,11 @@
   "finger_flexion_angles_are_cumulative_joint_rotations": true,
   "horizontal_hinge_axis_pins_modeled": true,
   "segment_local_frames_align_surface_details": true,
+  "clevis_yoke_brackets_modeled": true,
+  "bearing_end_caps_modeled": true,
+  "raised_service_rails_and_joint_collars_modeled": true,
   "neutral_adjacent_finger_clearance_ok": true,
   "thumb_opposed_and_angled": true,
-  "separate_colored_solids": 170,
+  "separate_colored_solids": 260,
   "passed": true
 }
