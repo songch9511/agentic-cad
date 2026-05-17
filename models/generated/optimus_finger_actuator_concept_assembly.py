@@ -12,19 +12,19 @@ DISPLAY_NAME = "Tesla Optimus-inspired robotic finger actuator concept"
 # Units: millimeters. X is finger spread, Y is finger extension, Z is vertical.
 FINGER_COUNT = 4
 TOTAL_FINGERS = 5
-PHALANX_LENGTHS = (66.0, 48.0, 34.0)
-THUMB_PHALANX_LENGTHS = (50.0, 36.0)
-JOINT_SPACING = 5.0
-FINGER_PITCH = 32.0
+PHALANX_LENGTHS = (58.0, 42.0, 30.0)
+THUMB_PHALANX_LENGTHS = (42.0, 28.0)
+JOINT_SPACING = 4.0
+FINGER_PITCH = 34.0
 PALM_WIDTH = 174.0
 PALM_DEPTH = 92.0
 PALM_THICKNESS = 28.0
 ACTUATOR_DIAMETER = 12.0
-TENDON_TUBE_RADIUS = 2.8
+TENDON_TUBE_RADIUS = 1.25
 PAD_THICKNESS = 7.0
-LINK_WIDTH = 22.0
-LINK_THICKNESS = 17.0
-KNUCKLE_RADIUS = 10.5
+LINK_WIDTH = 26.0
+LINK_THICKNESS = 15.0
+KNUCKLE_RADIUS = 9.5
 
 TOTAL_JOINTS = FINGER_COUNT * 3 + 2
 TOTAL_PHALANGES = FINGER_COUNT * 3 + 2
@@ -38,7 +38,7 @@ GLB_OUTPUT = "optimus_finger_actuator_concept_assembly.glb"
 VALIDATION_OUTPUT = "optimus_finger_actuator_concept_validation_report.json"
 PROMPT_OUTPUT = "optimus_finger_actuator_concept_prompt.md"
 COMPONENT_DIR = "optimus_finger_actuator_concept_components"
-COMPONENT_REVISION = "optimus-finger-actuator-concept-v1"
+COMPONENT_REVISION = "optimus-finger-actuator-concept-v3-low-profile-fingertips"
 
 COLORS = {
     "graphite": Color(0.045, 0.048, 0.052, 1.0),
@@ -115,6 +115,17 @@ def _tube_between_xy(
     return _paint(Pos(center[0], center[1], z) * Rot(0.0, 0.0, angle) * _x_cylinder(radius, length), color, label)
 
 
+def _offset_segment_xy(
+    start: tuple[float, float],
+    end: tuple[float, float],
+    offset: float,
+) -> tuple[tuple[float, float], tuple[float, float]]:
+    angle = math.radians(_angle_xy(start, end) + 90.0)
+    dx = math.cos(angle) * offset
+    dy = math.sin(angle) * offset
+    return (start[0] + dx, start[1] + dy), (end[0] + dx, end[1] + dy)
+
+
 def _finger_chain(
     root: tuple[float, float],
     lengths: tuple[float, ...],
@@ -134,27 +145,27 @@ def _finger_specs() -> list[dict[str, object]]:
     return [
         {
             "name": "index",
-            "root": (start_x, PALM_DEPTH / 2.0 - 6.0),
+            "root": (start_x, PALM_DEPTH / 2.0 - 5.0),
             "scale": 0.96,
-            "angles": (94.0, 90.0, 84.0),
+            "angles": (92.0, 94.0, 98.0),
         },
         {
             "name": "middle",
-            "root": (start_x + FINGER_PITCH, PALM_DEPTH / 2.0 - 2.0),
+            "root": (start_x + FINGER_PITCH, PALM_DEPTH / 2.0 - 1.0),
             "scale": 1.05,
-            "angles": (91.0, 87.0, 80.0),
+            "angles": (90.0, 91.0, 93.0),
         },
         {
             "name": "ring",
-            "root": (start_x + FINGER_PITCH * 2.0, PALM_DEPTH / 2.0 - 4.0),
+            "root": (start_x + FINGER_PITCH * 2.0, PALM_DEPTH / 2.0 - 3.0),
             "scale": 1.00,
-            "angles": (88.0, 83.0, 76.0),
+            "angles": (88.0, 86.0, 83.0),
         },
         {
             "name": "pinky",
-            "root": (start_x + FINGER_PITCH * 3.0, PALM_DEPTH / 2.0 - 9.0),
+            "root": (start_x + FINGER_PITCH * 3.0, PALM_DEPTH / 2.0 - 8.0),
             "scale": 0.86,
-            "angles": (85.0, 79.0, 70.0),
+            "angles": (86.0, 82.0, 78.0),
         },
     ]
 
@@ -172,9 +183,9 @@ def _all_finger_chains() -> dict[str, list[tuple[float, float]]]:
             spec["angles"],  # type: ignore[arg-type]
         )
     chains["thumb"] = _finger_chain(
-        (-PALM_WIDTH / 2.0 + 8.0, -8.0),
+        (-PALM_WIDTH / 2.0 + 9.0, -9.0),
         THUMB_PHALANX_LENGTHS,
-        (34.0, 52.0),
+        (30.0, 48.0),
     )
     return chains
 
@@ -214,34 +225,41 @@ def _finger_link_sets():
             start = points[segment_index]
             end = points[segment_index + 1]
             length = _distance_xy(start, end)
+            taper = 1.0 - segment_index * 0.14
+            link_width = width * taper
+            side_offset = link_width / 2.0 - 2.8
+            left_start, left_end = _offset_segment_xy(start, end, side_offset)
+            right_start, right_end = _offset_segment_xy(start, end, -side_offset)
             shell_label = f"{finger_name}_phalange_{segment_index + 1}_satin_aluminum_shell"
             children.extend(
                 [
-                    _box_between_xy(start, end, width, LINK_THICKNESS, z, "aluminum", shell_label),
-                    _box_between_xy(start, end, width - 7.0, 5.0, z + LINK_THICKNESS / 2.0 + 3.0, "satin", f"{finger_name}_phalange_{segment_index + 1}_raised_center_rib"),
-                    _box_between_xy(start, end, 4.0, 5.0, z - LINK_THICKNESS / 2.0 - 2.0, "graphite", f"{finger_name}_phalange_{segment_index + 1}_underside_shadow_gap"),
+                    _box_between_xy(start, end, link_width, LINK_THICKNESS, z, "aluminum", shell_label),
+                    _box_between_xy(start, end, link_width - 7.0, 4.0, z + LINK_THICKNESS / 2.0 + 3.0, "satin", f"{finger_name}_phalange_{segment_index + 1}_broad_top_highlight_panel"),
+                    _box_between_xy(left_start, left_end, 2.8, LINK_THICKNESS + 4.0, z, "titanium", f"{finger_name}_phalange_{segment_index + 1}_left_side_cheek"),
+                    _box_between_xy(right_start, right_end, 2.8, LINK_THICKNESS + 4.0, z, "titanium", f"{finger_name}_phalange_{segment_index + 1}_right_side_cheek"),
+                    _box_between_xy(start, end, link_width - 5.5, 3.6, z - LINK_THICKNESS / 2.0 - 2.0, "graphite", f"{finger_name}_phalange_{segment_index + 1}_underside_shadow_gap"),
                 ]
             )
             for fastener_offset in (-length * 0.28, length * 0.28):
                 angle = math.radians(_angle_xy(start, end))
                 cx = (start[0] + end[0]) / 2.0 + math.cos(angle) * fastener_offset
                 cy = (start[1] + end[1]) / 2.0 + math.sin(angle) * fastener_offset
-                children.append(_paint(Pos(cx, cy, z + LINK_THICKNESS / 2.0 + 6.0) * _z_cylinder(2.2, 2.2), "titanium", f"{finger_name}_phalange_{segment_index + 1}_flush_fastener"))
+                children.append(_paint(Pos(cx, cy, z + LINK_THICKNESS / 2.0 + 5.0) * _z_cylinder(1.7, 2.0), "graphite", f"{finger_name}_phalange_{segment_index + 1}_flush_fastener"))
         for joint_index, point in enumerate(points[:-1], start=1):
             joint_label = "mcp" if joint_index == 1 else "pip" if joint_index == 2 else "dip"
             radius = KNUCKLE_RADIUS * (1.05 if joint_index == 1 else 0.92)
             children.extend(
                 [
-                    _paint(Pos(point[0], point[1], z) * _z_cylinder(radius, LINK_THICKNESS + 8.0), "titanium", f"{finger_name}_{joint_label}_rounded_joint_knuckle"),
-                    _paint(Pos(point[0], point[1], z + LINK_THICKNESS / 2.0 + 7.0) * _z_cylinder(radius * 0.45, 3.0), "graphite", f"{finger_name}_{joint_label}_black_hinge_pin_cap"),
-                    _paint(Pos(point[0], point[1], z - LINK_THICKNESS / 2.0 - 7.0) * _z_cylinder(radius * 0.36, 3.0), "graphite", f"{finger_name}_{joint_label}_lower_hinge_pin_cap"),
+                    _paint(Pos(point[0], point[1], z) * _z_cylinder(radius, LINK_THICKNESS + 7.0), "titanium", f"{finger_name}_{joint_label}_rounded_joint_knuckle"),
+                    _paint(Pos(point[0], point[1], z + LINK_THICKNESS / 2.0 + 6.5) * _z_cylinder(radius * 0.42, 2.6), "graphite", f"{finger_name}_{joint_label}_black_hinge_pin_cap"),
+                    _paint(Pos(point[0], point[1], z - LINK_THICKNESS / 2.0 - 6.5) * _z_cylinder(radius * 0.34, 2.6), "graphite", f"{finger_name}_{joint_label}_lower_hinge_pin_cap"),
                 ]
             )
         tip = points[-1]
         prev = points[-2]
         angle = _angle_xy(prev, tip)
         dx, dy = _vec(angle, 10.0)
-        children.append(_paint(Pos(tip[0] + dx, tip[1] + dy, z) * Rot(0.0, 0.0, angle) * Box(13.0, width * 0.82, LINK_THICKNESS * 0.72), "aluminum", f"{finger_name}_rounded_distal_tip_carrier"))
+        children.append(_paint(Pos(tip[0] + dx, tip[1] + dy, z) * Rot(0.0, 0.0, angle) * Box(12.0, width * 0.74, LINK_THICKNESS * 0.68), "aluminum", f"{finger_name}_rounded_distal_tip_carrier"))
     return Compound(children=children)
 
 
@@ -249,23 +267,24 @@ def _tendon_guide_tubes():
     children = []
     chains = _all_finger_chains()
     for finger_index, (finger_name, points) in enumerate(chains.items(), start=1):
-        z_top = PALM_THICKNESS + 32.0
-        z_side = PALM_THICKNESS + 23.0
+        z_top = PALM_THICKNESS + 29.0
+        z_side = PALM_THICKNESS + 22.0
         color_top = "blue" if finger_index % 2 else "copper"
         color_side = "copper" if finger_index % 2 else "blue"
         for segment_index in range(len(points) - 1):
             start = points[segment_index]
             end = points[segment_index + 1]
-            angle = math.radians(_angle_xy(start, end) + 90.0)
-            lateral = (math.cos(angle) * 6.5, math.sin(angle) * 6.5)
+            tube_start, tube_end = _offset_segment_xy(start, end, 7.6)
+            return_start, return_end = _offset_segment_xy(start, end, -7.6)
             children.extend(
                 [
-                    _tube_between_xy(start, end, TENDON_TUBE_RADIUS, z_top, color_top, f"{finger_name}_top_tendon_guide_segment_{segment_index + 1}"),
-                    _tube_between_xy((start[0] + lateral[0], start[1] + lateral[1]), (end[0] + lateral[0], end[1] + lateral[1]), TENDON_TUBE_RADIUS * 0.72, z_side, color_side, f"{finger_name}_side_tendon_return_segment_{segment_index + 1}"),
+                    _tube_between_xy(tube_start, tube_end, TENDON_TUBE_RADIUS, z_top, color_top, f"{finger_name}_low_profile_tendon_guide_segment_{segment_index + 1}"),
+                    _tube_between_xy(return_start, return_end, TENDON_TUBE_RADIUS * 0.72, z_side, color_side, f"{finger_name}_side_tendon_return_segment_{segment_index + 1}"),
                 ]
             )
         root = points[0]
-        children.append(_tube_between_xy((root[0], -PALM_DEPTH / 2.0 + 8.0), root, TENDON_TUBE_RADIUS, z_top, color_top, f"{finger_name}_palm_tendon_entry_guide"))
+        entry_end, _ = _offset_segment_xy(root, points[1], 7.6)
+        children.append(_tube_between_xy((entry_end[0], -PALM_DEPTH / 2.0 + 8.0), entry_end, TENDON_TUBE_RADIUS, z_top, color_top, f"{finger_name}_palm_tendon_entry_guide"))
     return Compound(children=children)
 
 
@@ -276,12 +295,15 @@ def _rubber_fingertip_pads():
         tip = points[-1]
         prev = points[-2]
         angle = _angle_xy(prev, tip)
-        dx, dy = _vec(angle, 13.0)
+        inset_far = _vec(angle, -6.0)
+        inset_near = _vec(angle, -22.0)
         pad_width = LINK_WIDTH * (0.68 if finger_name == "thumb" else 0.78)
+        pad_start = (tip[0] + inset_near[0], tip[1] + inset_near[1])
+        pad_end = (tip[0] + inset_far[0], tip[1] + inset_far[1])
         children.extend(
             [
-                _paint(Pos(tip[0] + dx, tip[1] + dy, PALM_THICKNESS + 30.0) * Rot(0.0, 0.0, angle) * Box(PAD_THICKNESS, pad_width, 10.0), "dark_rubber", f"{finger_name}_dark_rubber_tactile_fingertip_pad"),
-                _paint(Pos(tip[0] + dx * 0.8, tip[1] + dy * 0.8, PALM_THICKNESS + 36.0) * Rot(0.0, 0.0, angle) * Box(2.0, pad_width * 0.62, 2.0), "cyan", f"{finger_name}_thin_tactile_sensor_highlight"),
+                _box_between_xy(pad_start, pad_end, pad_width, 3.6, PALM_THICKNESS + 31.0, "dark_rubber", f"{finger_name}_low_profile_dark_rubber_tactile_fingertip_pad"),
+                _box_between_xy(pad_start, pad_end, pad_width * 0.52, 1.6, PALM_THICKNESS + 33.8, "graphite", f"{finger_name}_subtle_tactile_pad_groove"),
             ]
         )
     return Compound(children=children)
@@ -313,7 +335,7 @@ def _fasteners_hinge_pins_and_cable_exits():
 def _presentation_base():
     return Compound(
         children=[
-            _paint(Pos(0.0, 72.0, 3.0) * Box(230.0, 280.0, 6.0), "black", "thin_black_demo_shadow_base"),
+            _paint(Pos(0.0, 70.0, 3.0) * Box(216.0, 252.0, 6.0), "black", "thin_black_demo_shadow_base"),
             _paint(Pos(0.0, -54.0, 8.0) * Box(PALM_WIDTH + 18.0, PALM_DEPTH + 18.0, 4.0), "service", "subtle_palm_mounting_shadow_plate"),
         ]
     )
