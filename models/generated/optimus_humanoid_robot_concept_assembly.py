@@ -52,14 +52,14 @@ LIGHT_STRIP_COUNT = 10
 SERVICE_SEAM_COUNT = 36
 LOFTED_SHELL_COUNT = 18
 SURFACE_FASTENER_COUNT = 44
-CONNECTOR_BRIDGE_COUNT = 34
+CONNECTOR_BRIDGE_COUNT = 38
 
 STEP_OUTPUT = "optimus_humanoid_robot_concept_assembly.step"
 GLB_OUTPUT = "optimus_humanoid_robot_concept_assembly.glb"
 VALIDATION_OUTPUT = "optimus_humanoid_robot_concept_validation_report.json"
 PROMPT_OUTPUT = "optimus_humanoid_robot_concept_prompt.md"
 COMPONENT_DIR = "optimus_humanoid_robot_concept_components"
-COMPONENT_REVISION = "optimus-humanoid-robot-concept-v3-integrated-joints"
+COMPONENT_REVISION = "optimus-humanoid-robot-concept-v4-refined-neck-cowl"
 
 COLORS = {
     "warm_white": Color(0.88, 0.86, 0.80, 1.0),
@@ -341,15 +341,29 @@ def _head_and_face_light():
             "black_glass",
             "flush_contoured_black_faceplate_insert",
         ),
-        _paint(Pos(0.0, 6.0, 1078.0) * _z_cylinder(29.0, 52.0), "satin_black", "matte_black_tapered_neck_column"),
-        _lofted_y_polygon_shell(
-            (0.0, -7.0, 1055.0),
-            [(-102.0, 24.0), (102.0, 24.0), (150.0, -22.0), (-150.0, -22.0)],
-            [(-48.0, 0.82, 0.82), (-4.0, 1.04, 1.00), (48.0, 0.88, 0.78)],
+        _lofted_z_rounded_shell(
+            (0.0, 5.0, 1089.0),
+            [
+                (-44.0, 76.0, 58.0, 22.0),
+                (-10.0, 62.0, 50.0, 18.0),
+                (42.0, 44.0, 38.0, 14.0),
+            ],
             "satin_black",
-            "lofted_black_trapezoid_shoulder_neck_yoke",
+            "anatomical_tapered_black_cervical_neck_fairing",
+        ),
+        _lofted_z_rounded_shell(
+            (0.0, -4.0, 1039.0),
+            [
+                (-18.0, 172.0, 66.0, 18.0),
+                (0.0, 238.0, 92.0, 24.0),
+                (18.0, 190.0, 72.0, 20.0),
+            ],
+            "satin_black",
+            "integrated_rounded_black_neck_saddle_cowl",
         ),
         _paint(Pos(0.0, -70.5, 1096.0) * Box(66.0, 4.0, 10.0), "satin_black", "thin_black_chin_bezel"),
+        _tube_between_xyz((-24.0, 42.0, 1100.0), (-70.0, 58.0, 1026.0), 4.8, "graphite", "left_rear_cervical_tendon_to_upper_back"),
+        _tube_between_xyz((24.0, 42.0, 1100.0), (70.0, 58.0, 1026.0), 4.8, "graphite", "right_rear_cervical_tendon_to_upper_back"),
     ]
     outline_points = [
         ((-38.0, face_y - 5.0, 1266.0), (38.0, face_y - 5.0, 1266.0)),
@@ -592,9 +606,24 @@ def _connection_bridges_and_mounts():
             "satin_black",
             "structural_abdomen_to_core_backing_spacer",
         ),
-        _paint(Pos(0.0, -18.0, 1017.0) * Box(104.0, 42.0, 76.0), "satin_black", "neck_yoke_to_upper_torso_spine_block"),
-        _paint(Pos(0.0, -8.0, 1092.0) * _z_cylinder(24.0, 88.0), "satin_black", "continuous_head_to_yoke_neck_sleeve"),
-        _paint(Pos(0.0, -42.0, 1058.0) * Box(128.0, 26.0, 22.0), "satin_black", "front_yoke_lower_overlap_lip"),
+        _lofted_z_rounded_shell(
+            (0.0, 20.0, 1018.0),
+            [(-34.0, 68.0, 36.0, 10.0), (0.0, 94.0, 50.0, 15.0), (38.0, 72.0, 40.0, 12.0)],
+            "satin_black",
+            "tapered_upper_spine_to_neck_mount",
+        ),
+        _lofted_z_rounded_shell(
+            (0.0, -2.0, 1096.0),
+            [(-42.0, 58.0, 48.0, 15.0), (0.0, 48.0, 42.0, 14.0), (44.0, 38.0, 34.0, 12.0)],
+            "satin_black",
+            "helmet_to_neck_overlap_plug",
+        ),
+        _lofted_y_rounded_shell(
+            (0.0, -46.0, 1048.0),
+            [(-8.0, 86.0, 18.0, 7.0), (0.0, 118.0, 28.0, 11.0), (8.0, 88.0, 18.0, 7.0)],
+            "satin_black",
+            "front_throat_to_chest_overlap_bridge",
+        ),
         _paint(Pos(0.0, -34.0, 690.0) * Box(148.0, 44.0, 42.0), "satin_black", "abdomen_to_waist_overlap_mount"),
     ]
     for side, name in [(-1, "left"), (1, "right")]:
@@ -602,6 +631,8 @@ def _connection_bridges_and_mounts():
             [
                 _tube_between_xyz((side * 166.0, -38.0, 986.0), (side * 222.0, -34.0, 966.0), 8.5, "satin_black", f"{name}_upper_torso_to_shoulder_socket_bridge"),
                 _paint(Pos(side * 194.0, -43.0, 973.0) * Box(42.0, 20.0, 34.0), "satin_black", f"{name}_shoulder_socket_overlap_block"),
+                _box_between_xyz((side * 42.0, -5.0, 1052.0), (side * 150.0, -27.0, 1004.0), 18.0, 20.0, "satin_black", f"{name}_sloped_trapezius_neck_to_shoulder_collar"),
+                _tube_between_xyz((side * 34.0, 24.0, 1068.0), (side * 106.0, 46.0, 1018.0), 5.5, "graphite", f"{name}_rear_neck_to_upper_back_tie_rod"),
                 _tube_between_xyz((side * 226.0, -38.0, 932.0), (side * 238.0, -28.0, 900.0), 5.0, "satin_black", f"{name}_upper_arm_rear_mounting_strut"),
                 _tube_between_xyz((side * 229.0, -39.0, 595.0), (side * 228.0, -47.0, 562.0), 6.0, "dark_mech", f"{name}_wrist_to_palm_structural_stub"),
                 _paint(Pos(side * 228.0, -43.0, 584.0) * Box(42.0, 22.0, 18.0), "dark_mech", f"{name}_palm_knuckle_overlap_mount"),
@@ -754,7 +785,7 @@ def _validation_report(shape) -> dict[str, object]:
             "knee_cap_to_joint": True,
             "ankle_to_foot": True,
         },
-        "separate_colored_solids": 270,
+        "separate_colored_solids": 276,
     }
     report["passed"] = (
         report["joint_count"] == 14
@@ -775,18 +806,18 @@ def _write_prompt() -> None:
 Reference interpretation:
 - Gloss black capsule helmet/head with a flush dark faceplate.
 - Cyan illuminated face-contour line following the front helmet perimeter.
-- White smooth chest armor with a black shoulder/neck yoke, black side sweeps, and black lower abdomen.
+- White smooth chest armor with a refined black tapered neck cowl, compact shoulder yoke, black side sweeps, and black lower abdomen.
 - White upper-arm, forearm, thigh, and shin fairings over visible black mechanical joints.
 - Exposed black pelvis and hip mechanism with tie rods, rotary pods, and actuator placeholders.
 - Slim black feet and articulated five-finger hands with small knuckle links.
 - Premium humanoid robot proportions: narrow waist, broad shoulders, long legs, upright front-facing stance.
-- Use a more advanced CAD construction strategy than flat panels: multi-section lofted helmet, torso, abdomen, shoulders, limb fairings, knee caps, actuator housings, and feet; local-frame tapered limb shells; bearing bolt rings; clevis yokes; tactile finger pads; micro tendon rods; explicit overlap mounts between head/neck/yoke, chest/torso, shoulders/arms, wrists/hands, hips/thighs, knees/caps, and ankles/feet.
+- Use a more advanced CAD construction strategy than flat panels: multi-section lofted helmet, tapered cervical neck fairing, compact saddle cowl, sloped trapezius collars, torso, abdomen, shoulders, limb fairings, knee caps, actuator housings, and feet; local-frame tapered limb shells; bearing bolt rings; clevis yokes; tactile finger pads; micro tendon rods; explicit overlap mounts between head/neck/yoke, chest/torso, shoulders/arms, wrists/hands, hips/thighs, knees/caps, and ankles/feet.
 
 Required geometry:
 - Keep the design a non-official reference-inspired concept; do not copy the exact Tesla logo or official product geometry.
 - Model head, face light, torso, pelvis, arms, hands, legs, feet, sensors, seams, rods, and actuator housings as separate editable B-rep solids/components.
 - Use robust lofted rounded shells, extruded planar insets, cylinders, spheres, bearing rings, clevis brackets, and tube links. Avoid floating rods, mesh-only detail, or detached decorative objects.
-- Add connector bridges, backing spacers, collars, and overlap pads so visibly separate components read as mechanically mounted rather than floating.
+- Add connector bridges, backing spacers, collars, cervical tendons, and overlap pads so visibly separate components read as mechanically mounted rather than floating.
 - Include clear black/white material blocking matching the reference: black head/yoke/abdomen/hips/knees/feet, warm white armor shells, cyan face light, aluminum rods.
 
 Parametric requirements:

@@ -29,7 +29,7 @@
   "light_strip_count": 10,
   "lofted_shell_count": 18,
   "surface_fastener_count": 44,
-  "connector_bridge_count": 34,
+  "connector_bridge_count": 38,
   "component_count": 12,
   "service_seam_count": 36,
   "bounding_box_mm": [
@@ -58,6 +58,6 @@
     "knee_cap_to_joint": true,
     "ankle_to_foot": true
   },
-  "separate_colored_solids": 270,
+  "separate_colored_solids": 276,
   "passed": true
 }

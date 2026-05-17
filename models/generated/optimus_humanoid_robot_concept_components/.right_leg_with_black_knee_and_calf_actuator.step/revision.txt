@@ -1,1 +1,1 @@
-optimus-humanoid-robot-concept-v3-integrated-joints
+optimus-humanoid-robot-concept-v4-refined-neck-cowl
