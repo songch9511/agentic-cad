@@ -1,1 +1,1 @@
-optimus-finger-actuator-concept-v6-joint-angle-flexion
+optimus-finger-actuator-concept-v7-advanced-joint-angles

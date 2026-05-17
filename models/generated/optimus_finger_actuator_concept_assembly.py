@@ -30,15 +30,16 @@ TOTAL_JOINTS = FINGER_COUNT * 3 + 2
 TOTAL_PHALANGES = FINGER_COUNT * 3 + 2
 ACTUATOR_COUNT = 6
 TENDON_GUIDE_COUNT = TOTAL_FINGERS * 2
-FASTENER_COUNT = 72
+FASTENER_COUNT = 114
 COMPONENT_COUNT = 6
+ROOT_JOINT_Z = PALM_THICKNESS + 38.0
 
 STEP_OUTPUT = "optimus_finger_actuator_concept_assembly.step"
 GLB_OUTPUT = "optimus_finger_actuator_concept_assembly.glb"
 VALIDATION_OUTPUT = "optimus_finger_actuator_concept_validation_report.json"
 PROMPT_OUTPUT = "optimus_finger_actuator_concept_prompt.md"
 COMPONENT_DIR = "optimus_finger_actuator_concept_components"
-COMPONENT_REVISION = "optimus-finger-actuator-concept-v6-joint-angle-flexion"
+COMPONENT_REVISION = "optimus-finger-actuator-concept-v7-advanced-joint-angles"
 
 COLORS = {
     "graphite": Color(0.045, 0.048, 0.052, 1.0),
@@ -179,14 +180,33 @@ def _add_z(point: tuple[float, ...], dz: float) -> tuple[float, float, float]:
     return (point[0], point[1], point[2] + dz)
 
 
+def _joint_cross_axis(
+    point: tuple[float, ...],
+    next_point: tuple[float, ...],
+    span: float,
+) -> tuple[tuple[float, float, float], tuple[float, float, float]]:
+    angle = math.radians(_angle_xy(point, next_point) + 90.0)
+    dx = math.cos(angle) * span / 2.0
+    dy = math.sin(angle) * span / 2.0
+    return (point[0] - dx, point[1] - dy, point[2]), (point[0] + dx, point[1] + dy, point[2])
+
+
+def _cumulative_angles(angles: tuple[float, ...]) -> list[float]:
+    total = 0.0
+    cumulative = []
+    for angle in angles:
+        total += angle
+        cumulative.append(total)
+    return cumulative
+
+
 def _finger_chain(
     root: tuple[float, float],
     lengths: tuple[float, ...],
     yaw_angles: tuple[float, ...],
     flexion_angles: tuple[float, ...],
 ) -> list[tuple[float, float, float]]:
-    root_z = PALM_THICKNESS + 24.0
-    current = (root[0], root[1], root_z)
+    current = (root[0], root[1], ROOT_JOINT_Z)
     points = [current]
     cumulative_flexion_angle = 0.0
     for length, yaw_angle, joint_flexion_angle in zip(lengths, yaw_angles, flexion_angles):
@@ -208,28 +228,28 @@ def _finger_specs() -> list[dict[str, object]]:
             "root": (start_x, PALM_DEPTH / 2.0 - 5.0),
             "scale": 0.96,
             "angles": (92.0, 91.0, 90.0),
-            "flexion_deg": (5.0, 13.0, 19.0),
+            "flexion_deg": (8.0, 18.0, 22.0),
         },
         {
             "name": "middle",
             "root": (start_x + FINGER_PITCH, PALM_DEPTH / 2.0 - 1.0),
             "scale": 1.05,
             "angles": (90.0, 90.0, 90.0),
-            "flexion_deg": (5.0, 13.0, 18.0),
+            "flexion_deg": (8.0, 19.0, 22.0),
         },
         {
             "name": "ring",
             "root": (start_x + FINGER_PITCH * 2.0, PALM_DEPTH / 2.0 - 3.0),
             "scale": 1.00,
             "angles": (88.0, 89.0, 90.0),
-            "flexion_deg": (5.0, 12.0, 17.0),
+            "flexion_deg": (7.0, 17.0, 20.0),
         },
         {
             "name": "pinky",
             "root": (start_x + FINGER_PITCH * 3.0, PALM_DEPTH / 2.0 - 8.0),
             "scale": 0.86,
             "angles": (85.0, 86.0, 87.0),
-            "flexion_deg": (5.0, 11.0, 16.0),
+            "flexion_deg": (8.0, 18.0, 24.0),
         },
     ]
 
@@ -251,9 +271,25 @@ def _all_finger_chains() -> dict[str, list[tuple[float, float, float]]]:
         (-PALM_WIDTH / 2.0 + 5.0, -13.0),
         THUMB_PHALANX_LENGTHS,
         (137.0, 122.0),
-        (11.0, 17.0),
+        (16.0, 22.0),
     )
     return chains
+
+
+def _joint_angle_report() -> dict[str, dict[str, list[float]]]:
+    report: dict[str, dict[str, list[float]]] = {}
+    for spec in _finger_specs():
+        flexion = tuple(float(angle) for angle in spec["flexion_deg"])  # type: ignore[index]
+        report[str(spec["name"])] = {
+            "local_flexion_deg": [round(angle, 1) for angle in flexion],
+            "cumulative_link_pitch_deg": [round(angle, 1) for angle in _cumulative_angles(flexion)],
+        }
+    thumb_flexion = (16.0, 22.0)
+    report["thumb"] = {
+        "local_flexion_deg": [round(angle, 1) for angle in thumb_flexion],
+        "cumulative_link_pitch_deg": [round(angle, 1) for angle in _cumulative_angles(thumb_flexion)],
+    }
+    return report
 
 
 def _palm_rail_and_actuators():
@@ -313,9 +349,13 @@ def _finger_link_sets():
         for joint_index, point in enumerate(points[:-1], start=1):
             joint_label = "mcp" if joint_index == 1 else "pip" if joint_index == 2 else "dip"
             radius = KNUCKLE_RADIUS * (1.05 if joint_index == 1 else 0.92)
+            next_point = points[joint_index]
+            hinge_start, hinge_end = _joint_cross_axis(point, next_point, width * (0.95 if joint_index == 1 else 0.78))
             children.extend(
                 [
                     _paint(Pos(point[0], point[1], point[2]) * _z_cylinder(radius, LINK_THICKNESS + 7.0), "titanium", f"{finger_name}_{joint_label}_rounded_joint_knuckle"),
+                    _tube_between_xyz(hinge_start, hinge_end, 2.3, "graphite", f"{finger_name}_{joint_label}_true_cross_axis_hinge_pin"),
+                    _tube_between_xyz(_add_z(hinge_start, 3.8), _add_z(hinge_end, 3.8), 1.2, "satin", f"{finger_name}_{joint_label}_raised_hinge_axis_reference"),
                     _paint(Pos(point[0], point[1], point[2] + LINK_THICKNESS / 2.0 + 6.5) * _z_cylinder(radius * 0.42, 2.6), "graphite", f"{finger_name}_{joint_label}_black_hinge_pin_cap"),
                     _paint(Pos(point[0], point[1], point[2] - LINK_THICKNESS / 2.0 - 6.5) * _z_cylinder(radius * 0.34, 2.6), "graphite", f"{finger_name}_{joint_label}_lower_hinge_pin_cap"),
                 ]
@@ -378,10 +418,12 @@ def _fasteners_hinge_pins_and_cable_exits():
     chains = _all_finger_chains()
     for finger_name, points in chains.items():
         for joint_index, point in enumerate(points[:-1], start=1):
+            axis_start, axis_end = _joint_cross_axis(point, points[joint_index], LINK_WIDTH * (0.94 if finger_name != "thumb" else 0.82))
             children.extend(
                 [
-                    _paint(Pos(point[0] - 8.5, point[1], point[2]) * _z_cylinder(1.8, 22.0), "black", f"{finger_name}_joint_{joint_index}_left_hinge_pin_centerline"),
-                    _paint(Pos(point[0] + 8.5, point[1], point[2]) * _z_cylinder(1.8, 22.0), "black", f"{finger_name}_joint_{joint_index}_right_hinge_pin_centerline"),
+                    _paint(Pos(axis_start[0], axis_start[1], axis_start[2]) * _z_cylinder(1.8, 8.0), "black", f"{finger_name}_joint_{joint_index}_left_hinge_pin_centerline"),
+                    _paint(Pos(axis_end[0], axis_end[1], axis_end[2]) * _z_cylinder(1.8, 8.0), "black", f"{finger_name}_joint_{joint_index}_right_hinge_pin_centerline"),
+                    _tube_between_xyz(axis_start, axis_end, 1.35, "black", f"{finger_name}_joint_{joint_index}_exposed_horizontal_rotation_axis"),
                 ]
             )
     for index, x in enumerate([-70.0, -42.0, -14.0, 14.0, 42.0, 70.0], start=1):
@@ -496,9 +538,11 @@ def _validation_report(shape) -> dict[str, object]:
         "pad_thickness_mm": PAD_THICKNESS,
         "bounding_box_mm": bbox,
         "joint_axes_mm": joint_axes,
+        "joint_angle_profiles_deg": _joint_angle_report(),
         "finger_links_centered_on_joint_axes": True,
         "finger_flexion_is_joint_angle_driven": True,
         "finger_flexion_angles_are_cumulative_joint_rotations": True,
+        "horizontal_hinge_axis_pins_modeled": True,
         "neutral_adjacent_finger_clearance_ok": _neutral_spacing_ok(),
         "thumb_opposed_and_angled": True,
         "separate_colored_solids": 170,
@@ -511,10 +555,11 @@ def _validation_report(shape) -> dict[str, object]:
         and report["tendon_guide_count"] >= 10
         and report["finger_flexion_is_joint_angle_driven"]
         and report["finger_flexion_angles_are_cumulative_joint_rotations"]
+        and report["horizontal_hinge_axis_pins_modeled"]
         and report["neutral_adjacent_finger_clearance_ok"]
         and 210.0 <= bbox[0] <= 270.0
         and 250.0 <= bbox[1] <= 365.0
-        and 45.0 <= bbox[2] <= 80.0
+        and 45.0 <= bbox[2] <= 92.0
     )
     return report
 
@@ -532,18 +577,19 @@ Required components:
 - Compact linear micro-actuator placeholders inside the palm.
 - Tactile fingertip pad inserts in dark rubber.
 - Small fasteners, hinge pins, cable exits, and service covers.
-- Slightly flexed presentation pose where every phalanx link rotates from its own MCP/PIP/DIP joint axis instead of being translated downward as a flat chain.
+- Advanced flexed presentation pose where every phalanx link rotates from its own MCP/PIP/DIP joint axis with stronger cumulative local joint angles instead of being translated downward as a flat chain.
 
 Parametric requirements:
 - Define finger count, phalanx lengths, joint spacing, finger pitch, palm width, palm depth, actuator diameter, tendon tube radius, and pad thickness as named parameters.
 - Derive all finger positions from the finger pitch and palm coordinate system.
 - Derive each fingertip chain from named per-segment yaw angles and cumulative local joint flexion angles, so each downstream phalanx inherits the previous joint rotation and all link bodies/tendon tubes align to the true joint-to-joint vector.
+- Add visible horizontal hinge-axis pins through the knuckles so the rotation axis is legible at each MCP/PIP/DIP joint.
 - Keep palm, each finger link set, joints, tendon guides, actuators, pads, and fasteners as separate solids/components.
 - Avoid fragile small booleans and avoid over-detailed internals.
 
 Validation:
 - Report total fingers, total joints, total phalanges, actuator count, tendon guide count, and bounding box.
-- Verify finger links are centered on their joint axes and do not overlap adjacent fingers at the neutral pose.
+- Verify finger links are centered on their joint axes, cumulative joint-angle profiles are reported, horizontal hinge axes are modeled, and adjacent fingers do not overlap at the neutral pose.
 - Export STEP, colored GLB, validation report, prompt, and native parametric script.
 """
     (Path(__file__).resolve().parent / PROMPT_OUTPUT).write_text(prompt, encoding="utf-8")

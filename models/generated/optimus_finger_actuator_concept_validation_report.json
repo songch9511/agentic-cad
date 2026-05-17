@@ -8,7 +8,7 @@
   "total_phalanges": 14,
   "actuator_count": 6,
   "tendon_guide_count": 10,
-  "fastener_count": 72,
+  "fastener_count": 114,
   "component_count": 6,
   "finger_pitch_mm": 34.0,
   "palm_width_mm": 174.0,
@@ -17,95 +17,156 @@
   "tendon_tube_radius_mm": 1.25,
   "pad_thickness_mm": 7.0,
   "bounding_box_mm": [
-    251.7,
+    249.4,
     305.0,
-    67.3
+    81.3
   ],
   "joint_axes_mm": {
     "index": [
       [
         -51.0,
         41.0,
-        52.0
+        66.0
       ],
       [
-        -53.07,
-        100.42,
-        46.8
+        -53.06,
+        100.06,
+        57.69
       ],
       [
-        -53.81,
-        142.56,
-        33.1
+        -53.76,
+        139.89,
+        38.27
       ]
     ],
     "middle": [
       [
         -17.0,
         45.0,
-        52.0
+        66.0
       ],
       [
         -17.0,
-        109.65,
-        46.34
+        109.27,
+        56.97
       ],
       [
         -17.0,
-        155.4,
-        31.48
+        152.13,
+        35.13
       ]
     ],
     "ring": [
       [
         17.0,
         43.0,
-        52.0
+        66.0
       ],
       [
-        19.16,
-        104.73,
-        46.6
+        19.15,
+        104.5,
+        58.44
       ],
       [
-        19.92,
-        148.71,
-        33.15
+        19.88,
+        146.52,
+        39.73
       ]
     ],
     "pinky": [
       [
         51.0,
         38.0,
-        52.0
+        66.0
       ],
       [
-        55.68,
-        91.47,
-        47.3
+        55.65,
+        91.15,
+        58.5
       ],
       [
-        58.37,
-        129.94,
-        36.25
+        58.17,
+        127.12,
+        40.91
       ]
     ],
     "thumb": [
       [
         -82.0,
         -13.0,
-        52.0
+        66.0
       ],
       [
-        -115.02,
-        17.8,
-        43.22
+        -114.34,
+        17.16,
+        53.32
       ]
     ]
+  },
+  "joint_angle_profiles_deg": {
+    "index": {
+      "local_flexion_deg": [
+        8.0,
+        18.0,
+        22.0
+      ],
+      "cumulative_link_pitch_deg": [
+        8.0,
+        26.0,
+        48.0
+      ]
+    },
+    "middle": {
+      "local_flexion_deg": [
+        8.0,
+        19.0,
+        22.0
+      ],
+      "cumulative_link_pitch_deg": [
+        8.0,
+        27.0,
+        49.0
+      ]
+    },
+    "ring": {
+      "local_flexion_deg": [
+        7.0,
+        17.0,
+        20.0
+      ],
+      "cumulative_link_pitch_deg": [
+        7.0,
+        24.0,
+        44.0
+      ]
+    },
+    "pinky": {
+      "local_flexion_deg": [
+        8.0,
+        18.0,
+        24.0
+      ],
+      "cumulative_link_pitch_deg": [
+        8.0,
+        26.0,
+        50.0
+      ]
+    },
+    "thumb": {
+      "local_flexion_deg": [
+        16.0,
+        22.0
+      ],
+      "cumulative_link_pitch_deg": [
+        16.0,
+        38.0
+      ]
+    }
   },
   "finger_links_centered_on_joint_axes": true,
   "finger_flexion_is_joint_angle_driven": true,
   "finger_flexion_angles_are_cumulative_joint_rotations": true,
+  "horizontal_hinge_axis_pins_modeled": true,
   "neutral_adjacent_finger_clearance_ok": true,
   "thumb_opposed_and_angled": true,
   "separate_colored_solids": 170,

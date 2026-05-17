@@ -10,16 +10,17 @@ Required components:
 - Compact linear micro-actuator placeholders inside the palm.
 - Tactile fingertip pad inserts in dark rubber.
 - Small fasteners, hinge pins, cable exits, and service covers.
-- Slightly flexed presentation pose where every phalanx link rotates from its own MCP/PIP/DIP joint axis instead of being translated downward as a flat chain.
+- Advanced flexed presentation pose where every phalanx link rotates from its own MCP/PIP/DIP joint axis with stronger cumulative local joint angles instead of being translated downward as a flat chain.
 
 Parametric requirements:
 - Define finger count, phalanx lengths, joint spacing, finger pitch, palm width, palm depth, actuator diameter, tendon tube radius, and pad thickness as named parameters.
 - Derive all finger positions from the finger pitch and palm coordinate system.
 - Derive each fingertip chain from named per-segment yaw angles and cumulative local joint flexion angles, so each downstream phalanx inherits the previous joint rotation and all link bodies/tendon tubes align to the true joint-to-joint vector.
+- Add visible horizontal hinge-axis pins through the knuckles so the rotation axis is legible at each MCP/PIP/DIP joint.
 - Keep palm, each finger link set, joints, tendon guides, actuators, pads, and fasteners as separate solids/components.
 - Avoid fragile small booleans and avoid over-detailed internals.
 
 Validation:
 - Report total fingers, total joints, total phalanges, actuator count, tendon guide count, and bounding box.
-- Verify finger links are centered on their joint axes and do not overlap adjacent fingers at the neutral pose.
+- Verify finger links are centered on their joint axes, cumulative joint-angle profiles are reported, horizontal hinge axes are modeled, and adjacent fingers do not overlap at the neutral pose.
 - Export STEP, colored GLB, validation report, prompt, and native parametric script.
