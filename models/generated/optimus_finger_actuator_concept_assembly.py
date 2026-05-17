@@ -38,7 +38,7 @@ GLB_OUTPUT = "optimus_finger_actuator_concept_assembly.glb"
 VALIDATION_OUTPUT = "optimus_finger_actuator_concept_validation_report.json"
 PROMPT_OUTPUT = "optimus_finger_actuator_concept_prompt.md"
 COMPONENT_DIR = "optimus_finger_actuator_concept_components"
-COMPONENT_REVISION = "optimus-finger-actuator-concept-v3-low-profile-fingertips"
+COMPONENT_REVISION = "optimus-finger-actuator-concept-v4-opposed-thumb-curled-fingers"
 
 COLORS = {
     "graphite": Color(0.045, 0.048, 0.052, 1.0),
@@ -147,25 +147,25 @@ def _finger_specs() -> list[dict[str, object]]:
             "name": "index",
             "root": (start_x, PALM_DEPTH / 2.0 - 5.0),
             "scale": 0.96,
-            "angles": (92.0, 94.0, 98.0),
+            "angles": (96.0, 104.0, 112.0),
         },
         {
             "name": "middle",
             "root": (start_x + FINGER_PITCH, PALM_DEPTH / 2.0 - 1.0),
             "scale": 1.05,
-            "angles": (90.0, 91.0, 93.0),
+            "angles": (91.0, 96.0, 102.0),
         },
         {
             "name": "ring",
             "root": (start_x + FINGER_PITCH * 2.0, PALM_DEPTH / 2.0 - 3.0),
             "scale": 1.00,
-            "angles": (88.0, 86.0, 83.0),
+            "angles": (86.0, 81.0, 75.0),
         },
         {
             "name": "pinky",
             "root": (start_x + FINGER_PITCH * 3.0, PALM_DEPTH / 2.0 - 8.0),
             "scale": 0.86,
-            "angles": (86.0, 82.0, 78.0),
+            "angles": (82.0, 75.0, 68.0),
         },
     ]
 
@@ -183,9 +183,9 @@ def _all_finger_chains() -> dict[str, list[tuple[float, float]]]:
             spec["angles"],  # type: ignore[arg-type]
         )
     chains["thumb"] = _finger_chain(
-        (-PALM_WIDTH / 2.0 + 9.0, -9.0),
+        (-PALM_WIDTH / 2.0 + 5.0, -13.0),
         THUMB_PHALANX_LENGTHS,
-        (30.0, 48.0),
+        (137.0, 122.0),
     )
     return chains
 
@@ -195,12 +195,12 @@ def _palm_rail_and_actuators():
         _paint(Pos(0.0, 0.0, PALM_THICKNESS / 2.0) * Box(PALM_WIDTH, PALM_DEPTH, PALM_THICKNESS), "graphite", "compact_graphite_palm_rail"),
         _paint(Pos(0.0, PALM_DEPTH / 2.0 - 6.0, PALM_THICKNESS + 4.0) * Box(PALM_WIDTH - 10.0, 18.0, 8.0), "titanium", "satin_knuckle_mounting_rail"),
         _paint(Pos(0.0, -PALM_DEPTH / 2.0 + 10.0, PALM_THICKNESS + 2.0) * Box(PALM_WIDTH - 24.0, 22.0, 6.0), "service", "rear_service_cover_plate"),
-        _paint(Pos(-PALM_WIDTH / 2.0 - 8.0, -12.0, PALM_THICKNESS / 2.0 + 2.0) * Rot(0.0, 0.0, 28.0) * Box(34.0, 44.0, 24.0), "graphite", "angled_opposed_thumb_base_block"),
+        _paint(Pos(-PALM_WIDTH / 2.0 - 10.0, -18.0, PALM_THICKNESS / 2.0 + 2.0) * Rot(0.0, 0.0, -34.0) * Box(34.0, 44.0, 24.0), "graphite", "outward_opposed_thumb_base_block"),
     ]
     actuator_xs = [-60.0, -30.0, 0.0, 30.0, 60.0, -82.0]
     for index, x in enumerate(actuator_xs, start=1):
-        y = -20.0 if index < 6 else -6.0
-        angle = 0.0 if index < 6 else 26.0
+        y = -20.0 if index < 6 else -14.0
+        angle = 0.0 if index < 6 else -32.0
         children.extend(
             [
                 _paint(Pos(x, y, 20.0) * Rot(0.0, 0.0, angle) * _y_cylinder(ACTUATOR_DIAMETER / 2.0, 54.0), "satin", f"linear_micro_actuator_placeholder_{index:02d}"),
