@@ -10,11 +10,12 @@ Required components:
 - Compact linear micro-actuator placeholders inside the palm.
 - Tactile fingertip pad inserts in dark rubber.
 - Small fasteners, hinge pins, cable exits, and service covers.
-- Exploded optional pose with a few fingers slightly flexed.
+- Slightly flexed presentation pose where every phalanx link rotates from its own MCP/PIP/DIP joint axis instead of being translated downward as a flat chain.
 
 Parametric requirements:
 - Define finger count, phalanx lengths, joint spacing, finger pitch, palm width, palm depth, actuator diameter, tendon tube radius, and pad thickness as named parameters.
 - Derive all finger positions from the finger pitch and palm coordinate system.
+- Derive each fingertip chain from named per-segment yaw angles and cumulative local joint flexion angles, so each downstream phalanx inherits the previous joint rotation and all link bodies/tendon tubes align to the true joint-to-joint vector.
 - Keep palm, each finger link set, joints, tendon guides, actuators, pads, and fasteners as separate solids/components.
 - Avoid fragile small booleans and avoid over-detailed internals.
 

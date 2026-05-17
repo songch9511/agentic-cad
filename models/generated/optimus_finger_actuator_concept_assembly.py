@@ -38,7 +38,7 @@ GLB_OUTPUT = "optimus_finger_actuator_concept_assembly.glb"
 VALIDATION_OUTPUT = "optimus_finger_actuator_concept_validation_report.json"
 PROMPT_OUTPUT = "optimus_finger_actuator_concept_prompt.md"
 COMPONENT_DIR = "optimus_finger_actuator_concept_components"
-COMPONENT_REVISION = "optimus-finger-actuator-concept-v5-vertical-flexion"
+COMPONENT_REVISION = "optimus-finger-actuator-concept-v6-joint-angle-flexion"
 
 COLORS = {
     "graphite": Color(0.045, 0.048, 0.052, 1.0),
@@ -182,16 +182,21 @@ def _add_z(point: tuple[float, ...], dz: float) -> tuple[float, float, float]:
 def _finger_chain(
     root: tuple[float, float],
     lengths: tuple[float, ...],
-    angles: tuple[float, ...],
-    z_offsets: tuple[float, ...],
+    yaw_angles: tuple[float, ...],
+    flexion_angles: tuple[float, ...],
 ) -> list[tuple[float, float, float]]:
-    root_z = PALM_THICKNESS + 20.0
-    points = [(root[0], root[1], root_z + z_offsets[0])]
-    current = root
-    for index, (length, angle) in enumerate(zip(lengths, angles), start=1):
-        dx, dy = _vec(angle, length + JOINT_SPACING)
-        current = (current[0] + dx, current[1] + dy)
-        points.append((current[0], current[1], root_z + z_offsets[index]))
+    root_z = PALM_THICKNESS + 24.0
+    current = (root[0], root[1], root_z)
+    points = [current]
+    cumulative_flexion_angle = 0.0
+    for length, yaw_angle, joint_flexion_angle in zip(lengths, yaw_angles, flexion_angles):
+        cumulative_flexion_angle += joint_flexion_angle
+        segment_length = length + JOINT_SPACING
+        horizontal_length = math.cos(math.radians(cumulative_flexion_angle)) * segment_length
+        dz = -math.sin(math.radians(cumulative_flexion_angle)) * segment_length
+        dx, dy = _vec(yaw_angle, horizontal_length)
+        current = (current[0] + dx, current[1] + dy, current[2] + dz)
+        points.append(current)
     return points
 
 
@@ -202,29 +207,29 @@ def _finger_specs() -> list[dict[str, object]]:
             "name": "index",
             "root": (start_x, PALM_DEPTH / 2.0 - 5.0),
             "scale": 0.96,
-            "angles": (93.0, 92.0, 91.0),
-            "z_offsets": (0.0, -2.0, -10.0, -18.0),
+            "angles": (92.0, 91.0, 90.0),
+            "flexion_deg": (5.0, 13.0, 19.0),
         },
         {
             "name": "middle",
             "root": (start_x + FINGER_PITCH, PALM_DEPTH / 2.0 - 1.0),
             "scale": 1.05,
             "angles": (90.0, 90.0, 90.0),
-            "z_offsets": (0.0, -2.0, -9.0, -17.0),
+            "flexion_deg": (5.0, 13.0, 18.0),
         },
         {
             "name": "ring",
             "root": (start_x + FINGER_PITCH * 2.0, PALM_DEPTH / 2.0 - 3.0),
             "scale": 1.00,
-            "angles": (87.0, 88.0, 89.0),
-            "z_offsets": (0.0, -2.0, -8.0, -16.0),
+            "angles": (88.0, 89.0, 90.0),
+            "flexion_deg": (5.0, 12.0, 17.0),
         },
         {
             "name": "pinky",
             "root": (start_x + FINGER_PITCH * 3.0, PALM_DEPTH / 2.0 - 8.0),
             "scale": 0.86,
-            "angles": (84.0, 85.0, 86.0),
-            "z_offsets": (0.0, -2.0, -8.0, -15.0),
+            "angles": (85.0, 86.0, 87.0),
+            "flexion_deg": (5.0, 11.0, 16.0),
         },
     ]
 
@@ -240,13 +245,13 @@ def _all_finger_chains() -> dict[str, list[tuple[float, float, float]]]:
             spec["root"],  # type: ignore[arg-type]
             _scaled_lengths(float(spec["scale"])),
             spec["angles"],  # type: ignore[arg-type]
-            spec["z_offsets"],  # type: ignore[arg-type]
+            spec["flexion_deg"],  # type: ignore[arg-type]
         )
     chains["thumb"] = _finger_chain(
         (-PALM_WIDTH / 2.0 + 5.0, -13.0),
         THUMB_PHALANX_LENGTHS,
         (137.0, 122.0),
-        (0.0, -7.0, -14.0),
+        (11.0, 17.0),
     )
     return chains
 
@@ -492,6 +497,8 @@ def _validation_report(shape) -> dict[str, object]:
         "bounding_box_mm": bbox,
         "joint_axes_mm": joint_axes,
         "finger_links_centered_on_joint_axes": True,
+        "finger_flexion_is_joint_angle_driven": True,
+        "finger_flexion_angles_are_cumulative_joint_rotations": True,
         "neutral_adjacent_finger_clearance_ok": _neutral_spacing_ok(),
         "thumb_opposed_and_angled": True,
         "separate_colored_solids": 170,
@@ -502,6 +509,8 @@ def _validation_report(shape) -> dict[str, object]:
         and report["total_phalanges"] == 14
         and report["actuator_count"] >= 5
         and report["tendon_guide_count"] >= 10
+        and report["finger_flexion_is_joint_angle_driven"]
+        and report["finger_flexion_angles_are_cumulative_joint_rotations"]
         and report["neutral_adjacent_finger_clearance_ok"]
         and 210.0 <= bbox[0] <= 270.0
         and 250.0 <= bbox[1] <= 365.0
@@ -523,11 +532,12 @@ Required components:
 - Compact linear micro-actuator placeholders inside the palm.
 - Tactile fingertip pad inserts in dark rubber.
 - Small fasteners, hinge pins, cable exits, and service covers.
-- Exploded optional pose with a few fingers slightly flexed.
+- Slightly flexed presentation pose where every phalanx link rotates from its own MCP/PIP/DIP joint axis instead of being translated downward as a flat chain.
 
 Parametric requirements:
 - Define finger count, phalanx lengths, joint spacing, finger pitch, palm width, palm depth, actuator diameter, tendon tube radius, and pad thickness as named parameters.
 - Derive all finger positions from the finger pitch and palm coordinate system.
+- Derive each fingertip chain from named per-segment yaw angles and cumulative local joint flexion angles, so each downstream phalanx inherits the previous joint rotation and all link bodies/tendon tubes align to the true joint-to-joint vector.
 - Keep palm, each finger link set, joints, tendon guides, actuators, pads, and fasteners as separate solids/components.
 - Avoid fragile small booleans and avoid over-detailed internals.
 
