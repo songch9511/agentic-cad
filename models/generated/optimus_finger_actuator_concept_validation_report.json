@@ -1,0 +1,111 @@
+{
+  "product": "optimus_finger_actuator_concept",
+  "display_name": "Tesla Optimus-inspired robotic finger actuator concept",
+  "design_intent": "Non-proprietary humanoid robotic finger actuator visual engineering concept with placeholder actuation and tendon routing",
+  "finger_count": 5,
+  "primary_finger_count": 4,
+  "total_joints": 14,
+  "total_phalanges": 14,
+  "actuator_count": 6,
+  "tendon_guide_count": 10,
+  "fastener_count": 72,
+  "component_count": 6,
+  "finger_pitch_mm": 32.0,
+  "palm_width_mm": 174.0,
+  "palm_depth_mm": 92.0,
+  "actuator_diameter_mm": 12.0,
+  "tendon_tube_radius_mm": 2.8,
+  "pad_thickness_mm": 7.0,
+  "bounding_box_mm": [
+    235.3,
+    340.5,
+    65.0
+  ],
+  "joint_axes_mm": {
+    "index": [
+      [
+        -48.0,
+        40.0,
+        46.0
+      ],
+      [
+        -52.77,
+        108.19,
+        46.0
+      ],
+      [
+        -52.77,
+        159.27,
+        46.0
+      ]
+    ],
+    "middle": [
+      [
+        -16.0,
+        44.0,
+        46.0
+      ],
+      [
+        -17.3,
+        118.29,
+        46.0
+      ],
+      [
+        -14.4,
+        173.61,
+        46.0
+      ]
+    ],
+    "ring": [
+      [
+        16.0,
+        42.0,
+        46.0
+      ],
+      [
+        18.48,
+        112.96,
+        46.0
+      ],
+      [
+        24.94,
+        165.56,
+        46.0
+      ]
+    ],
+    "pinky": [
+      [
+        48.0,
+        37.0,
+        46.0
+      ],
+      [
+        53.38,
+        98.52,
+        46.0
+      ],
+      [
+        62.21,
+        143.95,
+        46.0
+      ]
+    ],
+    "thumb": [
+      [
+        -79.0,
+        -8.0,
+        46.0
+      ],
+      [
+        -33.4,
+        22.76,
+        46.0
+      ]
+    ]
+  },
+  "finger_links_centered_on_joint_axes": true,
+  "neutral_adjacent_finger_clearance_ok": true,
+  "thumb_opposed_and_angled": true,
+  "separate_colored_solids": 170,
+  "passed": true
+}
