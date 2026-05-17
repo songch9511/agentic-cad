@@ -46,7 +46,7 @@ GLB_OUTPUT = "humanoid_balance_system_concept_assembly.glb"
 VALIDATION_OUTPUT = "humanoid_balance_system_concept_validation_report.json"
 PROMPT_OUTPUT = "humanoid_balance_system_concept_prompt.md"
 COMPONENT_DIR = "humanoid_balance_system_concept_components"
-COMPONENT_REVISION = "humanoid-balance-system-v1-atlas-inspired-demo"
+COMPONENT_REVISION = "humanoid-balance-system-v2-muted-service-hardware-demo"
 
 COLORS = {
     "titanium": Color(0.63, 0.64, 0.62, 1.0),
@@ -55,8 +55,8 @@ COLORS = {
     "graphite": Color(0.075, 0.078, 0.08, 1.0),
     "rubber": Color(0.01, 0.01, 0.012, 1.0),
     "ceramic": Color(0.78, 0.77, 0.70, 1.0),
-    "copper": Color(0.72, 0.36, 0.15, 1.0),
-    "sensor": Color(0.0, 0.45, 0.86, 1.0),
+    "copper": Color(0.34, 0.24, 0.16, 1.0),
+    "sensor": Color(0.04, 0.16, 0.19, 1.0),
     "warning": Color(0.94, 0.63, 0.08, 1.0),
     "glass": Color(0.035, 0.08, 0.10, 0.82),
 }
@@ -166,8 +166,8 @@ def _foot_force_plate_modules():
                 _paint(Pos(x, 0.0, 112.0) * Box(150.0, 318.0, 26.0), "dark_titanium", f"{label}_upper_foot_sensor_bridge"),
                 _paint(Pos(x, -28.0, 156.0) * _z_cylinder(58.0, 82.0), "dark_titanium", f"{label}_ankle_pedestal_housing"),
                 _paint(Pos(x, -28.0, 210.0) * _z_ring(64.0, 38.0, 22.0), "titanium", f"{label}_ankle_torque_sensor_ring"),
-                _paint(Pos(x - side * 82.0, 0.0, 95.0) * Box(18.0, 360.0, 12.0), "sensor", f"{label}_outer_pressure_bus_bar"),
-                _paint(Pos(x + side * 82.0, 0.0, 95.0) * Box(18.0, 360.0, 12.0), "sensor", f"{label}_inner_pressure_bus_bar"),
+                _paint(Pos(x - side * 82.0, 0.0, 95.0) * Box(12.0, 312.0, 8.0), "graphite", f"{label}_outer_embedded_pressure_bus_strip"),
+                _paint(Pos(x + side * 82.0, 0.0, 95.0) * Box(12.0, 312.0, 8.0), "graphite", f"{label}_inner_embedded_pressure_bus_strip"),
             ]
         )
         cell_index = 0
@@ -208,14 +208,14 @@ def _lower_limb_actuation_frames():
                 _box_between_xyz((ankle[0], 28.0, ankle[2] + 42.0), (knee[0], 64.0, knee[2] - 58.0), 52.0, 34.0, "ceramic", f"{label}_front_shin_composite_fairing"),
                 _box_between_xyz((knee[0], 58.0, knee[2] + 56.0), (hip[0], 42.0, hip[2] - 62.0), 58.0, 36.0, "ceramic", f"{label}_front_thigh_composite_fairing"),
                 _paint(Pos(*knee) * _y_cylinder(62.0, 138.0), "dark_titanium", f"{label}_knee_pitch_actuator_housing"),
-                _paint(Pos(knee[0], knee[1], knee[2]) * Rot(90.0, 0.0, 0.0) * Torus(66.0, 6.5), "sensor", f"{label}_knee_torque_sensing_ring"),
+                _paint(Pos(knee[0], knee[1], knee[2]) * Rot(90.0, 0.0, 0.0) * Torus(66.0, 6.5), "dark_titanium", f"{label}_knee_torque_sensing_ring"),
                 _paint(Pos(*ankle) * _x_cylinder(50.0, 118.0), "dark_titanium", f"{label}_ankle_roll_actuator_housing"),
                 _paint(Pos(ankle[0], ankle[1], ankle[2] + 32.0) * _y_cylinder(44.0, 112.0), "dark_titanium", f"{label}_ankle_pitch_actuator_housing"),
                 _paint(Pos(*hip) * _x_cylinder(68.0, 140.0), "dark_titanium", f"{label}_hip_roll_actuator_housing"),
                 _paint(Pos(hip[0], hip[1], hip[2] + 78.0) * _y_cylinder(58.0, 124.0), "dark_titanium", f"{label}_hip_pitch_actuator_housing"),
                 _paint(Pos(hip[0], hip[1], hip[2] - 78.0) * _z_cylinder(54.0, 74.0), "dark_titanium", f"{label}_hip_yaw_actuator_stack"),
-                _tube_between_xyz((ankle[0] - side * 72.0, -88.0, ankle[2] + 48.0), (knee[0] - side * 92.0, -72.0, knee[2] + 20.0), 11.0, "copper", f"{label}_lower_leg_parallel_elastic_placeholder"),
-                _tube_between_xyz((knee[0] + side * 92.0, -58.0, knee[2] + 20.0), (hip[0] + side * 104.0, -54.0, hip[2] - 26.0), 11.0, "copper", f"{label}_upper_leg_parallel_elastic_placeholder"),
+                _tube_between_xyz((ankle[0] - side * 46.0, -44.0, ankle[2] + 56.0), (knee[0] - side * 54.0, -34.0, knee[2] - 24.0), 8.0, "dark_titanium", f"{label}_integrated_lower_leg_damper_placeholder"),
+                _tube_between_xyz((knee[0] + side * 54.0, -34.0, knee[2] + 28.0), (hip[0] + side * 62.0, -32.0, hip[2] - 42.0), 8.0, "dark_titanium", f"{label}_integrated_upper_leg_damper_placeholder"),
             ]
         )
     return Compound(children=children)
@@ -239,7 +239,7 @@ def _pelvis_balance_core():
                 _paint(Pos(x, -4.0, 892.0) * Sphere(78.0), "dark_titanium", f"{label}_pelvis_hip_socket_outer_shell"),
                 _paint(Pos(x, 84.0, 922.0) * Box(112.0, 42.0, 136.0), "graphite", f"{label}_hip_drive_service_cover"),
                 _tube_between_xyz((x - side * 66.0, 76.0, 956.0), (side * 158.0, 78.0, 1088.0), 16.0, "titanium", f"{label}_diagonal_pelvis_to_core_reaction_strut"),
-                _paint(Pos(side * 438.0, -14.0, 892.0) * _y_ring(62.0, 38.0, 36.0), "sensor", f"{label}_outer_hip_encoder_ring"),
+                _paint(Pos(side * 438.0, -14.0, 892.0) * _y_ring(62.0, 38.0, 36.0), "dark_titanium", f"{label}_outer_hip_encoder_ring"),
             ]
         )
     imu_positions = [(-82.0, -132.0, 1166.0), (0.0, -132.0, 1216.0), (82.0, -132.0, 1166.0)]
@@ -293,10 +293,10 @@ def _cable_management_and_service_panels():
         ankle = (side * STANCE_WIDTH / 2.0, 70.0, 222.0)
         children.extend(
             [
-                _tube_between_xyz((side * 120.0, 156.0, 1058.0), hip, 7.0, "sensor", f"{label}_blue_high_level_balance_bus_to_hip"),
-                _tube_between_xyz(hip, knee, 6.0, "sensor", f"{label}_blue_balance_bus_hip_to_knee"),
-                _tube_between_xyz(knee, ankle, 5.0, "sensor", f"{label}_blue_balance_bus_knee_to_ankle"),
-                _tube_between_xyz((side * 188.0, 154.0, 930.0), (side * 330.0, 92.0, 902.0), 8.0, "copper", f"{label}_copper_power_bus_to_hip_drive"),
+                _tube_between_xyz((side * 120.0, 156.0, 1058.0), hip, 6.0, "graphite", f"{label}_shielded_balance_bus_to_hip"),
+                _tube_between_xyz(hip, knee, 5.5, "graphite", f"{label}_shielded_balance_bus_hip_to_knee"),
+                _tube_between_xyz(knee, ankle, 5.0, "graphite", f"{label}_shielded_balance_bus_knee_to_ankle"),
+                _tube_between_xyz((side * 188.0, 154.0, 930.0), (side * 330.0, 92.0, 902.0), 6.0, "dark_titanium", f"{label}_internal_power_bus_to_hip_drive"),
                 _paint(Pos(side * 405.0, 112.0, 760.0) * Box(58.0, 48.0, 126.0), "graphite", f"{label}_side_service_disconnect_box"),
                 _paint(Pos(side * 405.0, 86.0, 1008.0) * Box(52.0, 38.0, 82.0), "warning", f"{label}_visible_balance_lockout_tag"),
             ]
@@ -435,12 +435,12 @@ Design intent:
 - The assembly should read like a laboratory CAD concept for dynamic balancing in humanoid robotics, not a full humanoid body and not an official Atlas replica.
 
 Required B-rep components:
-- Two broad contact feet with force-plate decks, rubber soles, pressure cell discs, ankle pedestals, torque sensor rings, and pressure bus bars.
-- Symmetric lower limb actuation frames with hip roll/pitch/yaw housings, knee pitch actuators, ankle roll/pitch housings, load links, fairings, and parallel elastic placeholder rods.
+- Two broad contact feet with force-plate decks, rubber soles, pressure cell discs, ankle pedestals, torque sensor rings, and embedded pressure bus strips.
+- Symmetric lower limb actuation frames with hip roll/pitch/yaw housings, knee pitch actuators, ankle roll/pitch housings, load links, fairings, and integrated dark damper placeholders.
 - Split pelvis balance core with hip sockets, diagonal reaction struts, control computer housing, diagnostic display, spine bearing, manual safing bar, and IMU modules.
 - Three orthogonal non-operational reaction-wheel placeholder rings around a central inertial hub.
 - Short 360-degree perception mast with top sensor ring, camera modules, and sealed perception puck.
-- Rear service cable tray, blue balance bus routing, copper power bus placeholders, service disconnect boxes, and lockout tags.
+- Rear service cable tray, shielded dark balance bus routing, internalized power bus placeholders, service disconnect boxes, and lockout tags.
 
 Parametric requirements:
 - Define named parameters for system height, width, depth, stance width, foot length, foot width, pelvis height, spine height, hip actuator count, knee actuator count, ankle actuator count, force cell count, IMU count, reaction-wheel placeholder count, and perception sensor count.

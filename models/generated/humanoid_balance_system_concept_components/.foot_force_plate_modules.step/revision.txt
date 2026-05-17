@@ -1,1 +1,1 @@
-humanoid-balance-system-v1-atlas-inspired-demo
+humanoid-balance-system-v2-muted-service-hardware-demo

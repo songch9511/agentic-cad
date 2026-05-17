@@ -10,12 +10,12 @@ Design intent:
 - The assembly should read like a laboratory CAD concept for dynamic balancing in humanoid robotics, not a full humanoid body and not an official Atlas replica.
 
 Required B-rep components:
-- Two broad contact feet with force-plate decks, rubber soles, pressure cell discs, ankle pedestals, torque sensor rings, and pressure bus bars.
-- Symmetric lower limb actuation frames with hip roll/pitch/yaw housings, knee pitch actuators, ankle roll/pitch housings, load links, fairings, and parallel elastic placeholder rods.
+- Two broad contact feet with force-plate decks, rubber soles, pressure cell discs, ankle pedestals, torque sensor rings, and embedded pressure bus strips.
+- Symmetric lower limb actuation frames with hip roll/pitch/yaw housings, knee pitch actuators, ankle roll/pitch housings, load links, fairings, and integrated dark damper placeholders.
 - Split pelvis balance core with hip sockets, diagonal reaction struts, control computer housing, diagnostic display, spine bearing, manual safing bar, and IMU modules.
 - Three orthogonal non-operational reaction-wheel placeholder rings around a central inertial hub.
 - Short 360-degree perception mast with top sensor ring, camera modules, and sealed perception puck.
-- Rear service cable tray, blue balance bus routing, copper power bus placeholders, service disconnect boxes, and lockout tags.
+- Rear service cable tray, shielded dark balance bus routing, internalized power bus placeholders, service disconnect boxes, and lockout tags.
 
 Parametric requirements:
 - Define named parameters for system height, width, depth, stance width, foot length, foot width, pelvis height, spine height, hip actuator count, knee actuator count, ankle actuator count, force cell count, IMU count, reaction-wheel placeholder count, and perception sensor count.
