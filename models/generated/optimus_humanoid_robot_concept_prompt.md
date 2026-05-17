@@ -1,21 +1,19 @@
-Generate a non-official Optimus-inspired humanoid robot concept in CoBrA from the supplied reference images. Use millimeters and create editable B-rep CAD solids, not mesh-only geometry.
+Generate a new non-official streamlined humanoid exoshell robot concept in CoBrA. Use millimeters and create editable B-rep CAD solids, not mesh-only geometry.
 
-Reference interpretation:
-- Gloss black capsule helmet/head with a flush dark faceplate.
-- Cyan illuminated face-contour line following the front helmet perimeter.
-- White smooth chest armor with a refined black tapered neck cowl, compact shoulder yoke, black side sweeps, and black lower abdomen.
-- White upper-arm, forearm, thigh, and shin fairings over visible black mechanical joints.
-- Exposed black pelvis and hip mechanism with tie rods, rotary pods, and actuator placeholders.
-- Slim black feet and articulated five-finger hands with small knuckle links.
-- Premium humanoid robot proportions: narrow waist, broad shoulders, long legs, upright front-facing stance.
-- Use a more advanced CAD construction strategy than flat panels: multi-section lofted helmet, tapered cervical neck fairing, compact saddle cowl, sloped trapezius collars, torso, abdomen, shoulders, limb fairings, knee caps, actuator housings, and feet; local-frame tapered limb shells; bearing bolt rings; clevis yokes; tactile finger pads; micro tendon rods; explicit overlap mounts between head/neck/yoke, chest/torso, shoulders/arms, wrists/hands, hips/thighs, knees/caps, and ankles/feet.
+Design direction:
+- Do not continue the blocky Optimus-like design. Create a different, sleeker humanoid robot with a more aerodynamic black/white exoshell.
+- Use a gloss black teardrop helmet, continuous smoked visor, cyan swept visor contour, seamless tapered cervical neck fairing, and compact shoulder saddle cowl.
+- Use a smooth hourglass torso with a continuous warm-white front exoshell, black side airflow channels, flush cyan centerline lights, covered pelvis pod, and slim rear spine keel.
+- Arms and legs should be slim and fluid with local-frame tapered B-rep fairings, recessed black joints, flush actuator grooves, and minimal exposed rods.
+- Feet should be low, swept, and tapered instead of heavy rectangular boots.
+- Keep articulated five-finger hands, but make palms and links slimmer and cleaner.
 
 Required geometry:
-- Keep the design a non-official reference-inspired concept; do not copy the exact Tesla logo or official product geometry.
+- Keep the design a non-official concept; do not copy official Tesla/Optimus product geometry.
 - Model head, face light, torso, pelvis, arms, hands, legs, feet, sensors, seams, rods, and actuator housings as separate editable B-rep solids/components.
-- Use robust lofted rounded shells, extruded planar insets, cylinders, spheres, bearing rings, clevis brackets, and tube links. Avoid floating rods, mesh-only detail, or detached decorative objects.
-- Add connector bridges, backing spacers, collars, cervical tendons, and overlap pads so visibly separate components read as mechanically mounted rather than floating.
-- Include clear black/white material blocking matching the reference: black head/yoke/abdomen/hips/knees/feet, warm white armor shells, cyan face light, aluminum rods.
+- Use robust lofted rounded shells, teardrop pods, extruded flush insets, cylinders, spheres, bearing rings, and tube links. Avoid flat shelf-like parts, mesh-only detail, or detached decorative objects.
+- Add compact connector bridges, backing shells, collars, cervical tendons, and overlap pads so all components read as mechanically mounted rather than floating.
+- Include clear black/white/cyan material blocking: black glass helmet and visor, warm-white exoshell armor, satin-black joints/channels/feet, cyan light accents, aluminum/titanium micro rods.
 
 Parametric requirements:
 - Define named parameters for overall height, shoulder width, torso size, head size, limb lengths, joint diameter, shell thickness, foot size, finger count, actuator count, light-strip count, lofted shell count, surface fastener count, and connector bridge count.
