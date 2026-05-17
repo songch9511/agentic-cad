@@ -24,9 +24,9 @@ from build123d import (
 DISPLAY_NAME = "Standalone wearable jetpack concept"
 
 # Units: millimeters. This is a non-operational display CAD model.
-JETPACK_HEIGHT = 1120.0
-JETPACK_WIDTH = 760.0
-JETPACK_DEPTH = 560.0
+JETPACK_HEIGHT = 965.0
+JETPACK_WIDTH = 860.0
+JETPACK_DEPTH = 530.0
 BACKPLATE_HEIGHT = 820.0
 PRIMARY_THRUSTER_COUNT = 2
 VECTOR_NOZZLE_COUNT = 2
@@ -35,14 +35,14 @@ SERVICE_CANISTER_COUNT = 4
 HARNESS_STRAP_COUNT = 4
 GUARD_RAIL_COUNT = 10
 ACCESS_FASTENER_COUNT = 32
-COMPONENT_COUNT = 6
+COMPONENT_COUNT = 5
 
 STEP_OUTPUT = "jetpack_concept_assembly.step"
 GLB_OUTPUT = "jetpack_concept_assembly.glb"
 VALIDATION_OUTPUT = "jetpack_concept_validation_report.json"
 PROMPT_OUTPUT = "jetpack_concept_prompt.md"
 COMPONENT_DIR = "jetpack_concept_components"
-COMPONENT_REVISION = "jetpack-concept-v1-standalone-backpack-demo"
+COMPONENT_REVISION = "jetpack-concept-v2-no-display-base-demo"
 
 COLORS = {
     "titanium": Color(0.62, 0.62, 0.58, 1.0),
@@ -277,25 +277,9 @@ def _avionics_and_control_box():
     return Compound(children=children)
 
 
-def _presentation_base():
-    children = [
-        _paint(Pos(0.0, 0.0, -46.0) * Box(920.0, 720.0, 42.0), "graphite", "matte_black_jetpack_filming_base"),
-        _paint(Pos(0.0, -318.0, -16.0) * Box(420.0, 32.0, 22.0), "warning", "front_non_flight_rated_label_plate"),
-    ]
-    for side in [-1, 1]:
-        children.extend(
-            [
-                _tube_between_xyz((side * 190.0, -80.0, -24.0), (side * 190.0, -80.0, 142.0), 10.0, "dark_titanium", f"{'left' if side < 0 else 'right'}_base_tie_down_post_front"),
-                _tube_between_xyz((side * 190.0, 180.0, -24.0), (side * 190.0, 180.0, 142.0), 10.0, "dark_titanium", f"{'left' if side < 0 else 'right'}_base_tie_down_post_rear"),
-            ]
-        )
-    return Compound(children=children)
-
-
 def build_assembly():
     return Compound(
         children=[
-            _presentation_base(),
             _backplate_and_harness(),
             _twin_thruster_pack(),
             _service_canisters_and_plumbing(),
@@ -334,7 +318,6 @@ def _write_component(name: str, shape) -> None:
 
 def _write_components() -> None:
     components = {
-        "presentation_base": _presentation_base(),
         "backplate_and_harness": _backplate_and_harness(),
         "twin_thruster_pack": _twin_thruster_pack(),
         "service_canisters_and_plumbing": _service_canisters_and_plumbing(),
@@ -387,14 +370,13 @@ def _validation_report(shape) -> dict[str, object]:
             "nozzles_to_thruster_pods": True,
             "service_canisters_to_side_mounts": True,
             "guard_cage_to_thruster_pack": True,
-            "base_tie_downs_to_jetpack": True,
         },
         "separate_colored_solids": 150,
     }
     report["passed"] = (
-        850.0 <= bbox[0] <= 980.0
-        and 660.0 <= bbox[1] <= 780.0
-        and 1080.0 <= bbox[2] <= 1220.0
+        820.0 <= bbox[0] <= 900.0
+        and 500.0 <= bbox[1] <= 580.0
+        and 930.0 <= bbox[2] <= 1010.0
         and report["primary_thruster_count"] == 2
         and report["vector_nozzle_count"] == 2
         and report["service_canister_count"] == 4
@@ -411,7 +393,7 @@ Scenario:
 - This is a fictional, non-official, non-flight-rated CAD visualization model. Do not provide operational thrust, fuel, control-law, or build instructions.
 
 Design intent:
-- Model a compact real-world display jetpack inspired by wearable jet suit references: rigid backplate, shoulder yoke, waist belt, harness straps, twin vertical jet pods, large upper intake rings, lower heat-shielded exhaust bells, vectoring nozzle rings, side service canisters, shielded control lines, guard cage, heat shields, avionics/control box, warning lockout tags, and a filming base.
+- Model a compact real-world display jetpack inspired by wearable jet suit references: rigid backplate, shoulder yoke, waist belt, harness straps, twin vertical jet pods, large upper intake rings, lower heat-shielded exhaust bells, vectoring nozzle rings, side service canisters, shielded control lines, guard cage, heat shields, avionics/control box, and warning lockout tags.
 - Do not model a human body, arms, hand jets, legs, boots, helmet, flames, weapons, missiles, lasers, or blue energy effects. The output should read as a single removable backpack jetpack assembly.
 
 Required B-rep components:
@@ -420,11 +402,11 @@ Required B-rep components:
 - Four side service canisters, valve/regulator boxes, shielded service lines, and cross-body manifolds.
 - Rear guard cage with high-visibility service bars, vertical guard rails, lower nozzle guard rails, central ceramic heat deflector, and lockout tags.
 - Avionics/control box with smoke glass diagnostic window, service port cover, access fasteners, and non-operational arming lockout panel.
-- Small matte display base only for filming and scale.
+- No bottom plate, no filming base, and no floor stand.
 
 Validation:
 - Report bounding box, jetpack height, width, depth, backplate height, primary thruster count, vector nozzle count, intake ring count, service canister count, harness strap count, guard rail count, fastener count, component count, and material separation.
-- Verify interfaces: backplate-to-shoulder-yoke, thruster-pods-to-crossbeams, nozzles-to-thruster-pods, service-canisters-to-side-mounts, guard-cage-to-thruster-pack, and base-tie-downs-to-jetpack.
+- Verify interfaces: backplate-to-shoulder-yoke, thruster-pods-to-crossbeams, nozzles-to-thruster-pods, service-canisters-to-side-mounts, and guard-cage-to-thruster-pack.
 - Verify that body, arms, hand jets, legs, helmet, flames, weapons, and blue energy effects are not modeled.
 - Export STEP, colored GLB, validation report, prompt artifact, component STEP files, and native parametric script.
 """

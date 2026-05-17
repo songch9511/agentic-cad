@@ -7,9 +7,9 @@
   "non_flight_rated_visual_cad_model": true,
   "no_human_body_modeled": true,
   "no_hand_or_arm_thrusters_modeled": true,
-  "jetpack_height_mm": 1120.0,
-  "jetpack_width_mm": 760.0,
-  "jetpack_depth_mm": 560.0,
+  "jetpack_height_mm": 965.0,
+  "jetpack_width_mm": 860.0,
+  "jetpack_depth_mm": 530.0,
   "backplate_height_mm": 820.0,
   "primary_thruster_count": 2,
   "vector_nozzle_count": 2,
@@ -18,11 +18,11 @@
   "harness_strap_count": 4,
   "guard_rail_count": 10,
   "access_fastener_count": 32,
-  "component_count": 6,
+  "component_count": 5,
   "bounding_box_mm": [
-    920.0,
-    720.0,
-    1107.0
+    868.0,
+    529.0,
+    964.0
   ],
   "backplate_and_harness_modeled": true,
   "twin_vertical_thruster_pods_modeled": true,
@@ -36,8 +36,7 @@
     "thruster_pods_to_crossbeams": true,
     "nozzles_to_thruster_pods": true,
     "service_canisters_to_side_mounts": true,
-    "guard_cage_to_thruster_pack": true,
-    "base_tie_downs_to_jetpack": true
+    "guard_cage_to_thruster_pack": true
   },
   "separate_colored_solids": 150,
   "passed": true
