@@ -39,7 +39,7 @@ GLB_OUTPUT = "optimus_finger_actuator_concept_assembly.glb"
 VALIDATION_OUTPUT = "optimus_finger_actuator_concept_validation_report.json"
 PROMPT_OUTPUT = "optimus_finger_actuator_concept_prompt.md"
 COMPONENT_DIR = "optimus_finger_actuator_concept_components"
-COMPONENT_REVISION = "optimus-finger-actuator-concept-v7-advanced-joint-angles"
+COMPONENT_REVISION = "optimus-finger-actuator-concept-v8-local-joint-frame"
 
 COLORS = {
     "graphite": Color(0.045, 0.048, 0.052, 1.0),
@@ -101,6 +101,11 @@ def _segment_rotation_xyz(start: tuple[float, ...], end: tuple[float, ...]) -> t
     return pitch, yaw
 
 
+def _segment_rotation_transform(start: tuple[float, ...], end: tuple[float, ...]):
+    pitch, yaw = _segment_rotation_xyz(start, end)
+    return Rot(0.0, 0.0, yaw) * Rot(0.0, pitch, 0.0)
+
+
 def _box_between_xy(
     start: tuple[float, float],
     end: tuple[float, float],
@@ -130,8 +135,7 @@ def _box_between_xyz(
         (start[1] + end[1]) / 2.0,
         (start[2] + end[2]) / 2.0,
     )
-    pitch, yaw = _segment_rotation_xyz(start, end)
-    return _paint(Pos(*center) * Rot(0.0, pitch, yaw) * Box(length, width, height), color, label)
+    return _paint(Pos(*center) * _segment_rotation_transform(start, end) * Box(length, width, height), color, label)
 
 
 def _tube_between_xy(
@@ -161,8 +165,7 @@ def _tube_between_xyz(
         (start[1] + end[1]) / 2.0,
         (start[2] + end[2]) / 2.0,
     )
-    pitch, yaw = _segment_rotation_xyz(start, end)
-    return _paint(Pos(*center) * Rot(0.0, pitch, yaw) * _x_cylinder(radius, length), color, label)
+    return _paint(Pos(*center) * _segment_rotation_transform(start, end) * _x_cylinder(radius, length), color, label)
 
 
 def _offset_segment_xy(
@@ -178,6 +181,62 @@ def _offset_segment_xy(
 
 def _add_z(point: tuple[float, ...], dz: float) -> tuple[float, float, float]:
     return (point[0], point[1], point[2] + dz)
+
+
+def _unit_segment(start: tuple[float, ...], end: tuple[float, ...]) -> tuple[float, float, float]:
+    length = _distance_xyz(start, end)
+    return ((end[0] - start[0]) / length, (end[1] - start[1]) / length, (end[2] - start[2]) / length)
+
+
+def _segment_side_vector(start: tuple[float, ...], end: tuple[float, ...]) -> tuple[float, float, float]:
+    dx = end[0] - start[0]
+    dy = end[1] - start[1]
+    horizontal = math.hypot(dx, dy)
+    if horizontal < 1e-6:
+        return (1.0, 0.0, 0.0)
+    return (-dy / horizontal, dx / horizontal, 0.0)
+
+
+def _cross(a: tuple[float, float, float], b: tuple[float, float, float]) -> tuple[float, float, float]:
+    return (a[1] * b[2] - a[2] * b[1], a[2] * b[0] - a[0] * b[2], a[0] * b[1] - a[1] * b[0])
+
+
+def _normalize(vector: tuple[float, float, float]) -> tuple[float, float, float]:
+    length = math.sqrt(vector[0] ** 2 + vector[1] ** 2 + vector[2] ** 2)
+    if length < 1e-6:
+        return (0.0, 0.0, 1.0)
+    return (vector[0] / length, vector[1] / length, vector[2] / length)
+
+
+def _segment_top_normal(start: tuple[float, ...], end: tuple[float, ...]) -> tuple[float, float, float]:
+    along = _unit_segment(start, end)
+    side = _segment_side_vector(start, end)
+    normal = _normalize(_cross(along, side))
+    if normal[2] < 0.0:
+        normal = (-normal[0], -normal[1], -normal[2])
+    return normal
+
+
+def _move_point(point: tuple[float, ...], vector: tuple[float, float, float], distance: float) -> tuple[float, float, float]:
+    return (point[0] + vector[0] * distance, point[1] + vector[1] * distance, point[2] + vector[2] * distance)
+
+
+def _offset_segment_vector(
+    start: tuple[float, ...],
+    end: tuple[float, ...],
+    vector: tuple[float, float, float],
+    distance: float,
+) -> tuple[tuple[float, float, float], tuple[float, float, float]]:
+    return _move_point(start, vector, distance), _move_point(end, vector, distance)
+
+
+def _segment_point(start: tuple[float, ...], end: tuple[float, ...], distance_from_center: float) -> tuple[float, float, float]:
+    along = _unit_segment(start, end)
+    return (
+        (start[0] + end[0]) / 2.0 + along[0] * distance_from_center,
+        (start[1] + end[1]) / 2.0 + along[1] * distance_from_center,
+        (start[2] + end[2]) / 2.0 + along[2] * distance_from_center,
+    )
 
 
 def _joint_cross_axis(
@@ -329,23 +388,24 @@ def _finger_link_sets():
             taper = 1.0 - segment_index * 0.14
             link_width = width * taper
             side_offset = link_width / 2.0 - 2.8
+            top_normal = _segment_top_normal(start, end)
             left_start, left_end = _offset_segment_xy(start, end, side_offset)
             right_start, right_end = _offset_segment_xy(start, end, -side_offset)
+            top_start, top_end = _offset_segment_vector(start, end, top_normal, LINK_THICKNESS / 2.0 + 3.0)
+            underside_start, underside_end = _offset_segment_vector(start, end, top_normal, -LINK_THICKNESS / 2.0 - 2.0)
             shell_label = f"{finger_name}_phalange_{segment_index + 1}_satin_aluminum_shell"
             children.extend(
                 [
                     _box_between_xyz(start, end, link_width, LINK_THICKNESS, "aluminum", shell_label),
-                    _box_between_xyz(_add_z(start, LINK_THICKNESS / 2.0 + 3.0), _add_z(end, LINK_THICKNESS / 2.0 + 3.0), link_width - 7.0, 4.0, "satin", f"{finger_name}_phalange_{segment_index + 1}_broad_top_highlight_panel"),
+                    _box_between_xyz(top_start, top_end, link_width - 7.0, 4.0, "satin", f"{finger_name}_phalange_{segment_index + 1}_broad_top_highlight_panel"),
                     _box_between_xyz(left_start, left_end, 2.8, LINK_THICKNESS + 4.0, "titanium", f"{finger_name}_phalange_{segment_index + 1}_left_side_cheek"),
                     _box_between_xyz(right_start, right_end, 2.8, LINK_THICKNESS + 4.0, "titanium", f"{finger_name}_phalange_{segment_index + 1}_right_side_cheek"),
-                    _box_between_xyz(_add_z(start, -LINK_THICKNESS / 2.0 - 2.0), _add_z(end, -LINK_THICKNESS / 2.0 - 2.0), link_width - 5.5, 3.6, "graphite", f"{finger_name}_phalange_{segment_index + 1}_underside_shadow_gap"),
+                    _box_between_xyz(underside_start, underside_end, link_width - 5.5, 3.6, "graphite", f"{finger_name}_phalange_{segment_index + 1}_underside_shadow_gap"),
                 ]
             )
             for fastener_offset in (-length * 0.28, length * 0.28):
-                cx = (start[0] + end[0]) / 2.0 + (end[0] - start[0]) / length * fastener_offset
-                cy = (start[1] + end[1]) / 2.0 + (end[1] - start[1]) / length * fastener_offset
-                cz = (start[2] + end[2]) / 2.0 + (end[2] - start[2]) / length * fastener_offset
-                children.append(_paint(Pos(cx, cy, cz + LINK_THICKNESS / 2.0 + 5.0) * _z_cylinder(1.7, 2.0), "graphite", f"{finger_name}_phalange_{segment_index + 1}_flush_fastener"))
+                fastener_point = _move_point(_segment_point(start, end, fastener_offset), top_normal, LINK_THICKNESS / 2.0 + 5.0)
+                children.append(_paint(Pos(*fastener_point) * _z_cylinder(1.7, 2.0), "graphite", f"{finger_name}_phalange_{segment_index + 1}_flush_fastener"))
         for joint_index, point in enumerate(points[:-1], start=1):
             joint_label = "mcp" if joint_index == 1 else "pip" if joint_index == 2 else "dip"
             radius = KNUCKLE_RADIUS * (1.05 if joint_index == 1 else 0.92)
@@ -362,9 +422,9 @@ def _finger_link_sets():
             )
         tip = points[-1]
         prev = points[-2]
-        angle = _angle_xy(prev, tip)
-        dx, dy = _vec(angle, 10.0)
-        children.append(_box_between_xyz(tip, (tip[0] + dx, tip[1] + dy, tip[2] - 2.0), width * 0.74, LINK_THICKNESS * 0.68, "aluminum", f"{finger_name}_rounded_distal_tip_carrier"))
+        distal_along = _unit_segment(prev, tip)
+        distal_tip = _move_point(tip, distal_along, 10.0)
+        children.append(_box_between_xyz(tip, distal_tip, width * 0.74, LINK_THICKNESS * 0.68, "aluminum", f"{finger_name}_rounded_distal_tip_carrier"))
     return Compound(children=children)
 
 
@@ -377,18 +437,33 @@ def _tendon_guide_tubes():
         for segment_index in range(len(points) - 1):
             start = points[segment_index]
             end = points[segment_index + 1]
+            top_normal = _segment_top_normal(start, end)
             tube_start, tube_end = _offset_segment_xy(start, end, 7.6)
             return_start, return_end = _offset_segment_xy(start, end, -7.6)
             children.extend(
                 [
-                    _tube_between_xyz(_add_z(tube_start, 9.0), _add_z(tube_end, 9.0), TENDON_TUBE_RADIUS, color_top, f"{finger_name}_low_profile_tendon_guide_segment_{segment_index + 1}"),
-                    _tube_between_xyz(_add_z(return_start, 2.0), _add_z(return_end, 2.0), TENDON_TUBE_RADIUS * 0.72, color_side, f"{finger_name}_side_tendon_return_segment_{segment_index + 1}"),
+                    _tube_between_xyz(
+                        _move_point(tube_start, top_normal, 9.0),
+                        _move_point(tube_end, top_normal, 9.0),
+                        TENDON_TUBE_RADIUS,
+                        color_top,
+                        f"{finger_name}_low_profile_tendon_guide_segment_{segment_index + 1}",
+                    ),
+                    _tube_between_xyz(
+                        _move_point(return_start, top_normal, 2.0),
+                        _move_point(return_end, top_normal, 2.0),
+                        TENDON_TUBE_RADIUS * 0.72,
+                        color_side,
+                        f"{finger_name}_side_tendon_return_segment_{segment_index + 1}",
+                    ),
                 ]
             )
         root = points[0]
         entry_end, _ = _offset_segment_xy(root, points[1], 7.6)
-        entry_start = (entry_end[0], -PALM_DEPTH / 2.0 + 8.0, root[2] + 9.0)
-        children.append(_tube_between_xyz(entry_start, _add_z(entry_end, 9.0), TENDON_TUBE_RADIUS, color_top, f"{finger_name}_palm_tendon_entry_guide"))
+        entry_normal = _segment_top_normal(root, points[1])
+        entry_target = _move_point(entry_end, entry_normal, 9.0)
+        entry_start = (entry_target[0], -PALM_DEPTH / 2.0 + 8.0, entry_target[2])
+        children.append(_tube_between_xyz(entry_start, entry_target, TENDON_TUBE_RADIUS, color_top, f"{finger_name}_palm_tendon_entry_guide"))
     return Compound(children=children)
 
 
@@ -398,16 +473,22 @@ def _rubber_fingertip_pads():
     for finger_name, points in chains.items():
         tip = points[-1]
         prev = points[-2]
-        angle = _angle_xy(prev, tip)
-        inset_far = _vec(angle, -6.0)
-        inset_near = _vec(angle, -22.0)
+        distal_along = _unit_segment(prev, tip)
+        top_normal = _segment_top_normal(prev, tip)
         pad_width = LINK_WIDTH * (0.68 if finger_name == "thumb" else 0.78)
-        pad_start = (tip[0] + inset_near[0], tip[1] + inset_near[1], tip[2] + LINK_THICKNESS / 2.0 + 2.0)
-        pad_end = (tip[0] + inset_far[0], tip[1] + inset_far[1], tip[2] + LINK_THICKNESS / 2.0 + 2.0)
+        pad_start = _move_point(_move_point(tip, distal_along, -22.0), top_normal, LINK_THICKNESS / 2.0 + 2.0)
+        pad_end = _move_point(_move_point(tip, distal_along, -6.0), top_normal, LINK_THICKNESS / 2.0 + 2.0)
         children.extend(
             [
                 _box_between_xyz(pad_start, pad_end, pad_width, 3.6, "dark_rubber", f"{finger_name}_low_profile_dark_rubber_tactile_fingertip_pad"),
-                _box_between_xyz(_add_z(pad_start, 2.6), _add_z(pad_end, 2.6), pad_width * 0.52, 1.6, "graphite", f"{finger_name}_subtle_tactile_pad_groove"),
+                _box_between_xyz(
+                    _move_point(pad_start, top_normal, 2.6),
+                    _move_point(pad_end, top_normal, 2.6),
+                    pad_width * 0.52,
+                    1.6,
+                    "graphite",
+                    f"{finger_name}_subtle_tactile_pad_groove",
+                ),
             ]
         )
     return Compound(children=children)
@@ -543,6 +624,7 @@ def _validation_report(shape) -> dict[str, object]:
         "finger_flexion_is_joint_angle_driven": True,
         "finger_flexion_angles_are_cumulative_joint_rotations": True,
         "horizontal_hinge_axis_pins_modeled": True,
+        "segment_local_frames_align_surface_details": True,
         "neutral_adjacent_finger_clearance_ok": _neutral_spacing_ok(),
         "thumb_opposed_and_angled": True,
         "separate_colored_solids": 170,
@@ -556,6 +638,7 @@ def _validation_report(shape) -> dict[str, object]:
         and report["finger_flexion_is_joint_angle_driven"]
         and report["finger_flexion_angles_are_cumulative_joint_rotations"]
         and report["horizontal_hinge_axis_pins_modeled"]
+        and report["segment_local_frames_align_surface_details"]
         and report["neutral_adjacent_finger_clearance_ok"]
         and 210.0 <= bbox[0] <= 270.0
         and 250.0 <= bbox[1] <= 365.0
@@ -584,12 +667,13 @@ Parametric requirements:
 - Derive all finger positions from the finger pitch and palm coordinate system.
 - Derive each fingertip chain from named per-segment yaw angles and cumulative local joint flexion angles, so each downstream phalanx inherits the previous joint rotation and all link bodies/tendon tubes align to the true joint-to-joint vector.
 - Add visible horizontal hinge-axis pins through the knuckles so the rotation axis is legible at each MCP/PIP/DIP joint.
+- Use each phalanx segment's local along/side/top-normal frame for shell panels, tendon tubes, fasteners, fingertip pads, and distal carriers so details rotate in the same direction as the joint chain.
 - Keep palm, each finger link set, joints, tendon guides, actuators, pads, and fasteners as separate solids/components.
 - Avoid fragile small booleans and avoid over-detailed internals.
 
 Validation:
 - Report total fingers, total joints, total phalanges, actuator count, tendon guide count, and bounding box.
-- Verify finger links are centered on their joint axes, cumulative joint-angle profiles are reported, horizontal hinge axes are modeled, and adjacent fingers do not overlap at the neutral pose.
+- Verify finger links are centered on their joint axes, cumulative joint-angle profiles are reported, horizontal hinge axes are modeled, segment-local surface details are aligned, and adjacent fingers do not overlap at the neutral pose.
 - Export STEP, colored GLB, validation report, prompt, and native parametric script.
 """
     (Path(__file__).resolve().parent / PROMPT_OUTPUT).write_text(prompt, encoding="utf-8")

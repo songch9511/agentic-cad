@@ -17,9 +17,9 @@
   "tendon_tube_radius_mm": 1.25,
   "pad_thickness_mm": 7.0,
   "bounding_box_mm": [
-    249.4,
+    249.0,
     305.0,
-    81.3
+    83.9
   ],
   "joint_axes_mm": {
     "index": [
@@ -167,6 +167,7 @@
   "finger_flexion_is_joint_angle_driven": true,
   "finger_flexion_angles_are_cumulative_joint_rotations": true,
   "horizontal_hinge_axis_pins_modeled": true,
+  "segment_local_frames_align_surface_details": true,
   "neutral_adjacent_finger_clearance_ok": true,
   "thumb_opposed_and_angled": true,
   "separate_colored_solids": 170,

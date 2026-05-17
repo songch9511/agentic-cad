@@ -17,10 +17,11 @@ Parametric requirements:
 - Derive all finger positions from the finger pitch and palm coordinate system.
 - Derive each fingertip chain from named per-segment yaw angles and cumulative local joint flexion angles, so each downstream phalanx inherits the previous joint rotation and all link bodies/tendon tubes align to the true joint-to-joint vector.
 - Add visible horizontal hinge-axis pins through the knuckles so the rotation axis is legible at each MCP/PIP/DIP joint.
+- Use each phalanx segment's local along/side/top-normal frame for shell panels, tendon tubes, fasteners, fingertip pads, and distal carriers so details rotate in the same direction as the joint chain.
 - Keep palm, each finger link set, joints, tendon guides, actuators, pads, and fasteners as separate solids/components.
 - Avoid fragile small booleans and avoid over-detailed internals.
 
 Validation:
 - Report total fingers, total joints, total phalanges, actuator count, tendon guide count, and bounding box.
-- Verify finger links are centered on their joint axes, cumulative joint-angle profiles are reported, horizontal hinge axes are modeled, and adjacent fingers do not overlap at the neutral pose.
+- Verify finger links are centered on their joint axes, cumulative joint-angle profiles are reported, horizontal hinge axes are modeled, segment-local surface details are aligned, and adjacent fingers do not overlap at the neutral pose.
 - Export STEP, colored GLB, validation report, prompt, and native parametric script.

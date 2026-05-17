@@ -1,1 +1,1 @@
-optimus-finger-actuator-concept-v7-advanced-joint-angles
+optimus-finger-actuator-concept-v8-local-joint-frame
