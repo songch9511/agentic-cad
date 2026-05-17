@@ -1,1 +1,1 @@
-optimus-humanoid-robot-concept-v1-reference-rebuild
+optimus-humanoid-robot-concept-v2-lofted-surfaces
