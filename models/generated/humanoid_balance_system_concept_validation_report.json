@@ -10,8 +10,8 @@
   "non_operational_placeholder_geometry": true,
   "no_boston_dynamics_proprietary_dimensions": true,
   "no_control_law_or_torque_specs": true,
-  "system_height_mm": 1420.0,
-  "system_width_mm": 1000.0,
+  "system_height_mm": 1345.0,
+  "system_width_mm": 852.0,
   "system_depth_mm": 420.0,
   "stance_width_mm": 560.0,
   "foot_length_mm": 420.0,
@@ -23,27 +23,30 @@
   "ankle_actuator_count": 4,
   "force_cell_count": 12,
   "imu_module_count": 3,
-  "reaction_wheel_placeholder_count": 3,
-  "perception_sensor_count": 8,
-  "component_count": 6,
+  "reaction_wheel_placeholder_count": 0,
+  "perception_sensor_count": 0,
+  "component_count": 4,
   "bounding_box_mm": [
-    1000.0,
+    851.8,
     420.0,
-    1451.0
+    1345.0
   ],
   "left_right_leg_symmetry_modeled": true,
   "feet_contact_ground_plane": true,
   "pelvis_balance_core_modeled": true,
   "whole_body_control_computer_placeholder_modeled": true,
-  "perception_ring_modeled": true,
+  "external_reaction_wheel_placeholders_removed": true,
+  "external_perception_mast_removed": true,
+  "floating_service_tags_removed": true,
+  "integrated_cable_management_modeled": true,
   "critical_interface_checks": {
     "feet_to_ankle_pedestals": true,
     "ankles_to_lower_leg_links": true,
     "knee_actuators_to_leg_links": true,
     "hips_to_pelvis_crossbeam": true,
-    "balance_core_to_sensor_mast": true,
-    "cable_trays_to_joint_modules": true
+    "hip_clevises_to_pelvis": true,
+    "integrated_cable_trays_to_joint_modules": true
   },
-  "separate_colored_solids": 170,
+  "separate_colored_solids": 150,
   "passed": true
 }

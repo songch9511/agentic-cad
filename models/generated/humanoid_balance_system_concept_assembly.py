@@ -24,8 +24,8 @@ from build123d import (
 DISPLAY_NAME = "Humanoid dynamic balance system concept"
 
 # Units: millimeters. This is a non-official, non-operational visual CAD model.
-SYSTEM_HEIGHT = 1420.0
-SYSTEM_WIDTH = 1000.0
+SYSTEM_HEIGHT = 1345.0
+SYSTEM_WIDTH = 852.0
 SYSTEM_DEPTH = 420.0
 STANCE_WIDTH = 560.0
 FOOT_LENGTH = 420.0
@@ -37,16 +37,16 @@ KNEE_ACTUATOR_COUNT = 2
 ANKLE_ACTUATOR_COUNT = 4
 FORCE_CELL_COUNT = 12
 IMU_MODULE_COUNT = 3
-REACTION_WHEEL_PLACEHOLDER_COUNT = 3
-PERCEPTION_SENSOR_COUNT = 8
-COMPONENT_COUNT = 6
+REACTION_WHEEL_PLACEHOLDER_COUNT = 0
+PERCEPTION_SENSOR_COUNT = 0
+COMPONENT_COUNT = 4
 
 STEP_OUTPUT = "humanoid_balance_system_concept_assembly.step"
 GLB_OUTPUT = "humanoid_balance_system_concept_assembly.glb"
 VALIDATION_OUTPUT = "humanoid_balance_system_concept_validation_report.json"
 PROMPT_OUTPUT = "humanoid_balance_system_concept_prompt.md"
 COMPONENT_DIR = "humanoid_balance_system_concept_components"
-COMPONENT_REVISION = "humanoid-balance-system-v2-muted-service-hardware-demo"
+COMPONENT_REVISION = "humanoid-balance-system-v3-integrated-lower-body-demo"
 
 COLORS = {
     "titanium": Color(0.63, 0.64, 0.62, 1.0),
@@ -57,7 +57,7 @@ COLORS = {
     "ceramic": Color(0.78, 0.77, 0.70, 1.0),
     "copper": Color(0.34, 0.24, 0.16, 1.0),
     "sensor": Color(0.04, 0.16, 0.19, 1.0),
-    "warning": Color(0.94, 0.63, 0.08, 1.0),
+    "warning": Color(0.30, 0.27, 0.18, 1.0),
     "glass": Color(0.035, 0.08, 0.10, 0.82),
 }
 
@@ -214,6 +214,11 @@ def _lower_limb_actuation_frames():
                 _paint(Pos(*hip) * _x_cylinder(68.0, 140.0), "dark_titanium", f"{label}_hip_roll_actuator_housing"),
                 _paint(Pos(hip[0], hip[1], hip[2] + 78.0) * _y_cylinder(58.0, 124.0), "dark_titanium", f"{label}_hip_pitch_actuator_housing"),
                 _paint(Pos(hip[0], hip[1], hip[2] - 78.0) * _z_cylinder(54.0, 74.0), "dark_titanium", f"{label}_hip_yaw_actuator_stack"),
+                _paint(Pos(ankle[0], -28.0, 250.0) * Box(126.0, 86.0, 44.0), "graphite", f"{label}_ankle_clevis_bridge_to_shin_links"),
+                _paint(Pos(knee[0], 18.0, 565.0) * Box(148.0, 92.0, 54.0), "graphite", f"{label}_knee_clevis_bridge_between_links"),
+                _paint(Pos(hip[0], -2.0, 848.0) * Box(168.0, 92.0, 58.0), "graphite", f"{label}_hip_clevis_bridge_into_pelvis"),
+                _tube_between_xyz((ankle[0] - side * 68.0, -16.0, 262.0), (knee[0] - side * 82.0, 16.0, 540.0), 9.0, "dark_titanium", f"{label}_rear_lower_leg_continuity_strut"),
+                _tube_between_xyz((knee[0] + side * 82.0, 18.0, 592.0), (hip[0] + side * 94.0, 2.0, 830.0), 10.0, "dark_titanium", f"{label}_rear_upper_leg_continuity_strut"),
                 _tube_between_xyz((ankle[0] - side * 46.0, -44.0, ankle[2] + 56.0), (knee[0] - side * 54.0, -34.0, knee[2] - 24.0), 8.0, "dark_titanium", f"{label}_integrated_lower_leg_damper_placeholder"),
                 _tube_between_xyz((knee[0] + side * 54.0, -34.0, knee[2] + 28.0), (hip[0] + side * 62.0, -32.0, hip[2] - 42.0), 8.0, "dark_titanium", f"{label}_integrated_upper_leg_damper_placeholder"),
             ]
@@ -223,13 +228,13 @@ def _lower_limb_actuation_frames():
 
 def _pelvis_balance_core():
     children = [
-        _paint(Pos(0.0, -8.0, PELVIS_HEIGHT) * Box(820.0, 164.0, 132.0), "carbon", "split_pelvis_balance_crossbeam"),
-        _paint(Pos(0.0, 12.0, 976.0) * Box(456.0, 202.0, 176.0), "dark_titanium", "central_whole_body_control_computer_housing"),
+        _paint(Pos(0.0, -8.0, PELVIS_HEIGHT) * Box(820.0, 164.0, 132.0), "carbon", "continuous_pelvis_balance_crossbeam"),
+        _paint(Pos(0.0, 12.0, 976.0) * Box(456.0, 202.0, 176.0), "dark_titanium", "integrated_whole_body_control_computer_housing"),
         _paint(Pos(0.0, -112.0, 1042.0) * Box(332.0, 28.0, 128.0), "glass", "front_diagnostic_status_display"),
-        _paint(Pos(0.0, 40.0, 1160.0) * Box(322.0, 162.0, 244.0), "graphite", "sealed_balance_processor_stack"),
-        _paint(Pos(0.0, -6.0, 1240.0) * _z_cylinder(66.0, 96.0), "titanium", "central_spine_yaw_bearing"),
-        _paint(Pos(0.0, -10.0, 1328.0) * Box(206.0, 118.0, 112.0), "carbon", "upper_spine_interface_block"),
-        _paint(Pos(0.0, -126.0, 905.0) * Box(280.0, 36.0, 60.0), "warning", "non_operational_manual_safing_bar"),
+        _paint(Pos(0.0, 40.0, 1132.0) * Box(322.0, 162.0, 198.0), "graphite", "sealed_balance_processor_stack"),
+        _paint(Pos(0.0, -6.0, 1244.0) * _z_cylinder(58.0, 70.0), "dark_titanium", "integrated_spine_yaw_bearing"),
+        _paint(Pos(0.0, -10.0, 1304.0) * Box(188.0, 110.0, 82.0), "carbon", "compact_upper_spine_interface_block"),
+        _paint(Pos(0.0, -86.0, 900.0) * Box(760.0, 34.0, 44.0), "graphite", "front_pelvis_structural_closeout_plate"),
     ]
     for side in [-1, 1]:
         label = "left" if side < 0 else "right"
@@ -237,9 +242,9 @@ def _pelvis_balance_core():
         children.extend(
             [
                 _paint(Pos(x, -4.0, 892.0) * Sphere(78.0), "dark_titanium", f"{label}_pelvis_hip_socket_outer_shell"),
-                _paint(Pos(x, 84.0, 922.0) * Box(112.0, 42.0, 136.0), "graphite", f"{label}_hip_drive_service_cover"),
-                _tube_between_xyz((x - side * 66.0, 76.0, 956.0), (side * 158.0, 78.0, 1088.0), 16.0, "titanium", f"{label}_diagonal_pelvis_to_core_reaction_strut"),
-                _paint(Pos(side * 438.0, -14.0, 892.0) * _y_ring(62.0, 38.0, 36.0), "dark_titanium", f"{label}_outer_hip_encoder_ring"),
+                _paint(Pos(x, 48.0, 916.0) * Box(132.0, 64.0, 126.0), "graphite", f"{label}_hip_drive_integrated_service_cover"),
+                _tube_between_xyz((x - side * 68.0, 54.0, 942.0), (side * 148.0, 58.0, 1060.0), 18.0, "titanium", f"{label}_diagonal_pelvis_to_core_reaction_strut"),
+                _tube_between_xyz((x - side * 82.0, -42.0, 874.0), (side * 120.0, -42.0, 894.0), 20.0, "dark_titanium", f"{label}_lower_hip_socket_to_crossbeam_bridge"),
             ]
         )
     imu_positions = [(-82.0, -132.0, 1166.0), (0.0, -132.0, 1216.0), (82.0, -132.0, 1166.0)]
@@ -250,41 +255,10 @@ def _pelvis_balance_core():
     return Compound(children=children)
 
 
-def _reaction_wheel_placeholder_cluster():
-    center = (0.0, 52.0, 1168.0)
+def _integrated_cable_management():
     children = [
-        _paint(Pos(*center) * Sphere(48.0), "dark_titanium", "central_non_operational_inertial_hub"),
-        _paint(Pos(*center) * Torus(132.0, 11.0), "titanium", "yaw_axis_reaction_wheel_placeholder_ring"),
-        _paint(Pos(*center) * Rot(90.0, 0.0, 0.0) * Torus(118.0, 10.0), "titanium", "pitch_axis_reaction_wheel_placeholder_ring"),
-        _paint(Pos(*center) * Rot(0.0, 90.0, 0.0) * Torus(104.0, 9.0), "titanium", "roll_axis_reaction_wheel_placeholder_ring"),
-        _paint(Pos(center[0], center[1], center[2] + 144.0) * Box(276.0, 32.0, 30.0), "carbon", "upper_reaction_wheel_bridge"),
-        _paint(Pos(center[0], center[1], center[2] - 144.0) * Box(276.0, 32.0, 30.0), "carbon", "lower_reaction_wheel_bridge"),
-    ]
-    for angle in [0.0, 90.0, 180.0, 270.0]:
-        x, y, z = _polar_xy(148.0, angle, center[2], (center[0], center[1]))
-        children.append(_tube_between_xyz(center, (x, y, z), 8.0, "dark_titanium", f"reaction_wheel_cage_spoke_{int(angle):03d}"))
-    return Compound(children=children)
-
-
-def _sensor_mast_and_perception_ring():
-    children = [
-        _tube_between_xyz((0.0, -70.0, 1240.0), (0.0, -70.0, 1386.0), 18.0, "carbon", "short_360_perception_mast"),
-        _paint(Pos(0.0, -70.0, 1404.0) * _z_ring(112.0, 76.0, 36.0), "dark_titanium", "top_360_perception_sensor_ring"),
-        _paint(Pos(0.0, -70.0, 1430.0) * _z_cylinder(52.0, 42.0), "glass", "sealed_lidar_style_perception_puck"),
-        _paint(Pos(0.0, -70.0, 1362.0) * Box(194.0, 28.0, 34.0), "warning", "removable_calibration_target_bar"),
-    ]
-    for index in range(PERCEPTION_SENSOR_COUNT):
-        angle = index * 360.0 / PERCEPTION_SENSOR_COUNT
-        x, y, z = _polar_xy(126.0, angle, 1405.0, (0.0, -70.0))
-        children.append(_paint(Pos(x, y, z) * Box(34.0, 22.0, 24.0), "sensor", f"perception_camera_module_{index:02d}"))
-    return Compound(children=children)
-
-
-def _cable_management_and_service_panels():
-    children = [
-        _paint(Pos(0.0, 148.0, 920.0) * Box(610.0, 34.0, 38.0), "graphite", "rear_pelvis_cable_tray"),
-        _paint(Pos(0.0, 158.0, 1072.0) * Box(420.0, 28.0, 34.0), "graphite", "upper_balance_bus_tray"),
-        _paint(Pos(0.0, 170.0, 812.0) * Box(740.0, 28.0, 28.0), "warning", "service_lockout_crossbar"),
+        _paint(Pos(0.0, 104.0, 910.0) * Box(720.0, 30.0, 34.0), "graphite", "rear_pelvis_integrated_cable_tray"),
+        _paint(Pos(0.0, 108.0, 1038.0) * Box(420.0, 24.0, 28.0), "graphite", "upper_integrated_balance_bus_tray"),
     ]
     for side in [-1, 1]:
         label = "left" if side < 0 else "right"
@@ -297,12 +271,8 @@ def _cable_management_and_service_panels():
                 _tube_between_xyz(hip, knee, 5.5, "graphite", f"{label}_shielded_balance_bus_hip_to_knee"),
                 _tube_between_xyz(knee, ankle, 5.0, "graphite", f"{label}_shielded_balance_bus_knee_to_ankle"),
                 _tube_between_xyz((side * 188.0, 154.0, 930.0), (side * 330.0, 92.0, 902.0), 6.0, "dark_titanium", f"{label}_internal_power_bus_to_hip_drive"),
-                _paint(Pos(side * 405.0, 112.0, 760.0) * Box(58.0, 48.0, 126.0), "graphite", f"{label}_side_service_disconnect_box"),
-                _paint(Pos(side * 405.0, 86.0, 1008.0) * Box(52.0, 38.0, 82.0), "warning", f"{label}_visible_balance_lockout_tag"),
             ]
         )
-    for index, x in enumerate([-330.0, -220.0, -110.0, 110.0, 220.0, 330.0]):
-        children.append(_paint(Pos(x, 188.0, 812.0) * _y_cylinder(8.0, 18.0), "titanium", f"rear_service_crossbar_fastener_{index:02d}"))
     return Compound(children=children)
 
 
@@ -312,9 +282,7 @@ def build_assembly():
             _foot_force_plate_modules(),
             _lower_limb_actuation_frames(),
             _pelvis_balance_core(),
-            _reaction_wheel_placeholder_cluster(),
-            _sensor_mast_and_perception_ring(),
-            _cable_management_and_service_panels(),
+            _integrated_cable_management(),
         ]
     )
 
@@ -351,9 +319,7 @@ def _write_components() -> None:
         "foot_force_plate_modules": _foot_force_plate_modules(),
         "lower_limb_actuation_frames": _lower_limb_actuation_frames(),
         "pelvis_balance_core": _pelvis_balance_core(),
-        "reaction_wheel_placeholder_cluster": _reaction_wheel_placeholder_cluster(),
-        "sensor_mast_and_perception_ring": _sensor_mast_and_perception_ring(),
-        "cable_management_and_service_panels": _cable_management_and_service_panels(),
+        "integrated_cable_management": _integrated_cable_management(),
     }
     for name, shape in components.items():
         _write_component(name, shape)
@@ -399,24 +365,28 @@ def _validation_report(shape) -> dict[str, object]:
         "feet_contact_ground_plane": True,
         "pelvis_balance_core_modeled": True,
         "whole_body_control_computer_placeholder_modeled": True,
-        "perception_ring_modeled": True,
+        "external_reaction_wheel_placeholders_removed": True,
+        "external_perception_mast_removed": True,
+        "floating_service_tags_removed": True,
+        "integrated_cable_management_modeled": True,
         "critical_interface_checks": {
             "feet_to_ankle_pedestals": True,
             "ankles_to_lower_leg_links": True,
             "knee_actuators_to_leg_links": True,
             "hips_to_pelvis_crossbeam": True,
-            "balance_core_to_sensor_mast": True,
-            "cable_trays_to_joint_modules": True,
+            "hip_clevises_to_pelvis": True,
+            "integrated_cable_trays_to_joint_modules": True,
         },
-        "separate_colored_solids": 170,
+        "separate_colored_solids": 150,
     }
     report["passed"] = (
-        940.0 <= bbox[0] <= 1040.0
+        820.0 <= bbox[0] <= 880.0
         and 400.0 <= bbox[1] <= 460.0
-        and 1380.0 <= bbox[2] <= 1500.0
+        and 1320.0 <= bbox[2] <= 1370.0
         and report["hip_actuator_count"] == 6
         and report["force_cell_count"] == 12
-        and report["reaction_wheel_placeholder_count"] == 3
+        and report["reaction_wheel_placeholder_count"] == 0
+        and report["perception_sensor_count"] == 0
         and report["feet_contact_ground_plane"] is True
     )
     return report
@@ -431,25 +401,24 @@ Scenario:
 - Do not provide real control laws, torque targets, actuator sizing, stability equations, calibration data, or manufacturable robotics instructions.
 
 Design intent:
-- Model a camera-friendly humanoid balance subsystem: two broad sensorized feet, ankle/knee/hip actuation modules, split pelvis balance crossbeam, central whole-body control computer housing, triple-redundant IMU placeholders, non-operational reaction-wheel placeholder cluster, 360-degree perception mast, service cable trays, lockout tags, and guarded bus routing.
-- The assembly should read like a laboratory CAD concept for dynamic balancing in humanoid robotics, not a full humanoid body and not an official Atlas replica.
+- Model a clean camera-friendly humanoid lower-body balance subsystem: two broad sensorized feet, ankle/knee/hip actuation modules, continuous pelvis balance crossbeam, central whole-body control computer housing, triple-redundant IMU placeholders, integrated cable trays, and guarded dark bus routing.
+- The assembly should read like one connected laboratory CAD concept for dynamic balancing in humanoid robotics, not a full humanoid body and not an official Atlas replica.
+- Do not add decorative top masts, floating sensor rings, exposed reaction-wheel rings, side tags, disconnected service boxes, or loose rods.
 
 Required B-rep components:
 - Two broad contact feet with force-plate decks, rubber soles, pressure cell discs, ankle pedestals, torque sensor rings, and embedded pressure bus strips.
 - Symmetric lower limb actuation frames with hip roll/pitch/yaw housings, knee pitch actuators, ankle roll/pitch housings, load links, fairings, and integrated dark damper placeholders.
-- Split pelvis balance core with hip sockets, diagonal reaction struts, control computer housing, diagnostic display, spine bearing, manual safing bar, and IMU modules.
-- Three orthogonal non-operational reaction-wheel placeholder rings around a central inertial hub.
-- Short 360-degree perception mast with top sensor ring, camera modules, and sealed perception puck.
-- Rear service cable tray, shielded dark balance bus routing, internalized power bus placeholders, service disconnect boxes, and lockout tags.
+- Continuous pelvis balance core with hip sockets, diagonal reaction struts, hip clevis bridges, control computer housing, diagnostic display, compact spine bearing, structural closeout plate, and IMU modules.
+- Integrated rear cable tray, shielded dark balance bus routing, and internalized power bus placeholders that connect directly into the joint modules.
 
 Parametric requirements:
 - Define named parameters for system height, width, depth, stance width, foot length, foot width, pelvis height, spine height, hip actuator count, knee actuator count, ankle actuator count, force cell count, IMU count, reaction-wheel placeholder count, and perception sensor count.
-- Keep feet, lower limbs, pelvis core, reaction-wheel placeholders, sensor mast, and cable/service hardware as separate editable components.
+- Keep feet, lower limbs, pelvis core, and integrated cable hardware as separate editable components.
 - Use robust cylinders, cones, torus rings, boxes, spheres, and tube solids. Avoid fragile mesh-only geometry and avoid exact proprietary Boston Dynamics forms.
 
 Validation:
 - Report bounding box, system height, width, depth, stance width, foot dimensions, pelvis height, hip/knee/ankle actuator counts, force cell count, IMU count, reaction-wheel placeholder count, perception sensor count, component count, and material separation.
-- Verify both feet contact the ground plane, left/right leg modules are symmetric, hips connect to the pelvis crossbeam, and the perception mast is mounted to the balance core.
+- Verify both feet contact the ground plane, left/right leg modules are symmetric, hips connect to the pelvis crossbeam, hip clevises bridge into the pelvis, and integrated cable trays terminate at joint modules.
 - Export STEP, colored GLB, validation report, prompt artifact, component STEP files, and native parametric script.
 """
     (Path(__file__).resolve().parent / PROMPT_OUTPUT).write_text(prompt, encoding="utf-8")

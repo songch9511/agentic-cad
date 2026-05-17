@@ -1,1 +1,1 @@
-humanoid-balance-system-v2-muted-service-hardware-demo
+humanoid-balance-system-v3-integrated-lower-body-demo
