@@ -1,0 +1,46 @@
+{
+  "product": "optimus_humanoid_robot_concept",
+  "display_name": "Optimus-inspired humanoid robot concept",
+  "design_intent": "Non-official reference-inspired humanoid robot CAD concept based on the supplied images",
+  "self_generated_prompt_used": true,
+  "height_mm": 1280.0,
+  "shoulder_width_mm": 430.0,
+  "torso_width_mm": 330.0,
+  "torso_depth_mm": 152.0,
+  "head_size_mm": [
+    138.0,
+    116.0,
+    190.0
+  ],
+  "upper_arm_length_mm": 196.0,
+  "forearm_length_mm": 178.0,
+  "thigh_length_mm": 258.0,
+  "shin_length_mm": 275.0,
+  "joint_diameter_mm": 64.0,
+  "shell_thickness_mm": 6.0,
+  "foot_size_mm": [
+    92.0,
+    172.0,
+    38.0
+  ],
+  "joint_count": 14,
+  "finger_count": 10,
+  "actuator_count": 18,
+  "light_strip_count": 10,
+  "component_count": 11,
+  "service_seam_count": 28,
+  "bounding_box_mm": [
+    577.8,
+    250.0,
+    1275.0
+  ],
+  "left_right_limb_symmetry_ok": true,
+  "stable_foot_placement_ok": true,
+  "black_gloss_capsule_head_modeled": true,
+  "cyan_face_contour_light_modeled": true,
+  "white_chest_black_yoke_modeled": true,
+  "exposed_black_pelvis_mechanism_modeled": true,
+  "articulated_hands_modeled": true,
+  "separate_colored_solids": 190,
+  "passed": true
+}
