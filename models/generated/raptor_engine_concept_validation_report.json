@@ -14,6 +14,7 @@
   "gimbal_actuator_count": 4,
   "main_pipe_count": 18,
   "cooling_channel_count": 36,
+  "internal_liner_channel_count": 24,
   "injector_element_count": 54,
   "component_count": 10,
   "bounding_box_mm": [
@@ -28,6 +29,12 @@
   "annular_propellant_manifolds_modeled": true,
   "gimbal_mount_modeled": true,
   "instrumentation_and_valves_modeled": true,
+  "blue_airflow_visualization_removed": true,
+  "metal_only_engine_hardware_palette": true,
+  "open_hollow_nozzle_flowpath_modeled": true,
+  "black_nozzle_exit_cap_removed": true,
+  "visible_internal_chamber_bore_modeled": true,
+  "visible_internal_nozzle_liner_ribs_modeled": true,
   "critical_interface_checks": {
     "injector_to_chamber": true,
     "chamber_to_throat": true,
@@ -37,6 +44,6 @@
     "mount_ring_to_chamber": true,
     "gimbal_actuators_to_mount": true
   },
-  "separate_colored_solids": 196,
+  "separate_colored_solids": 226,
   "passed": true
 }

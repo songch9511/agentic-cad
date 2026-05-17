@@ -12,6 +12,7 @@ from build123d import (
     Color,
     Compound,
     Cylinder,
+    Mode,
     Plane,
     Pos,
     Rot,
@@ -36,6 +37,7 @@ PREBURNER_COUNT = 2
 GIMBAL_ACTUATOR_COUNT = 4
 MAIN_PIPE_COUNT = 18
 COOLING_CHANNEL_COUNT = 36
+INTERNAL_LINER_CHANNEL_COUNT = 24
 INJECTOR_ELEMENT_COUNT = 54
 COMPONENT_COUNT = 10
 
@@ -44,19 +46,20 @@ GLB_OUTPUT = "raptor_engine_concept_assembly.glb"
 VALIDATION_OUTPUT = "raptor_engine_concept_validation_report.json"
 PROMPT_OUTPUT = "raptor_engine_concept_prompt.md"
 COMPONENT_DIR = "raptor_engine_concept_components"
-COMPONENT_REVISION = "raptor-engine-concept-v2-extended-bell-mount-demo"
+COMPONENT_REVISION = "raptor-engine-concept-v6-bright-visible-hollow-nozzle-liner-demo"
 
 COLORS = {
     "inconel": Color(0.49, 0.48, 0.44, 1.0),
+    "nozzle_liner": Color(0.56, 0.55, 0.50, 1.0),
     "dark_inconel": Color(0.18, 0.18, 0.17, 1.0),
     "graphite": Color(0.06, 0.065, 0.065, 1.0),
     "black": Color(0.01, 0.01, 0.012, 1.0),
     "copper": Color(0.74, 0.38, 0.16, 1.0),
     "bronze": Color(0.55, 0.38, 0.18, 1.0),
-    "oxygen": Color(0.0, 0.72, 0.92, 1.0),
-    "methane": Color(0.0, 0.32, 1.0, 1.0),
-    "helium": Color(0.64, 0.78, 0.95, 1.0),
-    "sensor": Color(0.02, 0.95, 0.82, 1.0),
+    "oxygen": Color(0.46, 0.48, 0.48, 1.0),
+    "methane": Color(0.28, 0.30, 0.31, 1.0),
+    "helium": Color(0.58, 0.59, 0.56, 1.0),
+    "sensor": Color(0.08, 0.09, 0.09, 1.0),
     "ceramic": Color(0.82, 0.80, 0.72, 1.0),
 }
 
@@ -132,13 +135,31 @@ def _lofted_z_circular_shell(profiles: list[tuple[float, float]], color: str, la
     return _paint(part.part, color, label)
 
 
+def _lofted_z_annular_shell(
+    outer_profiles: list[tuple[float, float]],
+    inner_profiles: list[tuple[float, float]],
+    color: str,
+    label: str,
+):
+    with BuildPart() as part:
+        for z, radius in outer_profiles:
+            with BuildSketch(Plane.XY.offset(z)):
+                Circle(radius)
+        loft()
+        for z, radius in inner_profiles:
+            with BuildSketch(Plane.XY.offset(z)):
+                Circle(radius)
+        loft(mode=Mode.SUBTRACT)
+    return _paint(part.part, color, label)
+
+
 def _ring(z: float, major_radius: float, minor_radius: float, color: str, label: str):
     return _paint(Pos(0.0, 0.0, z) * Torus(major_radius, minor_radius), color, label)
 
 
 def _nozzle_bell_and_regen_channels():
     children = [
-        _lofted_z_circular_shell(
+        _lofted_z_annular_shell(
             [
                 (-1300.0, 725.0),
                 (-1040.0, 640.0),
@@ -146,16 +167,23 @@ def _nozzle_bell_and_regen_channels():
                 (-285.0, 335.0),
                 (-55.0, 138.0),
             ],
-            "dark_inconel",
-            "large_regeneratively_cooled_contoured_nozzle_bell",
-        ),
-        _lofted_z_circular_shell(
-            [(-1288.0, 650.0), (-910.0, 530.0), (-430.0, 350.0), (-80.0, 112.0)],
-            "black",
-            "deep_black_nozzle_interor_shadow",
+            [
+                (-1330.0, 648.0),
+                (-1040.0, 565.0),
+                (-680.0, 426.0),
+                (-285.0, 250.0),
+                (-46.0, 92.0),
+            ],
+            "nozzle_liner",
+            "open_hollow_regeneratively_cooled_contoured_nozzle_bell",
         ),
         _ring(-1296.0, 700.0, 18.0, "inconel", "thick_rolled_nozzle_exit_lip"),
+        _ring(-1286.0, 650.0, 7.0, "inconel", "visible_open_nozzle_inner_exit_edge"),
+        _ring(-1040.0, 565.0, 5.0, "ceramic", "visible_inner_bell_liner_reference_ring_lower"),
+        _ring(-680.0, 426.0, 5.0, "ceramic", "visible_inner_bell_liner_reference_ring_mid"),
+        _ring(-285.0, 250.0, 4.5, "ceramic", "visible_inner_bell_liner_reference_ring_upper"),
         _ring(-52.0, 140.0, 16.0, "copper", "copper_throat_regen_manifold_ring"),
+        _ring(-40.0, 92.0, 8.0, "inconel", "open_combustion_throat_lip"),
         _ring(-820.0, 548.0, 9.0, "copper", "mid_bell_regen_distribution_ring"),
     ]
     for index in range(COOLING_CHANNEL_COUNT):
@@ -169,19 +197,33 @@ def _nozzle_bell_and_regen_channels():
                 f"external_regen_cooling_channel_{index:02d}",
             )
         )
+    for index in range(INTERNAL_LINER_CHANNEL_COUNT):
+        angle = index * 360.0 / INTERNAL_LINER_CHANNEL_COUNT + 7.5
+        children.append(
+            _tube_between_xyz(
+                _polar(610.0, angle, -1244.0),
+                _polar(106.0, angle + 2.5, -76.0),
+                5.2,
+                "ceramic" if index % 3 else "copper",
+                f"visible_internal_nozzle_liner_rib_{index:02d}",
+            )
+        )
     return Compound(children=children)
 
 
 def _combustion_chamber_and_injector():
     children = [
-        _lofted_z_circular_shell(
+        _lofted_z_annular_shell(
             [(-90.0, 148.0), (40.0, 226.0), (235.0, 226.0), (390.0, 192.0)],
+            [(-120.0, 88.0), (40.0, 126.0), (235.0, 138.0), (416.0, 92.0)],
             "inconel",
-            "high_pressure_main_combustion_chamber",
+            "hollow_high_pressure_main_combustion_chamber_with_visible_bore",
         ),
         _ring(238.0, 218.0, 13.0, "copper", "upper_chamber_regen_collector_ring"),
+        _ring(54.0, 126.0, 4.0, "ceramic", "visible_lower_combustion_chamber_inner_liner_ring"),
+        _ring(236.0, 138.0, 4.0, "ceramic", "visible_upper_combustion_chamber_inner_liner_ring"),
         _ring(395.0, 174.0, 15.0, "dark_inconel", "bolted_injector_flange_ring"),
-        _paint(Pos(0.0, 0.0, 444.0) * _z_cylinder(178.0, 52.0), "dark_inconel", "flat_circular_injector_face_plate"),
+        _paint(Pos(0.0, 0.0, 444.0) * _z_cylinder(178.0, 52.0), "dark_inconel", "visible_circular_injector_face_plate_at_top_of_open_bore"),
         _paint(Pos(0.0, 0.0, 488.0) * Sphere(152.0), "graphite", "domed_methane_oxygen_mixing_plenum_cap"),
     ]
     for index in range(INJECTOR_ELEMENT_COUNT):
@@ -371,6 +413,7 @@ def _validation_report(shape) -> dict[str, object]:
         "gimbal_actuator_count": GIMBAL_ACTUATOR_COUNT,
         "main_pipe_count": MAIN_PIPE_COUNT,
         "cooling_channel_count": COOLING_CHANNEL_COUNT,
+        "internal_liner_channel_count": INTERNAL_LINER_CHANNEL_COUNT,
         "injector_element_count": INJECTOR_ELEMENT_COUNT,
         "component_count": COMPONENT_COUNT,
         "bounding_box_mm": bbox,
@@ -381,6 +424,12 @@ def _validation_report(shape) -> dict[str, object]:
         "annular_propellant_manifolds_modeled": True,
         "gimbal_mount_modeled": True,
         "instrumentation_and_valves_modeled": True,
+        "blue_airflow_visualization_removed": True,
+        "metal_only_engine_hardware_palette": True,
+        "open_hollow_nozzle_flowpath_modeled": True,
+        "black_nozzle_exit_cap_removed": True,
+        "visible_internal_chamber_bore_modeled": True,
+        "visible_internal_nozzle_liner_ribs_modeled": True,
         "critical_interface_checks": {
             "injector_to_chamber": True,
             "chamber_to_throat": True,
@@ -390,7 +439,7 @@ def _validation_report(shape) -> dict[str, object]:
             "mount_ring_to_chamber": True,
             "gimbal_actuators_to_mount": True,
         },
-        "separate_colored_solids": 196,
+        "separate_colored_solids": 226,
     }
     report["passed"] = (
         1450.0 <= bbox[0] <= 1900.0
@@ -400,6 +449,7 @@ def _validation_report(shape) -> dict[str, object]:
         and report["preburner_count"] == 2
         and report["gimbal_actuator_count"] == 4
         and report["cooling_channel_count"] == 36
+        and report["internal_liner_channel_count"] == 24
     )
     return report
 
@@ -412,19 +462,19 @@ Scenario:
 - This is a fictional, non-official concept and must not claim to be a real SpaceX engineering model or exact Raptor copy.
 
 Design intent:
-- Model a full-flow staged-combustion style engine architecture with a large regeneratively cooled bell nozzle, high-pressure combustion chamber, injector face, dual preburners, dual turbopumps, annular LOX/methane manifolds, compact plumbing, thrust-vector gimbal frame, actuators, smart valves, purge/sensor lines, and thermal shield panels.
-- Make the engine production-like and mechanically credible: dense but organized plumbing, clear color-coded propellant circuits, robust flanges, ring manifolds, cooling channels, and mount interfaces.
+- Model a full-flow staged-combustion style engine architecture with a large regeneratively cooled bell nozzle, high-pressure combustion chamber, injector face, dual preburners, dual turbopumps, annular LOX/methane manifolds, compact metal plumbing, thrust-vector gimbal frame, actuators, smart valves, purge/sensor lines, and thermal shield panels.
+- Make the engine production-like and mechanically credible: dense but organized metal plumbing, robust flanges, ring manifolds, cooling channels, and mount interfaces. The bell nozzle and chamber must be open hollow B-rep shells with a visible internal flowpath, not a black filled cap or sealed solid. Do not add blue airflow lines, cyan visualization curves, or color-coded simulation graphics.
 
 Required B-rep components:
-- Contoured nozzle bell with rolled exit lip, throat ring, and visible external regenerative cooling channels.
-- Main combustion chamber with injector dome, bolted injector flange, and individual injector element placeholders.
+- Open hollow contoured nozzle bell with rolled exit lip, visible inner liner rings, internal liner ribs, throat ring, and visible external regenerative cooling channels.
+- Hollow main combustion chamber with visible internal bore, injector dome, bolted injector flange, and individual injector element placeholders.
 - Oxygen and methane turbopump assemblies with turbine cases, pump volutes, compact preburner cans, and crossfeed tubes.
 - Annular LOX, methane, and purge manifolds with downcomers into the injector/chamber.
 - Thrust-vector control mount ring, inner gimbal ring, four actuator bodies, polished piston rods, and spherical joints.
 - Smart valve boxes, sensor nodes, purge harnesses, heat shields, service backbone panel, and removable shield seam strips.
 
 Validation:
-- Report bounding box, engine height, nozzle exit diameter, chamber diameter, throat diameter, turbopump count, preburner count, gimbal actuator count, pipe count, cooling channel count, injector element count, component count, and material separation.
+- Report bounding box, engine height, nozzle exit diameter, chamber diameter, throat diameter, turbopump count, preburner count, gimbal actuator count, pipe count, cooling channel count, internal liner channel count, injector element count, component count, and material separation.
 - Verify critical interfaces: injector-to-chamber, chamber-to-throat, throat-to-nozzle, turbopumps-to-manifolds, preburners-to-turbopumps, mount ring-to-chamber, and gimbal actuators-to-mount.
 - Export STEP, colored GLB, validation report, prompt, component STEP files, and native parametric script.
 """
