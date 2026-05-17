@@ -1,0 +1,42 @@
+{
+  "product": "raptor_engine_concept",
+  "display_name": "Next-gen Raptor-inspired propulsion engine concept",
+  "design_intent": "Non-official Raptor-inspired next-generation methane/LOX full-flow staged-combustion engine concept",
+  "scenario": "Propulsion-engineer-style prompt asked CoBrA for a next-gen Raptor engine concept",
+  "non_official_concept": true,
+  "engine_height_mm": 2550.0,
+  "nozzle_exit_diameter_mm": 1450.0,
+  "chamber_diameter_mm": 430.0,
+  "throat_diameter_mm": 245.0,
+  "mount_ring_diameter_mm": 920.0,
+  "turbopump_count": 2,
+  "preburner_count": 2,
+  "gimbal_actuator_count": 4,
+  "main_pipe_count": 18,
+  "cooling_channel_count": 36,
+  "injector_element_count": 54,
+  "component_count": 10,
+  "bounding_box_mm": [
+    1450.0,
+    1450.0,
+    2396.0
+  ],
+  "full_flow_staged_combustion_layout_modeled": true,
+  "regen_cooled_nozzle_modeled": true,
+  "dual_preburners_modeled": true,
+  "dual_turbopumps_modeled": true,
+  "annular_propellant_manifolds_modeled": true,
+  "gimbal_mount_modeled": true,
+  "instrumentation_and_valves_modeled": true,
+  "critical_interface_checks": {
+    "injector_to_chamber": true,
+    "chamber_to_throat": true,
+    "throat_to_nozzle_bell": true,
+    "turbopumps_to_manifolds": true,
+    "preburners_to_turbopumps": true,
+    "mount_ring_to_chamber": true,
+    "gimbal_actuators_to_mount": true
+  },
+  "separate_colored_solids": 196,
+  "passed": true
+}
