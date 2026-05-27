@@ -1,0 +1,19 @@
+{
+  "part_id": "servo_mg996r",
+  "name": "MG996R hobby servo placeholder",
+  "source_id": "placeholder:mg996r:v1",
+  "source_uri": "cadx://placeholder/vendor/mg996r.step",
+  "manufacturer": "TowerPro-compatible placeholder",
+  "model": "MG996R",
+  "category": "actuator",
+  "tags": ["servo", "actuator", "pan_tilt", "step_parts_style_seed"],
+  "license_status": "placeholder-local-seed",
+  "provenance_status": "curated_local_fixture",
+  "original_step_path": "catalog/parts/servo_mg996r/original.step",
+  "normalized_step_path": "catalog/parts/servo_mg996r/normalized.step",
+  "immutable_original": true,
+  "interface_tags": ["servo_output_spline", "servo_mount_tabs"],
+  "dimension_tags": ["40x20x40mm_body", "48x10mm_mount_tabs", "6mm_output_spline"],
+  "checksum_sha256": null,
+  "notes": "Local curated seed entry wrapping the existing deterministic MG996R placeholder; no external network fetch."
+}

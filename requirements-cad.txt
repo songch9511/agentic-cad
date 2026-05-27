@@ -1,3 +1,0 @@
--r skills/cad/requirements.txt
--r skills/urdf/requirements.txt
-vtk
