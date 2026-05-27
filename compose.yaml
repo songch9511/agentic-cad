@@ -1,0 +1,12 @@
+services:
+  cadx:
+    build:
+      context: .
+    image: cadx:local
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./runs:/app/runs
+    environment:
+      PYTHONUNBUFFERED: "1"
+    command: ["uvicorn", "cadx.server:app", "--host", "0.0.0.0", "--port", "8000"]

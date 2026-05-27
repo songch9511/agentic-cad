@@ -1,26 +1,6 @@
-# macOS
-.DS_Store
-.vscode
-
-# Python
+.venv/
 __pycache__/
-*.py[cod]
+*.pyc
 .pytest_cache/
-.mypy_cache/
-.ruff_cache/
-.coverage
-.coverage.*
-htmlcov/
-.python-version
-
-# Local environments and caches
-.venv
-.cache
-
-# Temporary files
-*.tmp
-*.swp
-tmp/
-benchmark-results/
-
-# CAD source, generated STEP outputs, and viewer CAD artifacts are tracked via Git LFS in .gitattributes.
+runs/*
+!runs/.gitkeep
